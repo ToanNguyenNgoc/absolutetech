@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/user/user.enums';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +22,10 @@ export class UploadController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/avatars',
+        destination: (req, file, cb) => {
+          const uploadPath = join(process.cwd(), 'uploads', 'avatars');
+          cb(null, uploadPath);
+        },
         filename: (req, file, cb) => {
           const uniqueSuffix = uuidv4();
           const fileExtName = extname(file.originalname);
@@ -38,7 +41,6 @@ export class UploadController {
     }),
   )
   uploadAvatar(@UploadedFile() file: Express.Multer.File) {
-    // const baseUrl = this.configService.get<string>('APP_BASE_URL');
     return {
       url: `uploads/avatars/${file.filename}`,
     };
