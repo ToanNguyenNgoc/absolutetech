@@ -1,7 +1,10 @@
 # User-Log Project
 
-**Node Version:** v22.14.0
-
+**Node Version:** `v22.14.0`
+**npm Version:** `10.9.2`  
+**VueJS Version:** `^3.2.13`  
+**Mongoose Version:** `^8.12.1`  
+**NestJS Version:** `^11.0.1`
 This project consists of a NestJS API (in the `api` folder) and a Vue 3 frontend (located in the root). Follow the instructions below to set up, build, run, seed, and deploy the project.
 
 ---
