@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
       {
-        name: 'backend',
+        name: 'backend-api',
         script: 'dist/main.js',
         watch: false,
         cwd: 'api',
