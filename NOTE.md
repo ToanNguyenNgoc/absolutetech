@@ -88,3 +88,13 @@ From the project root, run:
 ```bash
 npm run start:prod
 ```
+
+## 5. Add Super Admin
+
+From the project root, run:
+
+```bash
+cd api
+npx ts-node -r tsconfig-paths/register src/seeds/seed-users.ts
+```
+
