@@ -14,7 +14,7 @@ async function bootstrap() {
       email: 'super_admin@yopmail.com',
       password: '123123',
       employeeID: 'super_admin',
-      role: Role.ADMINISTRATOR,
+      role: Role.SUPER_ADMIN,
       position: 'Developer',
       gender: Gender.MALE,
       birthday: new Date('1990-01-01'),
