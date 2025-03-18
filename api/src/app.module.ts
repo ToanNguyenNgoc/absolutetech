@@ -21,7 +21,7 @@ import { FrontendMiddleware } from './frontend.middleware';
       },
       {
         rootPath: join(__dirname, '..', '..', 'public', 'dist'),
-        exclude: ['/api*'],
+        exclude: ['/api*', '/uploads'],
       },
     ),
     MongooseModule.forRoot(process.env.MONGODB_URI || '', {
