@@ -158,6 +158,7 @@ import { info } from '@/api';
 import { baseURL } from '@/constant/common';
 import { setCookie } from '@/utils/cookie';
 import { computed } from 'vue';
+import { globalState } from "@/store/globalState";
 
 export default {
     name: 'AdminLayout',
@@ -167,7 +168,6 @@ export default {
             showDropdown: false,
             isDrawerOpen: false,     // drawer mobile
             isMobileOrTablet: false,
-            userInfo: null,
             baseURL: baseURL,
         };
     },
@@ -175,6 +175,9 @@ export default {
         isExpandedProvide() {
             return this.isExpanded;
         },
+        userInfo() {
+            return globalState.userInfo;
+        }
     },
     provide() {
         return {
@@ -213,7 +216,7 @@ export default {
         async fetchUserInfo() {
             try {
                 const response = await info();
-                this.userInfo = response.data.data;
+                globalState.setUser(response.data.data);
             } catch (error) {
                 console.error('Error fetching user info:', error);
             }

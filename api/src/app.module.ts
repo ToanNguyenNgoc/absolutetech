@@ -25,7 +25,7 @@ import { FrontendMiddleware } from './frontend.middleware';
       },
     ),
     MongooseModule.forRoot(process.env.MONGODB_URI || '', {
-      dbName: 'user-logs',
+      dbName: process.env.MONGODB_DB_NAME,
     }),
     UserModule,
     AuthModule,

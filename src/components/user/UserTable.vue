@@ -12,7 +12,7 @@
             <el-table-column prop="role" label="Role" />
             <el-table-column label="Action">
                 <template #default="{ row }">
-                    <div class="action-buttons">
+                    <div class="action-buttons"  v-if="toRaw(row)?._id !== userInfo?._id">
                         <img src="@/assets/icon-edit.svg" alt="edit" @click="handleEdit(row)" />
                         <img src="@/assets/icon-delete.svg" alt="edit" @click="handleDelete(row)" />
                     </div>
@@ -33,10 +33,11 @@
 
 <script>
 import { deleteUser, getUsers } from '@/api/user';
-import { inject, onMounted, ref, toRaw } from 'vue';
+import { inject, onMounted, ref, toRaw, computed } from 'vue';
 import AddUserModal from './AddUserModal.vue';
 import { ElMessageBox } from 'element-plus';
 import MyMessage from '../common/MyMessage.vue';
+import { globalState } from "@/store/globalState";
 
 export default {
     name: 'UserTable',
@@ -57,6 +58,9 @@ export default {
         onMounted(() => {
             fetchData();
         });
+        const userInfo = computed(() => globalState.userInfo);
+        console.log(userInfo);
+
 
         const fetchData = async (isAdd = false) => {
             loading.value = true;
@@ -135,6 +139,8 @@ export default {
             handleDelete,
             tableRef,
             isExpanded,
+            userInfo,
+            toRaw,
         };
     },
 };
