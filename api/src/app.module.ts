@@ -17,11 +17,11 @@ import { FrontendMiddleware } from './frontend.middleware';
     ServeStaticModule.forRoot(
       {
         rootPath: join(__dirname, '..', 'uploads'),
-        serveRoot: '/uploads',
+        serveRoot: '/api/uploads',
       },
       {
         rootPath: join(__dirname, '..', '..', 'public', 'dist'),
-        exclude: ['/api*', '/uploads'],
+        exclude: ['/api*'],
       },
     ),
     MongooseModule.forRoot(process.env.MONGODB_URI || '', {

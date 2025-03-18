@@ -42,7 +42,7 @@ export class UploadController {
   )
   uploadAvatar(@UploadedFile() file: Express.Multer.File) {
     return {
-      url: `uploads/avatars/${file.filename}`,
+      url: `api/uploads/avatars/${file.filename}`,
     };
   }
 }
