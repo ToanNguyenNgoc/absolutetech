@@ -1,16 +1,18 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
-import { paginate } from 'src/common/pagination.util';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import * as fs from 'fs';
 import { parse } from 'csv-parse';
+import * as fs from 'fs';
+import { Model } from 'mongoose';
 import * as path from 'path';
+import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
-
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserInfo } from './user.enums';
+import { User, UserDocument } from './user.schema';
+const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
   constructor(
@@ -18,6 +20,74 @@ export class UserService {
     private readonly entryLogService: EntryLogService,
   ) {}
 
+  async createInfoPersonHIKVISION(data: { UserInfo: UserInfo }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Record?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      console.log(res);
+
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
+  async uploadFaceInfoHIKVISION(data: { id: string }, imagePath: string) {
+    try {
+      const form = new FormData();
+
+      // Append JSON data
+      form.append(
+        'FaceDataRecord',
+        JSON.stringify({ faceLibType: 'blackFD', FDID: '1', FPID: data.id }),
+      );
+
+      // Append image file
+      form.append('img', fs.readFileSync(imagePath, 'binary'));
+
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        { algorithm: 'MD5' },
+      );
+
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/Intelligent/FDLib/FDSetUp?format=json`,
+        {
+          method: 'PUT',
+          body: form,
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+
+      const result = await res.text(); // hoặc res.json() tùy API trả về
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
   async createUser(dto: CreateUserDto): Promise<User> {
     const hashed = await bcrypt.hash(dto.password, 10);
     const created = new this.userModel({

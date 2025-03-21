@@ -14,7 +14,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Controller('api/upload')
 export class UploadController {
-
   constructor(private readonly configService: ConfigService) {}
 
   @Post('avatar')

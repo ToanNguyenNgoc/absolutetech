@@ -4,7 +4,6 @@ import { Gender, Role } from './user.enums';
 
 export type UserDocument = User & Document;
 
-
 @Schema()
 export class User {
   @Prop({ required: true })
@@ -53,6 +52,5 @@ export class User {
   @Prop({ default: Date.now })
   createdAt: Date;
 }
-
 
 export const UserSchema = SchemaFactory.createForClass(User);

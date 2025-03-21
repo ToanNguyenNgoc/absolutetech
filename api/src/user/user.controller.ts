@@ -13,12 +13,13 @@ import {
   HttpException,
   HttpStatus,
   Res,
+  RawBody,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from './user.enums';
+import { Role, UserInfo } from './user.enums';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -32,6 +33,23 @@ import { convertToCSV } from 'src/common/csv.util';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post('create-user-face')
+  async createUserFace(@Body() data: { UserInfo: UserInfo }) {
+    return await this.userService.createInfoPersonHIKVISION(data);
+  }
+
+  @Post('upload-user-face')
+  @UseInterceptors(FileInterceptor('img'))
+  async uploadUserFace(
+    @Body('FaceDataRecord') faceDataRecord: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log('FaceDataRecord:', faceDataRecord);
+    console.log('Image file:', file);
+
+    const faceData = JSON.parse(faceDataRecord);
+    return this.userService.uploadFaceInfoHIKVISION(faceData, file.path);
+  }
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async create(@Body() dto: CreateUserDto) {

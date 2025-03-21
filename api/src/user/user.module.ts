@@ -11,10 +11,7 @@ import { SharedModule } from 'src/shared/shared.module';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     SharedModule,
   ],
-  providers: [
-    UserService,            
-    IsUniqueUserConstraint, 
-  ],
+  providers: [UserService, IsUniqueUserConstraint],
   controllers: [UserController],
   exports: [UserService],
 })
