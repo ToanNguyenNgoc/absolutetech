@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { HttpStatus, UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
+import {
+  HttpStatus,
+  UnprocessableEntityException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { useContainer, ValidationError } from 'class-validator';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new AllExceptionsFilter());
@@ -46,7 +49,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
-  
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

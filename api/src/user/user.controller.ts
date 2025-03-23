@@ -13,7 +13,6 @@ import {
   HttpException,
   HttpStatus,
   Res,
-  RawBody,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -39,16 +38,33 @@ export class UserController {
   }
 
   @Post('upload-user-face')
-  @UseInterceptors(FileInterceptor('img'))
+  @UseInterceptors(
+    FileInterceptor('img', {
+      storage: diskStorage({
+        destination: './uploads', // Thư mục lưu tạm
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(
+            null,
+            `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`,
+          );
+        },
+      }),
+    }),
+  )
   async uploadUserFace(
     @Body('FaceDataRecord') faceDataRecord: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log('FaceDataRecord:', faceDataRecord);
-    console.log('Image file:', file);
-
-    const faceData = JSON.parse(faceDataRecord);
-    return this.userService.uploadFaceInfoHIKVISION(faceData, file.path);
+    try {
+      console.log('FaceDataRecord:', faceDataRecord);
+      console.log('Image file:', file);
+      const faceData = JSON.parse(faceDataRecord);
+      return this.userService.uploadFaceInfoHIKVISION(faceData, file);
+    } catch (error) {
+      console.log(error);
+    }
   }
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)

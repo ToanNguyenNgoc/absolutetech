@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { UploadController } from './upload/upload.controller';
 import { EntryLogModule } from './entry-log/entry-log.module';
 import { FrontendMiddleware } from './frontend.middleware';
+import { HikvisionModule } from './hikvision/hikvision.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FrontendMiddleware } from './frontend.middleware';
     UserModule,
     AuthModule,
     EntryLogModule,
+    HikvisionModule,
   ],
 
   controllers: [UploadController],
@@ -37,8 +39,6 @@ import { FrontendMiddleware } from './frontend.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(FrontendMiddleware)
-      .forRoutes('*');
+    consumer.apply(FrontendMiddleware).forRoutes('*');
   }
 }

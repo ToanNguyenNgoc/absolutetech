@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,6 +14,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserInfo } from './user.enums';
 import { User, UserDocument } from './user.schema';
 const DigestClient = require('digest-fetch');
+import * as FormData from 'form-data';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -27,6 +30,7 @@ export class UserService {
         process.env.HIKVISION_PASSWORD,
         {
           algorithm: 'MD5',
+          timeout: 20000,
         },
       );
       const res = await client.fetch(
@@ -50,19 +54,28 @@ export class UserService {
     }
   }
 
-  async uploadFaceInfoHIKVISION(data: { id: string }, imagePath: string) {
+  async uploadFaceInfoHIKVISION(
+    data: { FPID: string },
+    file: Express.Multer.File,
+  ) {
     try {
       const form = new FormData();
-
-      // Append JSON data
       form.append(
         'FaceDataRecord',
-        JSON.stringify({ faceLibType: 'blackFD', FDID: '1', FPID: data.id }),
+        JSON.stringify({ faceLibType: 'blackFD', FDID: '1', FPID: data.FPID }),
       );
+      const absolutePath = path.resolve(
+        __dirname,
+        '..',
+        'uploads',
+        file.filename,
+      );
+      console.log('Absolute Path:', absolutePath);
 
-      // Append image file
-      form.append('img', fs.readFileSync(imagePath, 'binary'));
-
+      // form.append('img', fs.createReadStream(absolutePath), {
+      //   filename: file.originalname,
+      //   contentType: file.mimetype,
+      // });
       const client = new DigestClient(
         process.env.HIKVISION_USERNAME,
         process.env.HIKVISION_PASSWORD,
@@ -74,16 +87,13 @@ export class UserService {
         {
           method: 'PUT',
           body: form,
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'multipart/x-mixed-replace',
-          },
+          headers: form.getHeaders(), // ✅ LẤY ĐÚNG HEADERS CÓ BOUNDARY
         },
       );
 
-      const result = await res.text(); // hoặc res.json() tùy API trả về
-      console.log('result', result);
-      return result;
+      // const result = await res.text(); // hoặc res.json() tùy API trả về
+      console.log('result', res);
+      return true;
     } catch (error) {
       console.log('Error', error);
     }
