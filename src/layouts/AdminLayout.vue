@@ -25,11 +25,11 @@
                         <ul>
                             <li>
                                 <img src="@/assets/icon-user.svg" alt="">
-                                <span class="avatar-name">{{ userInfo?.username }}</span>
+                                <span class="avatar-name">{{ userInfo?.fullName }}</span>
                             </li>
                             <li>
                                 <img src="@/assets/icon-information.svg" alt="">
-                                <span class="avatar-name">Information</span>
+                                <span class="avatar-name" @click="openChangePasswordModal">Change Password</span>
                             </li>
                         </ul>
                         <hr>
@@ -125,10 +125,10 @@
                                 <img class="avt-mobile"
                                     :src="userInfo?.avatar ? baseURL + '/' + userInfo.avatar : require('@/assets/img/avt-default.png')"
                                     alt="Logo" />
-                                <p>{{ userInfo?.username }}</p>
+                                <p>{{ userInfo?.fullName }}</p>
                             </div>
-                            <div class="drawer-user-info-mobile__right">
-                                Information
+                            <div class="drawer-user-info-mobile__right" @click="openChangePasswordModal">
+                                Change Password
                             </div>
                         </div>
                         <div @click="handleLogout" class="drawer-user-info-mobile__logout">
@@ -151,6 +151,7 @@
             </nav>
         </el-drawer>
     </div>
+    <change-password-modal :visible="isChangePasswordModalVisible" @update:visible="isChangePasswordModalVisible = $event" />
 </template>
 
 <script>
@@ -159,9 +160,13 @@ import { baseURL } from '@/constant/common';
 import { setCookie } from '@/utils/cookie';
 import { computed } from 'vue';
 import { globalState } from "@/store/globalState";
+import ChangePasswordModal from '@/components/common/ChangePasswordModal.vue';
 
 export default {
     name: 'AdminLayout',
+    components: {
+        ChangePasswordModal,
+    },
     data() {
         return {
             isExpanded: false,       // sidebar desktop
@@ -169,6 +174,7 @@ export default {
             isDrawerOpen: false,     // drawer mobile
             isMobileOrTablet: false,
             baseURL: baseURL,
+            isChangePasswordModalVisible: false
         };
     },
     computed: {
@@ -213,6 +219,11 @@ export default {
             this.isMobileOrTablet = window.innerWidth <= 1024;
         },
 
+        openChangePasswordModal() {
+            console.log('open change password modal');
+            this.isChangePasswordModalVisible = true
+        },
+
         async fetchUserInfo() {
             try {
                 const response = await info();
@@ -236,6 +247,9 @@ export default {
 </script>
 
 <style scoped>
+.avatar-name {
+    white-space: nowrap;
+}
 .drawer-user-info-mobile__block-top {
     display: flex;
     flex-direction: column;
