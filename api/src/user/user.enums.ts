@@ -38,3 +38,16 @@ export interface CreatePersonResponse {
   message?: string;
   data?: any; // Có thể cụ thể hơn nếu biết cấu trúc chính xác
 }
+
+export interface AcsEventCond {
+  searchID: string;
+  searchResultPosition: number;
+  maxResults?: number;
+  major: number;
+  minor: number;
+  startTime?: Date;
+  endTime?: Date;
+  cardNo?: string;
+  name?: string;
+  timeReverseOrder?: boolean;
+}

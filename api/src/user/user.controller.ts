@@ -18,7 +18,7 @@ import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role, UserInfo } from './user.enums';
+import { AcsEventCond, Role, UserInfo } from './user.enums';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -46,22 +46,33 @@ export class UserController {
     }
   }
 
-  @Post('get-event-by')
+  @Post('get-acs-event')
   async getEventByTime(
     @Body()
-    data: {
-      searchID: string;
-      searchResultPosition: number;
-      maxResults: number;
-      major: number;
-      minor: number;
-      startTime: Date;
-      endTime: Date;
-    },
+    data: AcsEventCond,
   ) {
     return await this.userService.getEventByTimeHIKVISION(data);
   }
 
+  @Post('delete-user-hik')
+  async deleteUserHik(
+    @Body()
+    data: {
+      employeeNo: string;
+    },
+  ) {
+    return await this.userService.deleteUserHIKVISION(data);
+  }
+
+  @Post('delete-face-user-hik')
+  async deleteFaceUserHik(
+    @Body()
+    data: {
+      employeeNo: string;
+    },
+  ) {
+    return await this.userService.deleteFaceUserHik(data);
+  }
   @Post('register-finger')
   async registerFinger(
     @Body()

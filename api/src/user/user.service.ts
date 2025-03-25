@@ -10,7 +10,7 @@ import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserInfo } from './user.enums';
+import { AcsEventCond, UserInfo } from './user.enums';
 import { User, UserDocument } from './user.schema';
 import { XMLParser } from 'fast-xml-parser';
 const DigestClient = require('digest-fetch');
@@ -169,7 +169,70 @@ export class UserService {
       throw new Error('Failed to register fingerprint with HIKVISION');
     }
   }
-
+  async deleteUserHIKVISION(data: { employeeNo: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Delete?format=json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            UserInfoDelCond: {
+              EmployeeNoList: [{ employeeNo: data.employeeNo }],
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+  async deleteFaceUserHik(data: { employeeNo: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/Intelligent/FDLib/FDSetUp?format=json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            faceLibType: 'blackFD',
+            FDID: '1',
+            FPID: data.employeeNo,
+            deleteFP: true,
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
   async searchInfoHIKVISION(payload: { employId: string }) {
     try {
       const client = new DigestClient(
@@ -209,15 +272,7 @@ export class UserService {
     }
   }
 
-  async getEventByTimeHIKVISION(payload: {
-    searchID: string;
-    searchResultPosition: number;
-    maxResults: number;
-    major: number;
-    minor: number;
-    startTime: Date;
-    endTime: Date;
-  }) {
+  async getEventByTimeHIKVISION(payload: AcsEventCond) {
     try {
       const client = new DigestClient(
         process.env.HIKVISION_USERNAME,
@@ -242,7 +297,6 @@ export class UserService {
       );
 
       const result = await res.json();
-      console.log('result', result);
       return result;
     } catch (error) {
       console.log('Error', error);
