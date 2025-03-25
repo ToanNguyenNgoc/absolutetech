@@ -38,34 +38,30 @@ export class UserController {
   }
 
   @Post('upload-user-face')
-  @UseInterceptors(
-    FileInterceptor('img', {
-      storage: diskStorage({
-        destination: './uploads', // Thư mục lưu tạm
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(
-            null,
-            `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`,
-          );
-        },
-      }),
-    }),
-  )
-  async uploadUserFace(
-    @Body('FaceDataRecord') faceDataRecord: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  uploadUserFace(@Body() data: { employId: string; url: string }) {
     try {
-      console.log('FaceDataRecord:', faceDataRecord);
-      console.log('Image file:', file);
-      const faceData = JSON.parse(faceDataRecord);
-      return this.userService.uploadFaceInfoHIKVISION(faceData, file);
+      return this.userService.uploadFaceInfoHIKVISION(data);
     } catch (error) {
       console.log(error);
     }
   }
+
+  @Post('get-event-by')
+  async getEventByTime(
+    @Body()
+    data: {
+      searchID: string;
+      searchResultPosition: number;
+      maxResults: number;
+      major: number;
+      minor: number;
+      startTime: Date;
+      endTime: Date;
+    },
+  ) {
+    return await this.userService.getEventByTimeHIKVISION(data);
+  }
+
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async create(@Body() dto: CreateUserDto) {

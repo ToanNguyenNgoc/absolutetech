@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,8 +13,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserInfo } from './user.enums';
 import { User, UserDocument } from './user.schema';
 const DigestClient = require('digest-fetch');
-import * as FormData from 'form-data';
-
 @Injectable()
 export class UserService {
   constructor(
@@ -54,50 +51,120 @@ export class UserService {
     }
   }
 
-  async uploadFaceInfoHIKVISION(
-    data: { FPID: string },
-    file: Express.Multer.File,
-  ) {
+  async uploadFaceInfoHIKVISION(payload: { employId: string; url: string }) {
     try {
-      const form = new FormData();
-      form.append(
-        'FaceDataRecord',
-        JSON.stringify({ faceLibType: 'blackFD', FDID: '1', FPID: data.FPID }),
-      );
-      const absolutePath = path.resolve(
-        __dirname,
-        '..',
-        'uploads',
-        file.filename,
-      );
-      console.log('Absolute Path:', absolutePath);
-
-      // form.append('img', fs.createReadStream(absolutePath), {
-      //   filename: file.originalname,
-      //   contentType: file.mimetype,
-      // });
       const client = new DigestClient(
         process.env.HIKVISION_USERNAME,
         process.env.HIKVISION_PASSWORD,
-        { algorithm: 'MD5' },
-      );
-
-      const res = await client.fetch(
-        `${process.env.HOST_HIKVISION}ISAPI/Intelligent/FDLib/FDSetUp?format=json`,
         {
-          method: 'PUT',
-          body: form,
-          headers: form.getHeaders(), // ✅ LẤY ĐÚNG HEADERS CÓ BOUNDARY
+          algorithm: 'MD5',
+          timeout: 20000,
         },
       );
-
-      // const result = await res.text(); // hoặc res.json() tùy API trả về
-      console.log('result', res);
-      return true;
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/Intelligent/FDLib/FaceDataRecord?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            faceLibType: 'blackFD',
+            FDID: '1',
+            FPID: payload.employId,
+            faceURL:
+              payload.url ??
+              'http://192.168.1.4:7891/api/uploads/img-1742890789015-781708133.jpeg',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      return result;
     } catch (error) {
       console.log('Error', error);
     }
   }
+
+  async searchInfoHIKVISION(payload: { employId: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Search?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            UserInfoSearchCond: {
+              searchID: '0',
+              searchResultPosition: 0,
+              maxResults: 5,
+              EmployeeNoList: [
+                {
+                  employeeNo: payload.employId,
+                },
+              ],
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
+  async getEventByTimeHIKVISION(payload: {
+    searchID: string;
+    searchResultPosition: number;
+    maxResults: number;
+    major: number;
+    minor: number;
+    startTime: Date;
+    endTime: Date;
+  }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/AcsEvent?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            AcsEventCond: payload,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
   async createUser(dto: CreateUserDto): Promise<User> {
     const hashed = await bcrypt.hash(dto.password, 10);
     const created = new this.userModel({
