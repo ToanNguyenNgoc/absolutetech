@@ -62,6 +62,17 @@ export class UserController {
     return await this.userService.getEventByTimeHIKVISION(data);
   }
 
+  @Post('register-finger')
+  async registerFinger(
+    @Body()
+    data: {
+      fingerNo: number;
+      employeeNo: string;
+    },
+  ) {
+    return await this.userService.registerFingerHIKVISION(data);
+  }
+
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async create(@Body() dto: CreateUserDto) {

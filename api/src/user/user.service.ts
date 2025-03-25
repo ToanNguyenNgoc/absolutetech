@@ -12,6 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserInfo } from './user.enums';
 import { User, UserDocument } from './user.schema';
+import { XMLParser } from 'fast-xml-parser';
 const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
@@ -41,8 +42,6 @@ export class UserService {
           },
         },
       );
-      console.log(res);
-
       const result = await res.json();
       console.log('result', result);
       return result;
@@ -69,9 +68,7 @@ export class UserService {
             faceLibType: 'blackFD',
             FDID: '1',
             FPID: payload.employId,
-            faceURL:
-              payload.url ??
-              'http://192.168.1.4:7891/api/uploads/img-1742890789015-781708133.jpeg',
+            faceURL: payload.url,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -83,6 +80,93 @@ export class UserService {
       return result;
     } catch (error) {
       console.log('Error', error);
+    }
+  }
+
+  async registerFingerHIKVISION(payload: {
+    fingerNo: number;
+    employeeNo: string;
+  }) {
+    if (!payload.fingerNo || !payload.employeeNo) {
+      throw new Error('fingerNo and employeeNo are required');
+    }
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+
+      const xmlBody = `
+        <CaptureFingerPrintCond version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">
+          <fingerNo>${payload.fingerNo}</fingerNo>
+        </CaptureFingerPrintCond>
+      `;
+
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/CaptureFingerPrint`,
+        {
+          method: 'POST',
+          body: xmlBody,
+          headers: {
+            Accept: '*/*',
+            'Content-Type': 'application/xml; charset=UTF-8',
+            'x-requested-with': 'XMLHttpRequest',
+          },
+        },
+      );
+      if (!res.ok)
+        throw new Error(`CaptureFingerPrint failed: ${res.statusText}`);
+      const textResult: string = await res.text(); // vì Hikvision hay trả XML chứ không phải JSON
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '',
+      });
+      const jsonObj: {
+        CaptureFingerPrint: {
+          fingerData: string;
+          fingerNo: number;
+          fingerPrintQuality: number;
+          version: string;
+        };
+      } = parser.parse(textResult);
+      if (!jsonObj?.CaptureFingerPrint?.fingerData) {
+        throw new Error('No fingerData captured from device');
+      }
+      const data = {
+        FingerPrintCfg: {
+          employeeNo: payload.employeeNo,
+          enableCardReader: [1],
+          fingerPrintID: payload.fingerNo,
+          deleteFingerPrint: false,
+          fingerType: 'normalFP',
+          fingerData: jsonObj.CaptureFingerPrint.fingerData,
+          leaderFP: [],
+          checkEmployeeNo: true,
+        },
+      };
+
+      const saveFinger = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/FingerPrint/SetUp?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      if (!saveFinger.ok)
+        throw new Error(`Failed to save fingerprint: ${saveFinger.statusText}`);
+      const result = await saveFinger.json();
+      return result;
+    } catch (error) {
+      console.error('Error registerFingerHIKVISION:', error);
+      throw new Error('Failed to register fingerprint with HIKVISION');
     }
   }
 
