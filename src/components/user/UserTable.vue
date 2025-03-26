@@ -12,7 +12,8 @@
             <el-table-column prop="role" label="Role" />
             <el-table-column label="Action">
                 <template #default="{ row }">
-                    <div class="action-buttons"  v-if="toRaw(row)?._id !== userInfo?._id">
+                    <div class="action-buttons" v-if="toRaw(row)?._id !== userInfo?._id">
+                        <img src="@/assets/img/finger-ic.svg" alt="finger" @click="handleShowFingerModal(row)" />
                         <img src="@/assets/icon-edit.svg" alt="edit" @click="handleEdit(row)" />
                         <img src="@/assets/icon-delete.svg" alt="edit" @click="handleDelete(row)" />
                     </div>
@@ -29,6 +30,7 @@
     </div>
     <AddUserModal ref="addUserRef" :refreshUser="fetchData" />
     <MyMessage :message="messageText" :type="messageType" />
+    <FingerScanModal v-model:visible="showFingerModal" :scannedFingers="currentSelectedFingers" />
 </template>
 
 <script>
@@ -38,10 +40,11 @@ import AddUserModal from './AddUserModal.vue';
 import { ElMessageBox } from 'element-plus';
 import MyMessage from '../common/MyMessage.vue';
 import { globalState } from "@/store/globalState";
+import FingerScanModal from '../common/FingerScanModal.vue';
 
 export default {
     name: 'UserTable',
-    components: { AddUserModal, MyMessage },
+    components: { AddUserModal, MyMessage, FingerScanModal },
     setup() {
         const loading = ref(false);
         const tableData = ref([]);
@@ -54,12 +57,25 @@ export default {
         const isExpanded = inject('isExpanded');
         const messageText = ref('')
         const messageType = ref('success')
+        const showFingerModal = ref(false)
+        const currentSelectedFingers = ref([])
+        const FINGER_FIELDS_MAP = {
+            left_thumb: 'Left thumb',
+            left_index: 'Left index finger',
+            left_middle: 'Left middle finger',
+            left_ring: 'Left ring finger',
+            left_pinkie: 'Left pinkie',
+            right_thumb: 'Right thumb',
+            right_index: 'Right index finger',
+            right_middle: 'Right middle finger',
+            right_ring: 'Right ring finger',
+            right_pinkie: 'Right pinkie',
+        }
 
         onMounted(() => {
             fetchData();
         });
         const userInfo = computed(() => globalState.userInfo);
-        console.log(userInfo);
 
 
         const fetchData = async (isAdd = false) => {
@@ -122,6 +138,20 @@ export default {
 
         };
 
+        const handleShowFingerModal = (row) => {
+            // const raw = {
+            //     ...toRaw(row),
+            //     left_thumb: true,
+            //     left_index: true,
+            //     right_middle: true,
+            //     right_pinkie: true
+            // }
+            currentSelectedFingers.value = Object.entries(FINGER_FIELDS_MAP)
+                .filter(([field]) => row[field])
+                .map(([, label]) => label)
+            showFingerModal.value = true
+        }
+
         return {
             loading,
             tableData,
@@ -141,6 +171,9 @@ export default {
             isExpanded,
             userInfo,
             toRaw,
+            handleShowFingerModal,
+            showFingerModal,
+            currentSelectedFingers,
         };
     },
 };
@@ -162,6 +195,7 @@ export default {
     .admin-layout-close {
         width: 100%;
     }
+
     .pagination-wrapper {
         justify-content: end !important;
     }
@@ -171,16 +205,20 @@ export default {
     .admin-layout-expanded {
         width: 100%;
     }
+
     .admin-layout-close {
         width: 100vw;
     }
+
     :deep(.el-table .cell) {
-       font-size: 10px;
-       padding-left: 5px;
+        font-size: 10px;
+        padding-left: 5px;
     }
+
     .pagination-wrapper {
         justify-content: end !important;
     }
+
     .total-text {
         left: 0px;
     }
