@@ -9,6 +9,8 @@ import { UploadController } from './upload/upload.controller';
 import { EntryLogModule } from './entry-log/entry-log.module';
 import { FrontendMiddleware } from './frontend.middleware';
 import { HikvisionModule } from './hikvision/hikvision.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 
 @Module({
   imports: [
@@ -28,9 +30,11 @@ import { HikvisionModule } from './hikvision/hikvision.module';
     MongooseModule.forRoot(process.env.MONGODB_URI || '', {
       dbName: process.env.MONGODB_DB_NAME,
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     EntryLogModule,
+    EntryLogRawModule,
     HikvisionModule,
   ],
 

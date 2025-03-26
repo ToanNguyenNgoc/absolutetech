@@ -5,7 +5,6 @@ import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 
-
 @Module({
   imports: [
     MongooseModule.forFeature([
