@@ -31,6 +31,7 @@ export interface AcsEventCondResponse {
       currentVerifyMode: string;
       mask: string;
       pictureURL: string;
+      FaceRect: object;
     }[];
   };
 }

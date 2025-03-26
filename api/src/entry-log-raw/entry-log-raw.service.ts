@@ -84,7 +84,7 @@ export class EntryLogRawService {
             time: new Date(element.time),
             major: element.major,
             minor: element.minor,
-            currentVerifyMode: element.currentVerifyMode,
+            currentVerifyMode: element?.pictureURL ? 'face' : 'fp',
           });
         }
       }
