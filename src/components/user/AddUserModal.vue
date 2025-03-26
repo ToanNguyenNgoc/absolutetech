@@ -8,7 +8,7 @@
 
         <el-form :model="userForm" label-width="120px" class="user-form">
             <div class="avatar-section">
-                <AvatarUploader v-model="userForm.avatar" />
+                <AvatarUploader v-model="userForm.avatar" @file-selected="onFileSelected" />
             </div>
             <div class="form-modal-add-user">
                 <!-- Full Name -->
@@ -86,6 +86,7 @@
 
 <script>
 import { createUser, updateUser } from '@/api/user';
+import { uploadFile } from '@/api/upload';
 import { computed, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
 import AvatarUploader from '../common/AvatarUploader.vue';
 import MyMessage from '../common/MyMessage.vue';
@@ -103,9 +104,10 @@ export default {
     setup(props) {
         const dialogVisible = ref(false);
         const isEditLocal = ref(false);
-        const messageText = ref('')
-        const messageType = ref('success')
-        const isMobile = ref(false)
+        const messageText = ref('');
+        const messageType = ref('success');
+        const isMobile = ref(false);
+        const selectedFile = ref(null);
 
         const userForm = ref({
             avatar: '',
@@ -143,6 +145,7 @@ export default {
 
         const handleAddUser = () => {
             userForm.value = {
+                avatar: '',
                 fullName: '',
                 username: '',
                 employeeID: '',
@@ -155,19 +158,13 @@ export default {
                 email: '',
                 password: '',
             };
+            selectedFile.value = null;
+            isEditLocal.value = false;
             dialogVisible.value = true;
         };
 
-        const onFileChange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    // evt.target.result là base64
-                    userForm.value.avatar = evt.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+        const onFileSelected = (file) => {
+            selectedFile.value = file;
         };
 
         const setShowDialog = (value) => {
@@ -179,32 +176,47 @@ export default {
             if (row) {
                 Object.assign(userForm.value, row);
             }
+            selectedFile.value = null;
             isEditLocal.value = true;
             dialogVisible.value = true;
         };
 
         const saveUser = async () => {
             try {
-                messageText.value = ''
-                messageType.value = ''
-                let res
+                messageText.value = '';
+                messageType.value = '';
+
+                if (selectedFile.value) {
+                    const formData = new FormData();
+                    formData.append('file', selectedFile.value);
+                    const uploadResponse = await uploadFile(formData);
+                    if (uploadResponse.data.success) {
+                        userForm.value.avatar = uploadResponse.data.data.url;
+                    } else {
+                        messageText.value = 'File upload failed.';
+                        messageType.value = 'error';
+                        return;
+                    }
+                }
+
+                let res;
                 if (isEditLocal.value) {
-                    res = await updateUser(userForm.value._id, toRaw(userForm.value))
+                    res = await updateUser(userForm.value._id, toRaw(userForm.value));
                 } else {
-                    res = await createUser(toRaw(userForm.value))
+                    res = await createUser(toRaw(userForm.value));
                 }
 
                 if (res && res.data && (res.data.status === 200 || res.data.status === 201)) {
-                    messageText.value = 'Save Successfully'
-                    messageType.value = 'success'
-                    props.refreshUser()
-                    dialogVisible.value = false
+                    messageText.value = 'Save Successfully';
+                    messageType.value = 'success';
+                    props.refreshUser();
+                    dialogVisible.value = false;
                 }
             } catch (error) {
-                messageText.value = 'Save failed. Please try again.'
-                messageType.value = 'error'
+                messageText.value = 'Save failed. Please try again.';
+                messageType.value = 'error';
             }
-        }
+        };
 
         return {
             dialogVisible,
@@ -216,10 +228,10 @@ export default {
             messageType,
             dialogWidth,
             handleAddUser,
-            onFileChange,
             setShowDialog,
             setUser,
             saveUser,
+            onFileSelected,
         };
     },
 };

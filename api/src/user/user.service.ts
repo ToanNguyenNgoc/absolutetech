@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { parse } from 'csv-parse';
@@ -503,5 +507,17 @@ export class UserService {
         ],
       })
       .exec();
+  }
+
+  async updatePassword(userId: string, hashedPassword: string): Promise<User> {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { new: true },
+    );
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+    return updatedUser;
   }
 }
