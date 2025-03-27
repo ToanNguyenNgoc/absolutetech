@@ -54,3 +54,13 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('userFingers', {
+  ref: 'UserFinger',         
+  localField: '_id',         
+  foreignField: 'user',    
+  justOne: false,          
+});
+
+UserSchema.set('toObject', { virtuals: true });
+UserSchema.set('toJSON', { virtuals: true });

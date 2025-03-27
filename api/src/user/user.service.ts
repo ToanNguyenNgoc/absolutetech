@@ -345,7 +345,14 @@ export class UserService {
   }
 
   async findAllPaginated(page = 1, limit = 10) {
-    return paginate(this.userModel, page, limit, {}, { password: 0 });
+    return paginate(
+      this.userModel,
+      page,
+      limit,
+      {},
+      { password: 0 },
+      { populate: 'userFingers' }
+    );
   }
 
   async findByUsername(username: string): Promise<UserDocument | null> {
