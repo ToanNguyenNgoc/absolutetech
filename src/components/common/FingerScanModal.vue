@@ -1,15 +1,19 @@
 <template>
-    <el-dialog :model-value="visible" title="Scanned Finger" :width="dialogWidth" @close="handleClose">
+    <el-dialog :model-value="visible" :key="dialogKey" title="Scanned Finger" :width="dialogWidth" @close="handleClose">
         <div class="checkbox-columns">
             <div class="checkbox-column">
-                <el-checkbox v-for="(finger, index) in leftFingers" :key="index" :label="finger.name"
-                    :checked="has(finger.name)" :disabled="!has(finger.name)"
-                    @click="logFinger(finger.number, finger.name)" />
+                <el-checkbox label="Left thumb" :checked="has('Left thumb')" disabled />
+                <el-checkbox label="Left index finger" :checked="has('Left index finger')" disabled />
+                <el-checkbox label="Left middle finger" :checked="has('Left middle finger')" disabled />
+                <el-checkbox label="Left ring finger" :checked="has('Left ring finger')" disabled />
+                <el-checkbox label="Left pinkie" :checked="has('Left pinkie')" disabled />
             </div>
             <div class="checkbox-column">
-                <el-checkbox v-for="(finger, index) in rightFingers" :key="index" :label="finger.name"
-                    :checked="has(finger.name)" :disabled="!has(finger.name)"
-                    @click="logFinger(finger.number, finger.name)" />
+                <el-checkbox label="Right thumb" :checked="has('Right thumb')" disabled />
+                <el-checkbox label="Right index finger" :checked="has('Right index finger')" disabled />
+                <el-checkbox label="Right middle finger" :checked="has('Right middle finger')" disabled />
+                <el-checkbox label="Right ring finger" :checked="has('Right ring finger')" disabled />
+                <el-checkbox label="Right pinkie" :checked="has('Right pinkie')" disabled />
             </div>
         </div>
     </el-dialog>
@@ -17,70 +21,79 @@
 
 <script>
 import { computed, onMounted, ref } from 'vue'
-import { createFinger } from '@/api/finger';
 
 export default {
     name: 'FingerScanModal',
     props: {
-        visible: { type: Boolean, required: true },
-        scannedFingers: { type: Array, default: () => [] },
-        userId: { // Nhận userId từ parent component
-            type: String,
+        visible: {
+            type: Boolean,
             required: true
+        },
+        scannedFingers: {
+            type: Array,
+            default: () => []
         }
     },
     emits: ['update:visible'],
     setup(props, { emit }) {
-        const isMobile = ref(false);
-        const dialogWidth = computed(() => isMobile.value ? '343px' : '400px');
+        const isMobile = ref(false)
+        const dialogWidth = computed(() => isMobile.value ? '343px' : '400px')
 
-        const handleClose = () => emit('update:visible', false);
+        const handleClose = () => {
+            emit('update:visible', false)
+        }
 
         function checkMobile() {
-            isMobile.value = window.innerWidth < 768;
+            isMobile.value = window.innerWidth < 768
         }
 
         onMounted(() => {
-            checkMobile();
-            window.addEventListener('resize', checkMobile);
-        });
+            checkMobile()
+            window.addEventListener('resize', checkMobile)
+        })
 
-        const has = (label) => props.scannedFingers.includes(label);
+        const fingerMapping = {
+            1: 'Left thumb',
+            2: 'Left index finger',
+            3: 'Left middle finger',
+            4: 'Left ring finger',
+            5: 'Left pinkie',
+            6: 'Right thumb',
+            7: 'Right index finger',
+            8: 'Right middle finger',
+            9: 'Right ring finger',
+            10: 'Right pinkie'
+        }
 
-        const logFinger = (number, name) => {
-            console.log(`Finger No: ${number}, Name: ${name}, User ID: ${props.userId}`);
-            registerFinger({ fingerNo: number, employeeNo: props.userId });
-        };
+        const standardizedScannedFingers = computed(() => {
+            console.log('scannedFingers:', props.scannedFingers)
+            return props.scannedFingers.reduce((acc, finger) => {
+                if (
+                    finger &&
+                    finger.no &&
+                    finger.finger_data && 
+                    fingerMapping[finger.no]
+                ) {
+                    acc.push(fingerMapping[finger.no])
+                }
+                return acc
+            }, [])
+        })
 
-        const registerFinger = async ({ fingerNo, employeeNo }) => {
-            try {
+        const has = (label) => {
+            return standardizedScannedFingers.value.includes(label)
+        }
 
-                await createFinger({ fingerNo, employeeNo });
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        const leftFingers = [
-            { number: 1, name: 'Left thumb' },
-            { number: 2, name: 'Left index finger' },
-            { number: 3, name: 'Left middle finger' },
-            { number: 4, name: 'Left ring finger' },
-            { number: 5, name: 'Left pinkie' }
-        ];
-
-        const rightFingers = [
-            { number: 6, name: 'Right thumb' },
-            { number: 7, name: 'Right index finger' },
-            { number: 8, name: 'Right middle finger' },
-            { number: 9, name: 'Right ring finger' },
-            { number: 10, name: 'Right pinkie' }
-        ];
+        const dialogKey = computed(() => {
+            return props.visible ? Date.now() : 'hidden'
+        })
 
         return {
-            handleClose, has, dialogWidth, logFinger, registerFinger,
-            leftFingers, rightFingers
-        };
+            handleClose,
+            has,
+            dialogWidth,
+            dialogKey
+        }
     }
 }
 </script>

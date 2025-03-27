@@ -130,21 +130,8 @@ export default {
         const handleShowFingerModal = (row) => {
             const plainRow = toRaw(row);
 
-            selectedUserId.value = plainRow._id; // Lưu userId của người dùng được chọn
-            console.log('Opening modal with userId:', plainRow._id, selectedUserId.value);
-            currentSelectedFingers.value = [
-                { name: 'Left thumb', userId: plainRow._id },
-                { name: 'Left index finger', userId: plainRow._id },
-                { name: 'Left middle finger', userId: plainRow._id },
-                { name: 'Left ring finger', userId: plainRow._id },
-                { name: 'Left pinkie', userId: plainRow._id },
-                { name: 'Right thumb', userId: plainRow._id },
-                { name: 'Right index finger', userId: plainRow._id },
-                { name: 'Right middle finger', userId: plainRow._id },
-                { name: 'Right ring finger', userId: plainRow._id },
-                { name: 'Right pinkie', userId: plainRow._id },
-            ];
-            console.log('Opening modal with userId:', selectedUserId.value);
+            selectedUserId.value = plainRow._id;
+            currentSelectedFingers.value = plainRow.userFingers || [];
             showFingerModal.value = true
         }
 
