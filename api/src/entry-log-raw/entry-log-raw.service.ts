@@ -57,7 +57,7 @@ export class EntryLogRawService {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     // await this.createRawLog({
     //   user: new Types.ObjectId('67e4b1b2ecb2f39a5918ea05'),
