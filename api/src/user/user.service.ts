@@ -337,7 +337,7 @@ export class UserService {
     if (dto.avatar) {
       await this.uploadFaceInfoHIKVISION({
         employId: res.id,
-        url: `http://192.168.1.5:7891/${dto.avatar}`,
+        url: `${process.env.HOST_SERVER}/${dto.avatar}`,
       });
     }
 
@@ -430,7 +430,7 @@ export class UserService {
 
     if (deleted.avatar) {
       const filePath = path.join(__dirname, '..', '..', deleted.avatar);
-
+      await this.deleteFaceUserHik({ employeeNo: id });
       try {
         fs.unlink(filePath, (err) => {
           if (err) {
@@ -443,7 +443,7 @@ export class UserService {
         console.error('Error deleting avatar file:', err);
       }
     }
-
+    await this.deleteUserHIKVISION({ employeeNo: id });
     return deleted;
   }
 
