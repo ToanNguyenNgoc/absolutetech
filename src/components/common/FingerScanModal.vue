@@ -2,28 +2,14 @@
     <el-dialog :model-value="visible" title="Scanned Finger" :width="dialogWidth" @close="handleClose">
         <div class="checkbox-columns">
             <div class="checkbox-column">
-                <el-checkbox label="Left thumb" :checked="has('Left thumb')"
-                    @click="() => logFinger(1, 'Left thumb')" />
-                <el-checkbox label="Left index finger" :checked="has('Left index finger')" disabled
-                    @click="() => logFinger(2, 'Left index finger')" />
-                <el-checkbox label="Left middle finger" :checked="has('Left middle finger')" disabled
-                    @click="() => logFinger(3, 'Left middle finger')" />
-                <el-checkbox label="Left ring finger" :checked="has('Left ring finger')" disabled
-                    @click="() => logFinger(4, 'Left ring finger')" />
-                <el-checkbox label="Left pinkie" :checked="has('Left pinkie')" disabled
-                    @click="() => logFinger(5, 'Left pinkie')" />
+                <el-checkbox v-for="(finger, index) in leftFingers" :key="index" :label="finger.name"
+                    :checked="has(finger.name)" :disabled="!has(finger.name)"
+                    @click="logFinger(finger.number, finger.name)" />
             </div>
             <div class="checkbox-column">
-                <el-checkbox label="Right thumb" :checked="has('Right thumb')" disabled
-                    @click="() => logFinger(6, 'Right thumb')" />
-                <el-checkbox label="Right index finger" :checked="has('Right index finger')" disabled
-                    @click="() => logFinger(7, 'Right index finger')" />
-                <el-checkbox label="Right middle finger" :checked="has('Right middle finger')" disabled
-                    @click="() => logFinger(8, 'Right middle finger')" />
-                <el-checkbox label="Right ring finger" :checked="has('Right ring finger')" disabled
-                    @click="() => logFinger(9, 'Right ring finger')" />
-                <el-checkbox label="Right pinkie" :checked="has('Right pinkie')" disabled
-                    @click="() => logFinger(10, 'Right pinkie')" />
+                <el-checkbox v-for="(finger, index) in rightFingers" :key="index" :label="finger.name"
+                    :checked="has(finger.name)" :disabled="!has(finger.name)"
+                    @click="logFinger(finger.number, finger.name)" />
             </div>
         </div>
     </el-dialog>
@@ -36,61 +22,65 @@ import { createFinger } from '@/api/finger';
 export default {
     name: 'FingerScanModal',
     props: {
-        visible: {
-            type: Boolean,
+        visible: { type: Boolean, required: true },
+        scannedFingers: { type: Array, default: () => [] },
+        userId: { // Nhận userId từ parent component
+            type: String,
             required: true
-        },
-        scannedFingers: {
-            type: Array,
-            default: () => []
         }
     },
-
     emits: ['update:visible'],
     setup(props, { emit }) {
-        const isMobile = ref(false)
-        const dialogWidth = computed(() => isMobile.value ? '343px' : '400px')
+        const isMobile = ref(false);
+        const dialogWidth = computed(() => isMobile.value ? '343px' : '400px');
 
-        const handleClose = () => {
-            emit('update:visible', false)
-        }
+        const handleClose = () => emit('update:visible', false);
 
         function checkMobile() {
-            isMobile.value = window.innerWidth < 768
+            isMobile.value = window.innerWidth < 768;
         }
 
         onMounted(() => {
-            checkMobile()
-            window.addEventListener('resize', checkMobile)
-        })
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+        });
 
-        const has = (label) => {
-            return props.scannedFingers.includes(label)
-        }
-        const logFinger = (number) => {
-            registerFinger({
-                fingerNo: number,
-                employeeNo: '67e42af6e2084a9ebd74a6a4'
-            })
-        }
-        const registerFinger = async ({
-            fingerNo = 1,
-            employeeNo = '67e42af6e2084a9ebd74a6a4'
-        }) => {
+        const has = (label) => props.scannedFingers.includes(label);
+
+        const logFinger = (number, name) => {
+            console.log(`Finger No: ${number}, Name: ${name}, User ID: ${props.userId}`);
+            registerFinger({ fingerNo: number, employeeNo: props.userId });
+        };
+
+        const registerFinger = async ({ fingerNo, employeeNo }) => {
             try {
-                await createFinger({ fingerNo, employeeNo })
+
+                await createFinger({ fingerNo, employeeNo });
             } catch (error) {
                 console.log(error);
             }
         };
 
+        const leftFingers = [
+            { number: 1, name: 'Left thumb' },
+            { number: 2, name: 'Left index finger' },
+            { number: 3, name: 'Left middle finger' },
+            { number: 4, name: 'Left ring finger' },
+            { number: 5, name: 'Left pinkie' }
+        ];
+
+        const rightFingers = [
+            { number: 6, name: 'Right thumb' },
+            { number: 7, name: 'Right index finger' },
+            { number: 8, name: 'Right middle finger' },
+            { number: 9, name: 'Right ring finger' },
+            { number: 10, name: 'Right pinkie' }
+        ];
+
         return {
-            handleClose,
-            has,
-            dialogWidth,
-            logFinger,
-            registerFinger
-        }
+            handleClose, has, dialogWidth, logFinger, registerFinger,
+            leftFingers, rightFingers
+        };
     }
 }
 </script>

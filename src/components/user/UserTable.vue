@@ -30,7 +30,8 @@
     </div>
     <AddUserModal ref="addUserRef" :refreshUser="fetchData" />
     <MyMessage :message="messageText" :type="messageType" />
-    <FingerScanModal v-model:visible="showFingerModal" :scannedFingers="currentSelectedFingers" />
+    <FingerScanModal v-model:visible="showFingerModal" :scannedFingers="currentSelectedFingers"
+        :userId="selectedUserId" />
 </template>
 
 <script>
@@ -59,19 +60,7 @@ export default {
         const messageType = ref('success')
         const showFingerModal = ref(false)
         const currentSelectedFingers = ref([])
-        const FINGER_FIELDS_MAP = {
-            left_thumb: 'Left thumb',
-            left_index: 'Left index finger',
-            left_middle: 'Left middle finger',
-            left_ring: 'Left ring finger',
-            left_pinkie: 'Left pinkie',
-            right_thumb: 'Right thumb',
-            right_index: 'Right index finger',
-            right_middle: 'Right middle finger',
-            right_ring: 'Right ring finger',
-            right_pinkie: 'Right pinkie',
-        }
-
+        const selectedUserId = ref(null);
         onMounted(() => {
             fetchData();
         });
@@ -139,11 +128,23 @@ export default {
         };
 
         const handleShowFingerModal = (row) => {
-            currentSelectedFingers.value = Object.entries(FINGER_FIELDS_MAP)
-                .filter(([field]) => row[field])
-                .map(([, label]) => label)
-            // const plainRow = toRaw(row);
-            console.log('Scanned Fingers:', currentSelectedFingers.value) // ✅ Log tại đây kiểm tra đúng data
+            const plainRow = toRaw(row);
+
+            selectedUserId.value = plainRow._id; // Lưu userId của người dùng được chọn
+            console.log('Opening modal with userId:', plainRow._id, selectedUserId.value);
+            currentSelectedFingers.value = [
+                { name: 'Left thumb', userId: plainRow._id },
+                { name: 'Left index finger', userId: plainRow._id },
+                { name: 'Left middle finger', userId: plainRow._id },
+                { name: 'Left ring finger', userId: plainRow._id },
+                { name: 'Left pinkie', userId: plainRow._id },
+                { name: 'Right thumb', userId: plainRow._id },
+                { name: 'Right index finger', userId: plainRow._id },
+                { name: 'Right middle finger', userId: plainRow._id },
+                { name: 'Right ring finger', userId: plainRow._id },
+                { name: 'Right pinkie', userId: plainRow._id },
+            ];
+            console.log('Opening modal with userId:', selectedUserId.value);
             showFingerModal.value = true
         }
 
@@ -169,6 +170,7 @@ export default {
             handleShowFingerModal,
             showFingerModal,
             currentSelectedFingers,
+            selectedUserId, // Đảm bảo có dòng này
         };
     },
 };
