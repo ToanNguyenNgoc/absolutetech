@@ -98,4 +98,10 @@ export class EntryLogController {
     );
     res.send(csv);
   }
+
+  // @Get('test')
+  // async testCron() {
+  //   await this.entryLogService.processDailyLogs();
+  //   return { message: 'Cron job executed successfully' };
+  // }
 }

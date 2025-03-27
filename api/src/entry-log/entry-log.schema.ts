@@ -31,3 +31,12 @@ export class EntryLog {
 }
 
 export const EntryLogSchema = SchemaFactory.createForClass(EntryLog);
+
+EntryLogSchema.virtual('rawLogs', {
+  ref: 'EntryLogRaw',
+  localField: '_id', 
+  foreignField: 'entry_log_id',
+});
+
+EntryLogSchema.set('toObject', { virtuals: true });
+EntryLogSchema.set('toJSON', { virtuals: true });

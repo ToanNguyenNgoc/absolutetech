@@ -1,14 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { EntryLog, EntryLogDocument } from './entry-log.schema';
 import { paginate } from 'src/common/pagination.util';
+import { EntryLogRaw, EntryLogRawDocument } from 'src/entry-log-raw/entry-log-raw.schema';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class EntryLogService {
+  private readonly logger = new Logger(EntryLogService.name);
+
   constructor(
     @InjectModel(EntryLog.name)
     private entryLogModel: Model<EntryLogDocument>,
+    @InjectModel(EntryLogRaw.name)
+    private entryLogRawModel: Model<EntryLogRawDocument>,
   ) {}
 
   async findAllPaginated(page = 1, limit = 10, userIds?: string[]) {
@@ -28,7 +34,7 @@ export class EntryLogService {
       limit,
       query,
       {},
-      { populate: 'user' },
+      { populate: ['user', 'rawLogs'] },
     );
   }
 
@@ -62,5 +68,70 @@ export class EntryLogService {
 
   async deleteByUser(userId: string): Promise<void> {
     await this.entryLogModel.deleteMany({ user: new Types.ObjectId(userId) });
+  }
+
+  @Cron('0 23 * * *')
+  async processDailyLogs() {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const userIds: Types.ObjectId[] = await this.entryLogRawModel.distinct(
+        'user',
+        {
+          time: { $gte: today, $lt: tomorrow },
+        },
+      );
+
+      for (const userId of userIds) {
+        const logs = await this.entryLogRawModel
+          .find({
+            user: userId,
+            time: { $gte: today, $lt: tomorrow },
+          })
+          .sort({ time: 1 });
+
+        console.log(logs);
+        if (!logs || logs.length === 0) continue;
+
+        const checkIn = logs[0].time;
+        let checkOut: Date | null = null;
+
+        if (logs.length > 1) {
+          const lastLogTime = logs[logs.length - 1].time;
+          if (lastLogTime.getHours() < 12) {
+            checkOut = lastLogTime;
+          } else {
+            checkOut = new Date(today);
+            checkOut.setHours(17, 0, 0, 0);
+          }
+        } else {
+          checkOut = null;
+        }
+
+        const duration = checkOut
+          ? (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60)
+          : undefined;
+
+        const newEntryLog = new this.entryLogModel({
+          user: userId,
+          date: today,
+          timeIn: checkIn,
+          timeOut: checkOut,
+          duration,
+        });
+        const savedEntryLog = await newEntryLog.save();
+
+        await this.entryLogRawModel.updateMany(
+          { user: userId, time: { $gte: today, $lt: tomorrow } },
+          { entry_log_id: savedEntryLog._id },
+        );
+      }
+      this.logger.log('Daily log processing complete');
+    } catch (error) {
+      this.logger.error('Error processing daily logs', error);
+    }
   }
 }
