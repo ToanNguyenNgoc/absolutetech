@@ -57,8 +57,19 @@ export class EntryLogRawService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
+    // await this.createRawLog({
+    //   user: new Types.ObjectId('67e4b1b2ecb2f39a5918ea05'),
+    //   employeeNoString: '67e4b1b2ecb2f39a5918ea05',
+    //   name: 'Minh map 2',
+    //   doorNo: 1,
+    //   time: new Date(`2025-03-26T17:30:00`),
+    //   major: 5,
+    //   minor: 75,
+    //   currentVerifyMode: 'face',
+    // });
+    // await this.entryLogRawModel.deleteMany({});
     const latestInfo = await this.getLatestEntry();
     const scanEvery: AcsEventCondResponse = await this.getEventByTimeHIKVISION({
       searchID: '1',
