@@ -139,16 +139,11 @@ export default {
         };
 
         const handleShowFingerModal = (row) => {
-            // const raw = {
-            //     ...toRaw(row),
-            //     left_thumb: true,
-            //     left_index: true,
-            //     right_middle: true,
-            //     right_pinkie: true
-            // }
             currentSelectedFingers.value = Object.entries(FINGER_FIELDS_MAP)
                 .filter(([field]) => row[field])
                 .map(([, label]) => label)
+            // const plainRow = toRaw(row);
+            console.log('Scanned Fingers:', currentSelectedFingers.value) // ✅ Log tại đây kiểm tra đúng data
             showFingerModal.value = true
         }
 

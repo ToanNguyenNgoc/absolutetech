@@ -313,7 +313,35 @@ export class UserService {
       ...dto,
       password: hashed,
     });
-    return created.save();
+    const res = await created.save();
+    await this.createInfoPersonHIKVISION({
+      UserInfo: {
+        employeeNo: res.id,
+        name: created.fullName,
+        userType: 'normal',
+        Valid: {
+          enable: false,
+          beginTime: '2025-03-20T16:00:00',
+          endTime: '2025-03-20T23:30:00',
+          timeType: 'local',
+        },
+        doorRight: '1',
+        RightPlan: [
+          {
+            doorNo: 1,
+            planTemplateNo: '1',
+          },
+        ],
+      },
+    });
+    if (dto.avatar) {
+      await this.uploadFaceInfoHIKVISION({
+        employId: res.id,
+        url: `http://192.168.1.5:7891/${dto.avatar}`,
+      });
+    }
+
+    return res;
   }
 
   async findAllPaginated(page = 1, limit = 10) {
@@ -371,6 +399,12 @@ export class UserService {
     if (!updated) {
       throw new UnprocessableEntityException('User not found');
     }
+    if (dto.avatar) {
+      await this.uploadFaceInfoHIKVISION({
+        employId: id,
+        url: `http://192.168.1.5:7891/${dto.avatar}`,
+      });
+    }
     return updated;
   }
 
@@ -389,6 +423,7 @@ export class UserService {
 
     if (deleted.avatar) {
       const filePath = path.join(__dirname, '..', '..', deleted.avatar);
+
       try {
         fs.unlink(filePath, (err) => {
           if (err) {

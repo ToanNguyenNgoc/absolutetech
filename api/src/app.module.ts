@@ -11,6 +11,7 @@ import { FrontendMiddleware } from './frontend.middleware';
 import { HikvisionModule } from './hikvision/hikvision.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
+import { UserFingerModule } from './user-finger/user-finger.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
     EntryLogModule,
     EntryLogRawModule,
     HikvisionModule,
+    UserFingerModule,
   ],
 
   controllers: [UploadController],

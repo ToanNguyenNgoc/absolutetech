@@ -73,6 +73,7 @@ export class UserController {
   ) {
     return await this.userService.deleteFaceUserHik(data);
   }
+
   @Post('register-finger')
   async registerFinger(
     @Body()

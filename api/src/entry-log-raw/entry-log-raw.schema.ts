@@ -1,10 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type EntryLogRawDocument = EntryLogRaw & Document;
 
 @Schema({ collection: 'entry_logs_raw', timestamps: true })
 export class EntryLogRaw {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: Types.ObjectId;
+
   @Prop({ required: true })
   employeeNoString: string;
 

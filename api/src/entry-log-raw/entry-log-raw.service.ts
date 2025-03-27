@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AcsEventCond, AcsEventCondResponse } from './entry-log-raw.enums';
 import { EntryLogRaw, EntryLogRawDocument } from './entry-log-raw.schema';
 const dayjs = require('dayjs');
@@ -78,6 +78,7 @@ export class EntryLogRawService {
       for (const element of scanEvery?.AcsEvent.InfoList || []) {
         if (element.currentVerifyMode != 'invalid') {
           await this.createRawLog({
+            user: new Types.ObjectId(element.employeeNoString),
             employeeNoString: element.employeeNoString,
             name: element.name,
             doorNo: element.doorNo,
