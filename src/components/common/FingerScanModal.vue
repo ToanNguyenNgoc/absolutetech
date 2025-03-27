@@ -1,6 +1,7 @@
 <template>
-    <el-dialog :model-value="visible" :key="dialogKey" title="Scanned Finger" :width="dialogWidth" @close="handleClose">
-        <div class="checkbox-columns">
+    <el-dialog :model-value="visible" :key="dialogKey" title="Scanned Finger" :width="dialogWidth" @close="handleClose"
+        :close-on-click-modal="false" :show-close="!loading">
+        <div class="checkbox-columns" v-loading="loading">
             <div class="checkbox-column">
                 <el-checkbox label="Left thumb" @click="logFinger('Left thumb')" :checked="has('Left thumb')"
                     :disabled="has('Left thumb')" />
@@ -27,14 +28,17 @@
             </div>
         </div>
     </el-dialog>
+    <MyMessage :message="messageText" :type="messageType" />
 </template>
 
 <script>
 import { createFinger } from '@/api/finger'
 import { computed, onMounted, ref } from 'vue'
+import MyMessage from './MyMessage.vue' // 🔥 Import MyMessage
 
 export default {
     name: 'FingerScanModal',
+    components: { MyMessage }, // 🔥 Đăng ký component
     props: {
         visible: {
             type: Boolean,
@@ -51,7 +55,10 @@ export default {
     },
     emits: ['update:visible'],
     setup(props, { emit }) {
+        const loading = ref(false) // Loading toàn bộ modal
         const isMobile = ref(false)
+        const messageText = ref('');
+        const messageType = ref('success');
         const dialogWidth = computed(() => isMobile.value ? '343px' : '400px')
 
         const handleClose = () => {
@@ -117,10 +124,23 @@ export default {
         }
 
         const registerFinger = async ({ fingerNo, employeeNo }) => {
+            messageText.value = '';
+            messageType.value = '';
+            loading.value = true // Bật loading modal
+
             try {
                 await createFinger({ fingerNo, employeeNo })
+                messageText.value = `Save no.${fingerNo} Successfully`;
+                messageType.value = 'success';
+                handleClose()
             } catch (error) {
+                loading.value = false // Tắt loading modal
                 console.error(error)
+                messageText.value = 'Save failed. Please try again.';
+                messageType.value = 'error';
+            } finally {
+                loading.value = false // Tắt loading modal dù thành công hay thất bại
+                handleClose()
             }
         }
 
@@ -129,7 +149,10 @@ export default {
             has,
             dialogWidth,
             dialogKey,
-            logFinger
+            logFinger,
+            loading,
+            messageText,
+            messageType,
         }
     }
 }
@@ -170,6 +193,10 @@ export default {
 
 :deep(.el-checkbox__input.is-disabled.is-checked .el-checkbox__inner) {
     border-color: #409EFF;
+}
+
+:deep(.el-loading-mask) {
+    background-color: rgba(0, 0, 0, 0.3) !important;
 }
 
 @media (max-width: 767px) {
