@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 
 export type EntryLogRawDocument = EntryLogRaw & Document;
 
+
 @Schema({ collection: 'entry_logs_raw', timestamps: true })
 export class EntryLogRaw {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
@@ -31,6 +32,9 @@ export class EntryLogRaw {
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({ type: Types.ObjectId, ref: 'EntryLog' })
+  entry_log_id?: Types.ObjectId;
 }
 
 export const EntryLogRawSchema = SchemaFactory.createForClass(EntryLogRaw);
