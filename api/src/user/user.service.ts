@@ -351,7 +351,7 @@ export class UserService {
       limit,
       {},
       { password: 0 },
-      { populate: 'userFingers' }
+      { populate: 'userFingers' },
     );
   }
 
@@ -409,7 +409,7 @@ export class UserService {
     if (dto.avatar) {
       await this.uploadFaceInfoHIKVISION({
         employId: id,
-        url: `http://192.168.1.5:7891/${dto.avatar}`,
+        url: `${process.env.HOST_SERVER}/${dto.avatar}`,
       });
     }
     return updated;
