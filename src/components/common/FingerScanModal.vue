@@ -2,24 +2,35 @@
     <el-dialog :model-value="visible" :key="dialogKey" title="Scanned Finger" :width="dialogWidth" @close="handleClose">
         <div class="checkbox-columns">
             <div class="checkbox-column">
-                <el-checkbox label="Left thumb" :checked="has('Left thumb')" disabled />
-                <el-checkbox label="Left index finger" :checked="has('Left index finger')" disabled />
-                <el-checkbox label="Left middle finger" :checked="has('Left middle finger')" disabled />
-                <el-checkbox label="Left ring finger" :checked="has('Left ring finger')" disabled />
-                <el-checkbox label="Left pinkie" :checked="has('Left pinkie')" disabled />
+                <el-checkbox label="Left thumb" @click="logFinger('Left thumb')" :checked="has('Left thumb')"
+                    :disabled="has('Left thumb')" />
+                <el-checkbox label="Left index finger" @click="logFinger('Left index finger')"
+                    :checked="has('Left index finger')" :disabled="has('Left index finger')" />
+                <el-checkbox label="Left middle finger" @click="logFinger('Left middle finger')"
+                    :checked="has('Left middle finger')" :disabled="has('Left middle finger')" />
+                <el-checkbox label="Left ring finger" @click="logFinger('Left ring finger')"
+                    :checked="has('Left ring finger')" :disabled="has('Left ring finger')" />
+                <el-checkbox label="Left pinkie" @click="logFinger('Left pinkie')" :checked="has('Left pinkie')"
+                    :disabled="has('Left pinkie')" />
             </div>
             <div class="checkbox-column">
-                <el-checkbox label="Right thumb" :checked="has('Right thumb')" disabled />
-                <el-checkbox label="Right index finger" :checked="has('Right index finger')" disabled />
-                <el-checkbox label="Right middle finger" :checked="has('Right middle finger')" disabled />
-                <el-checkbox label="Right ring finger" :checked="has('Right ring finger')" disabled />
-                <el-checkbox label="Right pinkie" :checked="has('Right pinkie')" disabled />
+                <el-checkbox label="Right thumb" @click="logFinger('Right thumb')" :checked="has('Right thumb')"
+                    :disabled="has('Right thumb')" />
+                <el-checkbox label="Right index finger" @click="logFinger('Right index finger')"
+                    :checked="has('Right index finger')" :disabled="has('Right index finger')" />
+                <el-checkbox label="Right middle finger" @click="logFinger('Right middle finger')"
+                    :checked="has('Right middle finger')" :disabled="has('Right middle finger')" />
+                <el-checkbox label="Right ring finger" @click="logFinger('Right ring finger')"
+                    :checked="has('Right ring finger')" :disabled="has('Right ring finger')" />
+                <el-checkbox label="Right pinkie" @click="logFinger('Right pinkie')" :checked="has('Right pinkie')"
+                    :disabled="has('Right pinkie')" />
             </div>
         </div>
     </el-dialog>
 </template>
 
 <script>
+import { createFinger } from '@/api/finger'
 import { computed, onMounted, ref } from 'vue'
 
 export default {
@@ -32,6 +43,10 @@ export default {
         scannedFingers: {
             type: Array,
             default: () => []
+        },
+        userId: {
+            type: String,
+            required: true
         }
     },
     emits: ['update:visible'],
@@ -71,7 +86,7 @@ export default {
                 if (
                     finger &&
                     finger.no &&
-                    finger.finger_data && 
+                    finger.finger_data &&
                     fingerMapping[finger.no]
                 ) {
                     acc.push(fingerMapping[finger.no])
@@ -88,11 +103,33 @@ export default {
             return props.visible ? Date.now() : 'hidden'
         })
 
+        const logFinger = (name) => {
+            let fingerNo = null;
+            for (let key in fingerMapping) {
+                if (fingerMapping[key] === name) {
+                    fingerNo = Number(key);
+                    break;
+                }
+            }
+            if (fingerNo !== null) {
+                registerFinger({ fingerNo, employeeNo: props.userId });
+            }
+        }
+
+        const registerFinger = async ({ fingerNo, employeeNo }) => {
+            try {
+                await createFinger({ fingerNo, employeeNo })
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
         return {
             handleClose,
             has,
             dialogWidth,
-            dialogKey
+            dialogKey,
+            logFinger
         }
     }
 }
