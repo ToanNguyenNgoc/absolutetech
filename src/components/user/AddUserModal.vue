@@ -68,7 +68,8 @@
 
                 <!-- Password -->
                 <el-form-item label="Password" v-if="!isEditLocal">
-                    <el-input type="password" v-model="userForm.password" placeholder="Password" autocomplete="new-password" />
+                    <el-input type="password" v-model="userForm.password" placeholder="Password"
+                        autocomplete="new-password" />
                 </el-form-item>
             </div>
         </el-form>
@@ -241,9 +242,10 @@ export default {
 :deep(:-webkit-autofill:hover),
 :deep(:-webkit-autofill:focus),
 :deep(:-webkit-autofill:active) {
-  box-shadow: 0 0 0px 1000px #F3F3F3 inset !important;
-  -webkit-box-shadow: 0 0 0px 1000px #F3F3F3 inset !important;
+    box-shadow: 0 0 0px 1000px #F3F3F3 inset !important;
+    -webkit-box-shadow: 0 0 0px 1000px #F3F3F3 inset !important;
 }
+
 .dialog-header {
     display: flex;
     align-items: center;
@@ -346,6 +348,7 @@ export default {
 :deep(.form-modal-add-user .el-input__wrapper) {
     padding: unset;
 }
+
 :deep(.el-input__prefix-inner) {
     position: absolute;
     top: 25%;
@@ -355,13 +358,13 @@ export default {
 }
 
 :deep(.el-input__prefix-inner .el-input__icon) {
-    width: 24px!important;
-    height: 24px!important;
+    width: 24px !important;
+    height: 24px !important;
 }
 
 :deep(.el-input__prefix-inner .el-input__icon svg) {
-    width: 24px!important;
-    height: 24px!important;
+    width: 24px !important;
+    height: 24px !important;
 }
 
 @media (max-width: 1024px) {}

@@ -1,10 +1,10 @@
-import { 
-  IsString, 
-  IsNotEmpty, 
-  IsEmail, 
-  IsOptional, 
-  IsEnum, 
-  IsDateString 
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+  IsEnum,
+  IsDateString,
 } from 'class-validator';
 import { Gender, Role } from '../user.enums';
 import { IsUniqueUser } from '../validators/is-unique-user.decorator';
