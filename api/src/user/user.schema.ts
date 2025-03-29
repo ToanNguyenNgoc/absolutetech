@@ -4,7 +4,6 @@ import { Gender, Role } from './user.enums';
 
 export type UserDocument = User & Document;
 
-
 @Schema()
 export class User {
   @Prop({ required: true })
@@ -54,5 +53,14 @@ export class User {
   createdAt: Date;
 }
 
-
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('userFingers', {
+  ref: 'UserFinger',         
+  localField: '_id',         
+  foreignField: 'user',    
+  justOne: false,          
+});
+
+UserSchema.set('toObject', { virtuals: true });
+UserSchema.set('toJSON', { virtuals: true });

@@ -1,16 +1,23 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-require-imports */
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
-import { paginate } from 'src/common/pagination.util';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import * as fs from 'fs';
 import { parse } from 'csv-parse';
+import * as fs from 'fs';
+import { Model } from 'mongoose';
 import * as path from 'path';
+import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
-
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { AcsEventCond, UserInfo } from './user.enums';
+import { User, UserDocument } from './user.schema';
+import { XMLParser } from 'fast-xml-parser';
+const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
   constructor(
@@ -18,17 +25,334 @@ export class UserService {
     private readonly entryLogService: EntryLogService,
   ) {}
 
+  async createInfoPersonHIKVISION(data: { UserInfo: UserInfo }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Record?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
+  async uploadFaceInfoHIKVISION(payload: { employId: string; url: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/Intelligent/FDLib/FaceDataRecord?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            faceLibType: 'blackFD',
+            FDID: '1',
+            FPID: payload.employId,
+            faceURL: payload.url,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
+  async registerFingerHIKVISION(payload: {
+    fingerNo: number;
+    employeeNo: string;
+  }) {
+    if (!payload.fingerNo || !payload.employeeNo) {
+      throw new Error('fingerNo and employeeNo are required');
+    }
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+
+      const xmlBody = `
+        <CaptureFingerPrintCond version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">
+          <fingerNo>${payload.fingerNo}</fingerNo>
+        </CaptureFingerPrintCond>
+      `;
+
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/CaptureFingerPrint`,
+        {
+          method: 'POST',
+          body: xmlBody,
+          headers: {
+            Accept: '*/*',
+            'Content-Type': 'application/xml; charset=UTF-8',
+            'x-requested-with': 'XMLHttpRequest',
+          },
+        },
+      );
+      if (!res.ok)
+        throw new Error(`CaptureFingerPrint failed: ${res.statusText}`);
+      const textResult: string = await res.text(); // vì Hikvision hay trả XML chứ không phải JSON
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '',
+      });
+      const jsonObj: {
+        CaptureFingerPrint: {
+          fingerData: string;
+          fingerNo: number;
+          fingerPrintQuality: number;
+          version: string;
+        };
+      } = parser.parse(textResult);
+      if (!jsonObj?.CaptureFingerPrint?.fingerData) {
+        throw new Error('No fingerData captured from device');
+      }
+      const data = {
+        FingerPrintCfg: {
+          employeeNo: payload.employeeNo,
+          enableCardReader: [1],
+          fingerPrintID: payload.fingerNo,
+          deleteFingerPrint: false,
+          fingerType: 'normalFP',
+          fingerData: jsonObj.CaptureFingerPrint.fingerData,
+          leaderFP: [],
+          checkEmployeeNo: true,
+        },
+      };
+
+      const saveFinger = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/FingerPrint/SetUp?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      if (!saveFinger.ok)
+        throw new Error(`Failed to save fingerprint: ${saveFinger.statusText}`);
+      const result = await saveFinger.json();
+      return result;
+    } catch (error) {
+      console.error('Error registerFingerHIKVISION:', error);
+      throw new Error('Failed to register fingerprint with HIKVISION');
+    }
+  }
+  async deleteUserHIKVISION(data: { employeeNo: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Delete?format=json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            UserInfoDelCond: {
+              EmployeeNoList: [{ employeeNo: data.employeeNo }],
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+  async deleteFaceUserHik(data: { employeeNo: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/Intelligent/FDLib/FDSetUp?format=json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            faceLibType: 'blackFD',
+            FDID: '1',
+            FPID: data.employeeNo,
+            deleteFP: true,
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+  async searchInfoHIKVISION(payload: { employId: string }) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Search?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            UserInfoSearchCond: {
+              searchID: '0',
+              searchResultPosition: 0,
+              maxResults: 5,
+              EmployeeNoList: [
+                {
+                  employeeNo: payload.employId,
+                },
+              ],
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result = await res.json();
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
+  async getEventByTimeHIKVISION(payload: AcsEventCond) {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+          timeout: 20000,
+        },
+      );
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/AcsEvent?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            AcsEventCond: payload,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+
+      const result = await res.json();
+      return result;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
   async createUser(dto: CreateUserDto): Promise<User> {
     const hashed = await bcrypt.hash(dto.password, 10);
     const created = new this.userModel({
       ...dto,
       password: hashed,
     });
-    return created.save();
+    const res = await created.save();
+    await this.createInfoPersonHIKVISION({
+      UserInfo: {
+        employeeNo: res.id,
+        name: created.fullName,
+        userType: 'normal',
+        Valid: {
+          enable: false,
+          beginTime: '2025-03-20T16:00:00',
+          endTime: '2025-03-20T23:30:00',
+          timeType: 'local',
+        },
+        doorRight: '1',
+        RightPlan: [
+          {
+            doorNo: 1,
+            planTemplateNo: '1',
+          },
+        ],
+      },
+    });
+    if (dto.avatar) {
+      await this.uploadFaceInfoHIKVISION({
+        employId: res.id,
+        url: `${process.env.HOST_SERVER}/${dto.avatar}`,
+      });
+    }
+
+    return res;
   }
 
   async findAllPaginated(page = 1, limit = 10) {
-    return paginate(this.userModel, page, limit, {}, { password: 0 });
+    return paginate(
+      this.userModel,
+      page,
+      limit,
+      {},
+      { password: 0 },
+      { populate: 'userFingers' },
+    );
   }
 
   async findByUsername(username: string): Promise<UserDocument | null> {
@@ -82,6 +406,12 @@ export class UserService {
     if (!updated) {
       throw new UnprocessableEntityException('User not found');
     }
+    if (dto.avatar) {
+      await this.uploadFaceInfoHIKVISION({
+        employId: id,
+        url: `${process.env.HOST_SERVER}/${dto.avatar}`,
+      });
+    }
     return updated;
   }
 
@@ -100,6 +430,7 @@ export class UserService {
 
     if (deleted.avatar) {
       const filePath = path.join(__dirname, '..', '..', deleted.avatar);
+      await this.deleteFaceUserHik({ employeeNo: id });
       try {
         fs.unlink(filePath, (err) => {
           if (err) {
@@ -112,7 +443,7 @@ export class UserService {
         console.error('Error deleting avatar file:', err);
       }
     }
-
+    await this.deleteUserHIKVISION({ employeeNo: id });
     return deleted;
   }
 

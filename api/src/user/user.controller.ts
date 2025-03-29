@@ -18,7 +18,7 @@ import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from './user.enums';
+import { AcsEventCond, Role, UserInfo } from './user.enums';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -31,6 +31,59 @@ import { convertToCSV } from 'src/common/csv.util';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('create-user-face')
+  async createUserFace(@Body() data: { UserInfo: UserInfo }) {
+    return await this.userService.createInfoPersonHIKVISION(data);
+  }
+
+  @Post('upload-user-face')
+  uploadUserFace(@Body() data: { employId: string; url: string }) {
+    try {
+      return this.userService.uploadFaceInfoHIKVISION(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @Post('get-acs-event')
+  async getEventByTime(
+    @Body()
+    data: AcsEventCond,
+  ) {
+    return await this.userService.getEventByTimeHIKVISION(data);
+  }
+
+  @Post('delete-user-hik')
+  async deleteUserHik(
+    @Body()
+    data: {
+      employeeNo: string;
+    },
+  ) {
+    return await this.userService.deleteUserHIKVISION(data);
+  }
+
+  @Post('delete-face-user-hik')
+  async deleteFaceUserHik(
+    @Body()
+    data: {
+      employeeNo: string;
+    },
+  ) {
+    return await this.userService.deleteFaceUserHik(data);
+  }
+
+  @Post('register-finger')
+  async registerFinger(
+    @Body()
+    data: {
+      fingerNo: number;
+      employeeNo: string;
+    },
+  ) {
+    return await this.userService.registerFingerHIKVISION(data);
+  }
 
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)

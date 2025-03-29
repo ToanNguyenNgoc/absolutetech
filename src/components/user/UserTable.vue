@@ -30,7 +30,8 @@
     </div>
     <AddUserModal ref="addUserRef" :refreshUser="fetchData" />
     <MyMessage :message="messageText" :type="messageType" />
-    <FingerScanModal v-model:visible="showFingerModal" :scannedFingers="currentSelectedFingers" />
+    <FingerScanModal v-model:visible="showFingerModal" :scannedFingers="currentSelectedFingers"
+        :userId="selectedUserId" />
 </template>
 
 <script>
@@ -59,19 +60,7 @@ export default {
         const messageType = ref('success')
         const showFingerModal = ref(false)
         const currentSelectedFingers = ref([])
-        const FINGER_FIELDS_MAP = {
-            left_thumb: 'Left thumb',
-            left_index: 'Left index finger',
-            left_middle: 'Left middle finger',
-            left_ring: 'Left ring finger',
-            left_pinkie: 'Left pinkie',
-            right_thumb: 'Right thumb',
-            right_index: 'Right index finger',
-            right_middle: 'Right middle finger',
-            right_ring: 'Right ring finger',
-            right_pinkie: 'Right pinkie',
-        }
-
+        const selectedUserId = ref(null);
         onMounted(() => {
             fetchData();
         });
@@ -139,16 +128,10 @@ export default {
         };
 
         const handleShowFingerModal = (row) => {
-            // const raw = {
-            //     ...toRaw(row),
-            //     left_thumb: true,
-            //     left_index: true,
-            //     right_middle: true,
-            //     right_pinkie: true
-            // }
-            currentSelectedFingers.value = Object.entries(FINGER_FIELDS_MAP)
-                .filter(([field]) => row[field])
-                .map(([, label]) => label)
+            const plainRow = toRaw(row);
+
+            selectedUserId.value = plainRow._id;
+            currentSelectedFingers.value = plainRow.userFingers || [];
             showFingerModal.value = true
         }
 
@@ -174,6 +157,7 @@ export default {
             handleShowFingerModal,
             showFingerModal,
             currentSelectedFingers,
+            selectedUserId, // Đảm bảo có dòng này
         };
     },
 };
