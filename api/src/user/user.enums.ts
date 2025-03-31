@@ -9,6 +9,9 @@ export enum Role {
 export enum Gender {
   MALE = 'Male',
   FEMALE = 'Female',
+  'unknown' = 'unknown',
+  'male' = 'male',
+  'female' = 'female',
 }
 
 export interface Valid {
@@ -50,4 +53,52 @@ export interface AcsEventCond {
   cardNo?: string;
   name?: string;
   timeReverseOrder?: boolean;
+}
+
+//get list user from HIK
+export interface UserInfoSearch {
+  searchID: string;
+  responseStatusStrg: string;
+  numOfMatches: number;
+  totalMatches: number;
+  UserInfo: UserInfoItem[];
+}
+
+export interface UserInfoItem {
+  employeeNo: string;
+  name: string;
+  userType: 'normal' | 'admin' | 'guest';
+  sortByNamePosition: number;
+  sortByNameFlag: SortByNameFlag;
+  closeDelayEnabled: boolean;
+  Valid: Valid;
+  belongGroup: string;
+  password: string;
+  doorRight: string;
+  RightPlan: RightPlan[];
+  maxOpenDoorTime: number;
+  openDoorTime: number;
+  roomNumber: number;
+  floorNumber: number;
+  localUIRight: boolean;
+  gender: Gender;
+  numOfCard: number;
+  numOfFP: number;
+  numOfFace: number;
+  PersonInfoExtends: PersonInfoExtend[];
+  faceURL?: string;
+}
+
+export interface PersonInfoExtend {
+  value: string;
+}
+
+export interface RightPlan {
+  doorNo: number;
+  planTemplateNo: string;
+}
+
+export enum SortByNameFlag {
+  M = 'M',
+  N = 'N',
 }

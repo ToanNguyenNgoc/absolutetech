@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import {
   Injectable,
@@ -5,8 +7,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import axios from 'axios';
 import * as bcrypt from 'bcrypt';
 import { parse } from 'csv-parse';
+import { XMLParser } from 'fast-xml-parser';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
 import * as path from 'path';
@@ -14,9 +18,14 @@ import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AcsEventCond, UserInfo } from './user.enums';
+import {
+  AcsEventCond,
+  Role,
+  UserInfo,
+  UserInfoItem,
+  UserInfoSearch,
+} from './user.enums';
 import { User, UserDocument } from './user.schema';
-import { XMLParser } from 'fast-xml-parser';
 const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
@@ -307,6 +316,76 @@ export class UserService {
     }
   }
 
+  async syncHIKVISION() {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+        },
+      );
+      let page: number = 0;
+      const limit: number = 30;
+      let dataUser: UserInfoItem[] = [];
+      do {
+        const res = await client.fetch(
+          `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Search?format=json`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              UserInfoSearchCond: {
+                searchID: '0',
+                searchResultPosition: page * limit,
+                maxResults: limit,
+              },
+            }),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Accept: 'multipart/x-mixed-replace',
+            },
+          },
+        );
+
+        const result: { UserInfoSearch: UserInfoSearch } = await res.json();
+        // Kiểm tra nếu không có UserInfoSearch hoặc UserInfo thì dừng luôn
+        if (!result.UserInfoSearch || !result.UserInfoSearch?.UserInfo) {
+          break;
+        }
+        const responseData = result.UserInfoSearch;
+
+        if (responseData?.UserInfo) {
+          dataUser = dataUser.concat(responseData.UserInfo);
+        }
+
+        // Nếu responseStatusStrg là "OK", thoát khỏi vòng lặp
+        if (responseData?.responseStatusStrg === 'OK') {
+          break;
+        }
+        page += 1;
+      } while (true);
+      for (const user of dataUser) {
+        try {
+          await this.createUser({
+            employeeID: user.employeeNo,
+            fullName: user.name,
+            password: '123123',
+            username: user.employeeNo,
+            avatar: user.faceURL ?? '',
+            email: `${user.employeeNo}@gmail.com`,
+            gender: user.gender,
+            role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.STAFF,
+          });
+        } catch (error) {
+          console.error(`❌ Error importing user ${user.name}:`, error.message);
+        }
+      }
+      return dataUser;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+
   async createUser(dto: CreateUserDto): Promise<User> {
     const hashed = await bcrypt.hash(dto.password, 10);
     const created = new this.userModel({
@@ -314,32 +393,32 @@ export class UserService {
       password: hashed,
     });
     const res = await created.save();
-    await this.createInfoPersonHIKVISION({
-      UserInfo: {
-        employeeNo: res.id,
-        name: created.fullName,
-        userType: 'normal',
-        Valid: {
-          enable: false,
-          beginTime: '2025-03-20T16:00:00',
-          endTime: '2025-03-20T23:30:00',
-          timeType: 'local',
-        },
-        doorRight: '1',
-        RightPlan: [
-          {
-            doorNo: 1,
-            planTemplateNo: '1',
-          },
-        ],
-      },
-    });
-    if (dto.avatar) {
-      await this.uploadFaceInfoHIKVISION({
-        employId: res.id,
-        url: `${process.env.HOST_SERVER}/${dto.avatar}`,
-      });
-    }
+    // await this.createInfoPersonHIKVISION({
+    //   UserInfo: {
+    //     employeeNo: res.id,
+    //     name: created.fullName,
+    //     userType: 'normal',
+    //     Valid: {
+    //       enable: false,
+    //       beginTime: '2025-03-20T16:00:00',
+    //       endTime: '2025-03-20T23:30:00',
+    //       timeType: 'local',
+    //     },
+    //     doorRight: '1',
+    //     RightPlan: [
+    //       {
+    //         doorNo: 1,
+    //         planTemplateNo: '1',
+    //       },
+    //     ],
+    //   },
+    // });
+    // if (dto.avatar) {
+    //   await this.uploadFaceInfoHIKVISION({
+    //     employId: res.id,
+    //     url: `${process.env.HOST_SERVER}/${dto.avatar}`,
+    //   });
+    // }
 
     return res;
   }

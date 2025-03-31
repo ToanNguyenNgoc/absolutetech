@@ -45,9 +45,8 @@ export class CreateUserDto {
   address?: string;
 
   @IsEmail()
-  @IsNotEmpty()
   @IsUniqueUser({ message: 'Email already exists' })
-  email: string;
+  email?: string;
 
   @IsString()
   @IsNotEmpty()

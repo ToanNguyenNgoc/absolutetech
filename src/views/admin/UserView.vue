@@ -3,6 +3,11 @@
         <div class="current-menu">User</div>
         <div class="toolbar">
             <div class="button-group">
+
+                <button class="btn btn-primary" @click="handleSyncUsers">
+                    <img src="@/assets/img/ic-add.svg" alt="Import" class="btn-icon" />
+                    Sync HIK
+                </button>
                 <button class="btn btn-primary" @click="handleAddUser">
                     <img src="@/assets/img/ic-add.svg" alt="Import" class="btn-icon" />
                     Add User
@@ -28,7 +33,7 @@
 </template>
 
 <script>
-import { exportUsers } from '@/api/user';
+import { exportUsers, syncHik } from '@/api/user';
 import ImportModal from '@/components/common/ImportModal.vue';
 import AddUserModal from '@/components/user/AddUserModal.vue';
 import UserTable from '@/components/user/UserTable.vue';
@@ -52,6 +57,10 @@ export default {
                 addUserRef.value.setShowDialog(true);
             }
 
+        };
+
+        const handleSyncUsers = async () => {
+            await syncHik();
         };
 
         const refreshUserTable = () => {
@@ -90,6 +99,7 @@ export default {
             handleExport,
             refreshUserTable,
             onImportSuccess,
+            handleSyncUsers
         };
     },
 };

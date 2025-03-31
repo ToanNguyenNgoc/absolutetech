@@ -31,3 +31,7 @@ export function exportUsers() {
     responseType: "blob",
   });
 }
+
+export function syncHik(payload) {
+  return axiosInstance.post("/users/sync-hik", payload);
+}
