@@ -10,7 +10,7 @@ import {
   UserFinger,
   UserFingerSchema,
 } from 'src/user-finger/user-finger.schema';
-import { UserFingerService } from 'src/user-finger/user-finger.service'; // ⬅ Thêm import này
+import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 
@@ -23,7 +23,7 @@ import { UserService } from 'src/user/user.service';
       { name: UserFinger.name, schema: UserFingerSchema },
     ]),
   ],
-  providers: [UserService, EntryLogService, UserFingerService], // ⬅ Thêm UserFingerService vào đây
-  exports: [UserService, EntryLogService, UserFingerService, MongooseModule], // ⬅ Và export nó
+  providers: [UserService, EntryLogService, UserFingerService],
+  exports: [UserService, EntryLogService, UserFingerService, MongooseModule],
 })
 export class SharedModule {}

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/await-thenable */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -37,7 +36,6 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
-    @InjectModel(UserFinger.name) private userFingerModel: Model<UserFinger>,
     private readonly userFingerService: UserFingerService,
   ) {}
 
@@ -326,7 +324,7 @@ export class UserService {
   async downloadAndSaveImage(
     client,
     imageUrl: string,
-    folder = 'uploads/avatars',
+    folder = 'uploads/avatar',
   ) {
     try {
       // 🔹 Kiểm tra URL hợp lệ
@@ -391,16 +389,13 @@ export class UserService {
           .findOne({ employeeID: employeeId })
           .exec();
         if (!user) {
-          console.log(`❌ User with employeeID ${employeeId} not found.`);
           return;
         }
-
         await this.userFingerService.createFinger({
           user: user._id as Types.ObjectId,
           finger_data: result.FingerPrintInfo.FingerPrintList[0].fingerData,
           no: result.FingerPrintInfo.FingerPrintList[0].fingerPrintID, // Ép kiểu số rõ ràng
         });
-        // Chỉ gọi saveFingerData nếu đã lưu vân tay thành công
         await this.saveFingerData(client, employeeId);
       }
     } catch (error) {
@@ -408,9 +403,9 @@ export class UserService {
     }
   }
 
-  async userExists(employeeID: string): Promise<boolean> {
+  async userExists(employeeID: string): Promise<any> {
     const user = await this.userModel.findOne({ employeeID }).exec();
-    return !!user;
+    return user;
   }
   // sync from HIK to cloud
   async syncHIKVISION() {
@@ -465,6 +460,22 @@ export class UserService {
         try {
           const exists = await this.userExists(user.employeeNo);
           if (exists) {
+            if (user.numOfFP > 0) {
+              await this.userFingerService.removeFingersByUser(
+                exists._id as string,
+              );
+              await this.saveFingerData(client, user.employeeNo);
+              let pathImage: string | null = null;
+              if (user.faceURL) {
+                pathImage = await this.downloadAndSaveImage(
+                  client,
+                  user.faceURL,
+                );
+              }
+              await this.updateUser(exists._id as string, {
+                avatar: pathImage ?? exists.avatar ?? '',
+              });
+            }
             continue;
           }
           let pathImage: string | null = null;

@@ -23,6 +23,12 @@ export class UserFingerService {
     return log.save();
   }
 
+  async removeFingersByUser(userId: string) {
+    return this.UserFingerModel.deleteMany({
+      user: new Types.ObjectId(userId),
+    });
+  }
+
   async registerFingerHIKVISION(payload: {
     fingerNo: number;
     employeeNo: string;
