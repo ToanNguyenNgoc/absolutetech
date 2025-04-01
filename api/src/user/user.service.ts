@@ -322,7 +322,7 @@ export class UserService {
       console.log('Error', error);
     }
   }
-
+  //save FACE from HIK
   async downloadAndSaveImage(
     client,
     imageUrl: string,
@@ -365,15 +365,15 @@ export class UserService {
       return null;
     }
   }
-
+  //save Finger from HIK
   async saveFingerData(client, employeeId: string) {
     try {
       const res = await client.fetch(
-        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Search?format=json`,
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/FingerPrintUpload?format=json`,
         {
           method: 'POST',
           body: JSON.stringify({
-            UserInfoSearchCond: {
+            FingerPrintCond: {
               searchID: employeeId,
               employeeNo: employeeId,
               cardReaderNo: 1,
@@ -394,14 +394,13 @@ export class UserService {
           console.log(`❌ User with employeeID ${employeeId} not found.`);
           return;
         }
-        console.log(user);
 
         await this.userFingerService.createFinger({
-          user: new Types.ObjectId(user.id),
+          user: user._id as Types.ObjectId,
           finger_data: result.FingerPrintInfo.FingerPrintList[0].fingerData,
-          no: +result.FingerPrintInfo.searchID,
+          no: result.FingerPrintInfo.FingerPrintList[0].fingerPrintID, // Ép kiểu số rõ ràng
         });
-
+        // Chỉ gọi saveFingerData nếu đã lưu vân tay thành công
         await this.saveFingerData(client, employeeId);
       }
     } catch (error) {
