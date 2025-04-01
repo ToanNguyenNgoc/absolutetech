@@ -102,3 +102,21 @@ export enum SortByNameFlag {
   M = 'M',
   N = 'N',
 }
+
+export interface ResponseFinger {
+  FingerPrintInfo: FingerPrintInfo;
+}
+
+export interface FingerPrintInfo {
+  searchID: string;
+  status: string;
+  FingerPrintList: FingerPrintList[];
+}
+
+export interface FingerPrintList {
+  cardReaderNo: number;
+  fingerPrintID: number;
+  fingerType: string;
+  fingerData: string;
+  leaderFP: any[];
+}
