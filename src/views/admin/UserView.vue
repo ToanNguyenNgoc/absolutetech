@@ -1,5 +1,5 @@
 <template>
-    <div class="users-page">
+    <div class="users-page" v-loading="loading">
         <div class="current-menu">User</div>
         <div class="toolbar">
             <div class="button-group">
@@ -38,12 +38,12 @@ import ImportModal from '@/components/common/ImportModal.vue';
 import AddUserModal from '@/components/user/AddUserModal.vue';
 import UserTable from '@/components/user/UserTable.vue';
 import { ref } from 'vue';
-
+import { ElMessage } from 'element-plus';
 export default {
     name: 'UsersView',
     components: { UserTable, AddUserModal, ImportModal },
     setup() {
-
+        const loading = ref(false); // ✅ Thêm biến loading
         const userTableRef = ref(null);
         const addUserRef = ref(null);
         const handleImport = () => {
@@ -60,7 +60,17 @@ export default {
         };
 
         const handleSyncUsers = async () => {
-            await syncHik();
+            try {
+                loading.value = true; // 🔄 Bật loading
+                await syncHik();
+                refreshUserTable();
+                ElMessage.success('Sync HIK successfully!'); // ✅ Hiển thị message success
+            } catch (error) {
+                console.error('Sync HIK error:', error);
+                ElMessage.error('Sync HIK failed!'); // ❌ Hiển thị message error
+            } finally {
+                loading.value = false; // ❌ Tắt loading dù có lỗi hay không
+            }
         };
 
         const refreshUserTable = () => {
@@ -91,6 +101,7 @@ export default {
         }
 
         return {
+            loading, // ✅ Trả loading ra template
             userTableRef,
             addUserRef,
             showImport,
