@@ -13,7 +13,7 @@
             <div class="form-modal-add-user">
                 <!-- EmployeeID -->
                 <el-form-item label="EmployeeID">
-                    <el-input disabled v-model="userForm.employeeID" placeholder="Employee ID" />
+                    <el-input :disabled="isEditLocal" v-model="userForm.employeeID" placeholder="Employee ID" />
                 </el-form-item>
 
                 <!-- Full Name -->
