@@ -63,7 +63,7 @@ export class EntryLogRawService {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     // await this.entryLogRawModel.deleteMany();
     const latestInfo = await this.getLatestEntry();
