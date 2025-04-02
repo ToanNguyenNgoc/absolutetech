@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -464,6 +465,22 @@ export class UserService {
               await this.userFingerService.removeFingersByUser(
                 exists._id as string,
               );
+              if (exists.avatar) {
+                console.log('deleted.avatar', exists.avatar);
+                const avatarPath = exists.avatar.replace(/^\/?api\//, ''); // Xóa dư "api/" ở đầu nếu có
+                const filePath = path.join(__dirname, '..', '..', avatarPath);
+                try {
+                  fs.unlink(filePath, (err) => {
+                    if (err) {
+                      console.error('Error deleting avatar file:', err);
+                    } else {
+                      console.log('Avatar file deleted:', filePath);
+                    }
+                  });
+                } catch (err) {
+                  console.error('Error deleting avatar file:', err);
+                }
+              }
               await this.saveFingerData(client, user.employeeNo);
               let pathImage: string | null = null;
               if (user.faceURL) {
@@ -512,33 +529,6 @@ export class UserService {
       password: hashed,
     });
     const res = await created.save();
-    // await this.createInfoPersonHIKVISION({
-    //   UserInfo: {
-    //     employeeNo: res.id,
-    //     name: created.fullName,
-    //     userType: 'normal',
-    //     Valid: {
-    //       enable: false,
-    //       beginTime: '2025-03-20T16:00:00',
-    //       endTime: '2025-03-20T23:30:00',
-    //       timeType: 'local',
-    //     },
-    //     doorRight: '1',
-    //     RightPlan: [
-    //       {
-    //         doorNo: 1,
-    //         planTemplateNo: '1',
-    //       },
-    //     ],
-    //   },
-    // });
-    // if (dto.avatar) {
-    //   await this.uploadFaceInfoHIKVISION({
-    //     employId: res.id,
-    //     url: `${process.env.HOST_SERVER}/${dto.avatar}`,
-    //   });
-    // }
-
     return res;
   }
 
@@ -627,7 +617,9 @@ export class UserService {
     }
 
     if (deleted.avatar) {
-      const filePath = path.join(__dirname, '..', '..', deleted.avatar);
+      console.log('deleted.avatar', deleted.avatar);
+      const avatarPath = deleted.avatar.replace(/^\/?api\//, ''); // Xóa dư "api/" ở đầu nếu có
+      const filePath = path.join(__dirname, '..', '..', avatarPath);
       await this.deleteFaceUserHik({ employeeNo: id });
       try {
         fs.unlink(filePath, (err) => {
