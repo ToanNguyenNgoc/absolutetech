@@ -9,7 +9,7 @@ const dayjs = require('dayjs');
 import utc = require('dayjs/plugin/utc');
 import timezone = require('dayjs/plugin/timezone');
 import { User, UserDocument } from 'src/user/user.schema';
-
+const isBoolean = true;
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const DigestClient = require('digest-fetch');
@@ -21,6 +21,10 @@ export class EntryLogRawService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
+  async rawLogsExists(serialNo: number): Promise<any> {
+    const raw = await this.entryLogRawModel.findOne({ serialNo }).exec();
+    return !!raw;
+  }
   async createRawLog(data: Partial<EntryLogRaw>) {
     const log = new this.entryLogRawModel(data);
     return log.save();
@@ -59,36 +63,38 @@ export class EntryLogRawService {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
+    // await this.entryLogRawModel.deleteMany();
     const latestInfo = await this.getLatestEntry();
-    const scanEvery: AcsEventCondResponse = await this.getEventByTimeHIKVISION({
-      searchID: '1',
-      searchResultPosition: 0,
-      maxResults: 30,
-      major: 0,
-      minor: 0,
-      startTime: dayjs(latestInfo?.createdAt)
-        .tz('Asia/Ho_Chi_Minh')
-        .format('YYYY-MM-DDTHH:mm:ssZ'),
-      endTime: dayjs().tz('Asia/Ho_Chi_Minh').format('YYYY-MM-DDTHH:mm:ssZ'),
-    });
-    // console.log(scanEvery);
+    let page: number = 0;
+    const limit: number = 30;
+    do {
+      const scanEvery: AcsEventCondResponse =
+        await this.getEventByTimeHIKVISION({
+          searchID: `${page * limit}`,
+          searchResultPosition: page * limit,
+          maxResults: limit,
+          major: 0,
+          minor: 0,
+          startTime: dayjs(latestInfo?.createdAt)
+            .subtract(3, 'day')
+            .tz(process.env.TIMEZONE)
+            .format('YYYY-MM-DDTHH:mm:ssZ'),
+          endTime: dayjs()
+            .tz(process.env.TIMEZONE)
+            .format('YYYY-MM-DDTHH:mm:ssZ'),
+        });
 
-    if (
-      scanEvery?.AcsEvent?.responseStatusStrg &&
-      scanEvery?.AcsEvent?.InfoList?.length > 0
-    ) {
       for (const element of scanEvery?.AcsEvent.InfoList || []) {
         if (element.currentVerifyMode != 'invalid') {
-          // console.log(element);
+          if (await this.rawLogsExists(element.serialNo)) continue;
           const user = await this.userModel
             .findOne({ employeeID: element.employeeNoString })
             .exec();
-          console.log(element.employeeNoString);
-
           if (user) {
             await this.createRawLog({
+              serialNo: element.serialNo,
               user: user?._id as Types.ObjectId,
               employeeNoString: element.employeeNoString,
               name: element.name,
@@ -101,6 +107,12 @@ export class EntryLogRawService {
           }
         }
       }
-    }
+      // Nếu responseStatusStrg là "OK", thoát khỏi vòng lặp
+      if (scanEvery?.AcsEvent.responseStatusStrg === 'OK') {
+        page = 0;
+        break;
+      }
+      page += 1;
+    } while (isBoolean);
   }
 }
