@@ -8,6 +8,7 @@ import { EntryLogRaw, EntryLogRawDocument } from './entry-log-raw.schema';
 const dayjs = require('dayjs');
 import utc = require('dayjs/plugin/utc');
 import timezone = require('dayjs/plugin/timezone');
+import { User, UserDocument } from 'src/user/user.schema';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -17,6 +18,7 @@ export class EntryLogRawService {
   constructor(
     @InjectModel(EntryLogRaw.name)
     private entryLogRawModel: Model<EntryLogRawDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async createRawLog(data: Partial<EntryLogRaw>) {
@@ -57,19 +59,8 @@ export class EntryLogRawService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    // await this.createRawLog({
-    //   user: new Types.ObjectId('67e4b1b2ecb2f39a5918ea05'),
-    //   employeeNoString: '67e4b1b2ecb2f39a5918ea05',
-    //   name: 'Minh map 2',
-    //   doorNo: 1,
-    //   time: new Date(`2025-03-26T17:30:00`),
-    //   major: 5,
-    //   minor: 75,
-    //   currentVerifyMode: 'face',
-    // });
-    // await this.entryLogRawModel.deleteMany({});
     const latestInfo = await this.getLatestEntry();
     const scanEvery: AcsEventCondResponse = await this.getEventByTimeHIKVISION({
       searchID: '1',
@@ -82,22 +73,32 @@ export class EntryLogRawService {
         .format('YYYY-MM-DDTHH:mm:ssZ'),
       endTime: dayjs().tz('Asia/Ho_Chi_Minh').format('YYYY-MM-DDTHH:mm:ssZ'),
     });
+    // console.log(scanEvery);
+
     if (
-      scanEvery?.AcsEvent?.responseStatusStrg == 'OK' &&
-      scanEvery?.AcsEvent.InfoList.length > 0
+      scanEvery?.AcsEvent?.responseStatusStrg &&
+      scanEvery?.AcsEvent?.InfoList?.length > 0
     ) {
       for (const element of scanEvery?.AcsEvent.InfoList || []) {
         if (element.currentVerifyMode != 'invalid') {
-          await this.createRawLog({
-            user: new Types.ObjectId(element.employeeNoString),
-            employeeNoString: element.employeeNoString,
-            name: element.name,
-            doorNo: element.doorNo,
-            time: new Date(element.time),
-            major: element.major,
-            minor: element.minor,
-            currentVerifyMode: element?.pictureURL ? 'face' : 'fp',
-          });
+          // console.log(element);
+          const user = await this.userModel
+            .findOne({ employeeID: element.employeeNoString })
+            .exec();
+          console.log(element.employeeNoString);
+
+          if (user) {
+            await this.createRawLog({
+              user: user?._id as Types.ObjectId,
+              employeeNoString: element.employeeNoString,
+              name: element.name,
+              doorNo: element.doorNo,
+              time: new Date(element.time),
+              major: element.major,
+              minor: element.minor,
+              currentVerifyMode: element?.pictureURL ? 'face' : 'fp',
+            });
+          }
         }
       }
     }

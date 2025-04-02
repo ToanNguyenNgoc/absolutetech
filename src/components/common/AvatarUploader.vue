@@ -1,15 +1,15 @@
 <template>
     <div class="avatar-uploader">
-        <div class="avatar-wrapper" @click="openFileDialog">
+        <div class="avatar-wrapper">
             <img v-if="avatarUrl" :src="avatarUrlComputed" class="avatar-image" alt="Avatar" />
             <div v-else class="avatar-placeholder">
                 <img class="icon-camera" src="@/assets/ic-camera.svg" alt="icon-camera" />
             </div>
         </div>
 
-        <div v-if="avatarUrl" class="remove-icon" @click.stop="removeAvatar">
+        <!-- <div v-if="avatarUrl" class="remove-icon" @click.stop="removeAvatar">
             <img class="icon-close" src="@/assets/close.svg" alt="close" />
-        </div>
+        </div> -->
 
         <input ref="fileInput" type="file" accept="image/*" class="file-input" @change="onFileChange" hidden />
     </div>
@@ -46,9 +46,9 @@ watch(
 
 const fileInput = ref(null);
 
-function openFileDialog() {
-    fileInput.value?.click();
-}
+// function openFileDialog() {
+//     fileInput.value?.click();
+// }
 
 function onFileChange(e) {
     const file = e.target.files?.[0];
@@ -64,11 +64,11 @@ function onFileChange(e) {
     e.target.value = '';
 }
 
-function removeAvatar() {
-    avatarUrl.value = '';
-    emit('update:modelValue', '');
-    emit('file-selected', null);
-}
+// function removeAvatar() {
+//     avatarUrl.value = '';
+//     emit('update:modelValue', '');
+//     emit('file-selected', null);
+// }
 </script>
 
 <style scoped>
