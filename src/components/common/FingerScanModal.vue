@@ -1,30 +1,20 @@
 <template>
     <el-dialog :model-value="visible" :key="dialogKey" title="Scanned Finger" :width="dialogWidth" @close="handleClose"
-        :close-on-click-modal="false" :show-close="!loading">
+        :close-on-click-modal="true" :show-close="!loading">
         <div class="checkbox-columns" v-loading="loading">
             <div class="checkbox-column">
-                <el-checkbox label="Left thumb" @click="logFinger('Left thumb')" :checked="has('Left thumb')"
-                    :disabled="has('Left thumb')" />
-                <el-checkbox label="Left index finger" @click="logFinger('Left index finger')"
-                    :checked="has('Left index finger')" :disabled="has('Left index finger')" />
-                <el-checkbox label="Left middle finger" @click="logFinger('Left middle finger')"
-                    :checked="has('Left middle finger')" :disabled="has('Left middle finger')" />
-                <el-checkbox label="Left ring finger" @click="logFinger('Left ring finger')"
-                    :checked="has('Left ring finger')" :disabled="has('Left ring finger')" />
-                <el-checkbox label="Left pinkie" @click="logFinger('Left pinkie')" :checked="has('Left pinkie')"
-                    :disabled="has('Left pinkie')" />
+                <el-checkbox label="Fingerprint1" :checked="has('Fingerprint1',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint2" :checked="has('Fingerprint2',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint3" :checked="has('Fingerprint3',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint4" :checked="has('Fingerprint4',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint5" :checked="has('Fingerprint5',)" @click.stop.prevent="() => { }" />
             </div>
             <div class="checkbox-column">
-                <el-checkbox label="Right thumb" @click="logFinger('Right thumb')" :checked="has('Right thumb')"
-                    :disabled="has('Right thumb')" />
-                <el-checkbox label="Right index finger" @click="logFinger('Right index finger')"
-                    :checked="has('Right index finger')" :disabled="has('Right index finger')" />
-                <el-checkbox label="Right middle finger" @click="logFinger('Right middle finger')"
-                    :checked="has('Right middle finger')" :disabled="has('Right middle finger')" />
-                <el-checkbox label="Right ring finger" @click="logFinger('Right ring finger')"
-                    :checked="has('Right ring finger')" :disabled="has('Right ring finger')" />
-                <el-checkbox label="Right pinkie" @click="logFinger('Right pinkie')" :checked="has('Right pinkie')"
-                    :disabled="has('Right pinkie')" />
+                <el-checkbox label="Fingerprint6" :checked="has('Fingerprint6',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint7" :checked="has('Fingerprint7',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint8" :checked="has('Fingerprint8',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint9" :checked="has('Fingerprint9',)" @click.stop.prevent="() => { }" />
+                <el-checkbox label="Fingerprint10" :checked="has('Fingerprint10',)" @click.stop.prevent="() => { }" />
             </div>
         </div>
     </el-dialog>
@@ -32,7 +22,7 @@
 </template>
 
 <script>
-import { createFinger } from '@/api/finger'
+// import { createFinger } from '@/api/finger'
 import { computed, onMounted, ref } from 'vue'
 import MyMessage from './MyMessage.vue' // 🔥 Import MyMessage
 
@@ -75,16 +65,16 @@ export default {
         })
 
         const fingerMapping = {
-            1: 'Left thumb',
-            2: 'Left index finger',
-            3: 'Left middle finger',
-            4: 'Left ring finger',
-            5: 'Left pinkie',
-            6: 'Right thumb',
-            7: 'Right index finger',
-            8: 'Right middle finger',
-            9: 'Right ring finger',
-            10: 'Right pinkie'
+            1: 'Fingerprint1',
+            2: 'Fingerprint2',
+            3: 'Fingerprint3',
+            4: 'Fingerprint4',
+            5: 'Fingerprint5',
+            6: 'Fingerprint6',
+            7: 'Fingerprint7',
+            8: 'Fingerprint8',
+            9: 'Fingerprint9',
+            10: 'Fingerprint10',
         }
 
         const standardizedScannedFingers = computed(() => {
@@ -110,39 +100,39 @@ export default {
             return props.visible ? Date.now() : 'hidden'
         })
 
-        const logFinger = (name) => {
-            let fingerNo = null;
-            for (let key in fingerMapping) {
-                if (fingerMapping[key] === name) {
-                    fingerNo = Number(key);
-                    break;
-                }
-            }
-            if (fingerNo !== null) {
-                registerFinger({ fingerNo, employeeNo: props.userId });
-            }
+        const logFinger = () => {
+            // let fingerNo = null;
+            // for (let key in fingerMapping) {
+            //     if (fingerMapping[key] === name) {
+            //         fingerNo = Number(key);
+            //         break;
+            //     }
+            // }
+            // if (fingerNo !== null) {
+            //     registerFinger({ fingerNo, employeeNo: props.userId });
+            // }
         }
 
-        const registerFinger = async ({ fingerNo, employeeNo }) => {
-            messageText.value = '';
-            messageType.value = '';
-            loading.value = true // Bật loading modal
+        // const registerFinger = async ({ fingerNo, employeeNo }) => {
+        //     messageText.value = '';
+        //     messageType.value = '';
+        //     loading.value = true // Bật loading modal
 
-            try {
-                await createFinger({ fingerNo, employeeNo })
-                messageText.value = `Save no.${fingerNo} Successfully`;
-                messageType.value = 'success';
-                handleClose()
-            } catch (error) {
-                loading.value = false // Tắt loading modal
-                console.error(error)
-                messageText.value = 'Save failed. Please try again.';
-                messageType.value = 'error';
-            } finally {
-                loading.value = false // Tắt loading modal dù thành công hay thất bại
-                handleClose()
-            }
-        }
+        //     try {
+        //         await createFinger({ fingerNo, employeeNo })
+        //         messageText.value = `Save no.${fingerNo} Successfully`;
+        //         messageType.value = 'success';
+        //         handleClose()
+        //     } catch (error) {
+        //         loading.value = false // Tắt loading modal
+        //         console.error(error)
+        //         messageText.value = 'Save failed. Please try again.';
+        //         messageType.value = 'error';
+        //     } finally {
+        //         loading.value = false // Tắt loading modal dù thành công hay thất bại
+        //         handleClose()
+        //     }
+        // }
 
         return {
             handleClose,
@@ -198,6 +188,7 @@ export default {
 :deep(.el-loading-mask) {
     background-color: rgba(0, 0, 0, 0.3) !important;
 }
+
 
 @media (max-width: 767px) {
     .checkbox-columns {

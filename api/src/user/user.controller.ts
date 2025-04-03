@@ -85,6 +85,12 @@ export class UserController {
     return await this.userService.registerFingerHIKVISION(data);
   }
 
+  @Post('sync-hik')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  async syncHIK() {
+    return await this.userService.syncHIKVISION();
+  }
+
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async create(@Body() dto: CreateUserDto) {
