@@ -3,7 +3,6 @@ import { Document, Types } from 'mongoose';
 
 export type EntryLogRawDocument = EntryLogRaw & Document;
 
-
 @Schema({ collection: 'entry_logs_raw', timestamps: true })
 export class EntryLogRaw {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
@@ -11,6 +10,9 @@ export class EntryLogRaw {
 
   @Prop({ required: true })
   employeeNoString: string;
+
+  @Prop({ required: true, unique: true })
+  serialNo: number;
 
   @Prop()
   name?: string;

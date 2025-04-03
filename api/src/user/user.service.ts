@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import {
   Injectable,
@@ -5,24 +7,36 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import axios from 'axios';
 import * as bcrypt from 'bcrypt';
 import { parse } from 'csv-parse';
+import { XMLParser } from 'fast-xml-parser';
 import * as fs from 'fs';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as path from 'path';
 import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AcsEventCond, UserInfo } from './user.enums';
+import {
+  AcsEventCond,
+  ResponseFinger,
+  Role,
+  UserInfo,
+  UserInfoItem,
+  UserInfoSearch,
+} from './user.enums';
 import { User, UserDocument } from './user.schema';
-import { XMLParser } from 'fast-xml-parser';
+import { constants } from 'fs/promises';
+import { UserFinger } from 'src/user-finger/user-finger.schema';
+import { UserFingerService } from 'src/user-finger/user-finger.service';
 const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
+    private readonly userFingerService: UserFingerService,
   ) {}
 
   async createInfoPersonHIKVISION(data: { UserInfo: UserInfo }) {
@@ -306,6 +320,190 @@ export class UserService {
       console.log('Error', error);
     }
   }
+  //save FACE from HIK
+  async downloadAndSaveImage(
+    client,
+    imageUrl: string,
+    folder = 'uploads/avatar',
+  ) {
+    try {
+      // 🔹 Kiểm tra URL hợp lệ
+      if (!imageUrl.startsWith('http')) {
+        throw new Error('URL không hợp lệ');
+      }
+
+      // 🔹 Tách tên file và xử lý URL
+      const filename = path.basename(imageUrl.split('@')[0]); // Lấy tên file bỏ phần @WEBxxx
+      const saveDir = path.join(process.cwd(), folder);
+      const savePath = path.join(saveDir, filename);
+      const encodedUrl = encodeURI(imageUrl);
+
+      // 🔹 Tạo thư mục nếu chưa có
+      // Check if the file exists in the current directory.
+      fs.access(saveDir, constants.F_OK, (err) => {
+        console.log(`${saveDir} ${err ? 'does not exist' : 'exists'}`);
+        if (err) {
+          fs.mkdir(saveDir, { recursive: true }, () => {});
+        }
+      });
+      // 🔹 Gửi request tải ảnh bằng DigestClient
+      console.log('🔍 Đang tải ảnh từ:', encodedUrl);
+      const response = await client.fetch(encodedUrl, { method: 'GET' });
+      if (!response.ok) {
+        throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
+      }
+      // 🔹 Đọc dữ liệu ảnh và lưu file
+      const buffer = Buffer.from(await response.arrayBuffer());
+      fs.writeFile(savePath, buffer, (err) => {
+        if (err) throw err;
+      });
+      return `api/${folder}/${filename}`;
+    } catch (error) {
+      console.error('❌ Lỗi tải ảnh:', error.message);
+      return null;
+    }
+  }
+  //save Finger from HIK
+  async saveFingerData(client, employeeId: string) {
+    try {
+      const res = await client.fetch(
+        `${process.env.HOST_HIKVISION}ISAPI/AccessControl/FingerPrintUpload?format=json`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            FingerPrintCond: {
+              searchID: employeeId,
+              employeeNo: employeeId,
+              cardReaderNo: 1,
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'multipart/x-mixed-replace',
+          },
+        },
+      );
+      const result: ResponseFinger = await res.json();
+      if (result?.FingerPrintInfo?.FingerPrintList?.length > 0) {
+        const user = await this.userModel
+          .findOne({ employeeID: employeeId })
+          .exec();
+        if (!user) {
+          return;
+        }
+        await this.userFingerService.createFinger({
+          user: user._id as Types.ObjectId,
+          finger_data: result.FingerPrintInfo.FingerPrintList[0].fingerData,
+          no: result.FingerPrintInfo.FingerPrintList[0].fingerPrintID, // Ép kiểu số rõ ràng
+        });
+        await this.saveFingerData(client, employeeId);
+      }
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async userExists(employeeID: string): Promise<any> {
+    const user = await this.userModel.findOne({ employeeID }).exec();
+    return user;
+  }
+  // sync from HIK to cloud
+  async syncHIKVISION() {
+    try {
+      const client = new DigestClient(
+        process.env.HIKVISION_USERNAME,
+        process.env.HIKVISION_PASSWORD,
+        {
+          algorithm: 'MD5',
+        },
+      );
+      let page: number = 0;
+      const limit: number = 30;
+      let dataUser: UserInfoItem[] = [];
+      do {
+        const res = await client.fetch(
+          `${process.env.HOST_HIKVISION}ISAPI/AccessControl/UserInfo/Search?format=json`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              UserInfoSearchCond: {
+                searchID: '0',
+                searchResultPosition: page * limit,
+                maxResults: limit,
+              },
+            }),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Accept: 'multipart/x-mixed-replace',
+            },
+          },
+        );
+
+        const result: { UserInfoSearch: UserInfoSearch } = await res.json();
+        // Kiểm tra nếu không có UserInfoSearch hoặc UserInfo thì dừng luôn
+        if (!result.UserInfoSearch || !result.UserInfoSearch?.UserInfo) {
+          break;
+        }
+        const responseData = result.UserInfoSearch;
+
+        if (responseData?.UserInfo) {
+          dataUser = dataUser.concat(responseData.UserInfo);
+        }
+
+        // Nếu responseStatusStrg là "OK", thoát khỏi vòng lặp
+        if (responseData?.responseStatusStrg === 'OK') {
+          break;
+        }
+        page += 1;
+      } while (true);
+      for (const user of dataUser) {
+        try {
+          const exists = await this.userExists(user.employeeNo);
+          if (exists) {
+            if (user.numOfFP > 0) {
+              await this.userFingerService.removeFingersByUser(
+                exists._id as string,
+              );
+              await this.saveFingerData(client, user.employeeNo);
+              let pathImage: string | null = null;
+              if (user.faceURL) {
+                pathImage = await this.downloadAndSaveImage(
+                  client,
+                  user.faceURL,
+                );
+              }
+              await this.updateUser(exists._id as string, {
+                avatar: pathImage ?? exists.avatar ?? '',
+              });
+            }
+            continue;
+          }
+          let pathImage: string | null = null;
+          if (user.faceURL) {
+            pathImage = await this.downloadAndSaveImage(client, user.faceURL);
+          }
+          await this.createUser({
+            employeeID: user.employeeNo,
+            fullName: user.name,
+            password: '123123',
+            username: user.employeeNo,
+            avatar: pathImage ?? '',
+            email: `${user.employeeNo}@gmail.com`,
+            gender: user.gender,
+            role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.STAFF,
+          });
+          if (user.numOfFP > 0) {
+            await this.saveFingerData(client, user.employeeNo);
+          }
+        } catch (error) {
+          console.error(`❌ Error importing user ${user.name}:`, error.message);
+        }
+      }
+      return dataUser;
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
 
   async createUser(dto: CreateUserDto): Promise<User> {
     const hashed = await bcrypt.hash(dto.password, 10);
@@ -314,32 +512,32 @@ export class UserService {
       password: hashed,
     });
     const res = await created.save();
-    await this.createInfoPersonHIKVISION({
-      UserInfo: {
-        employeeNo: res.id,
-        name: created.fullName,
-        userType: 'normal',
-        Valid: {
-          enable: false,
-          beginTime: '2025-03-20T16:00:00',
-          endTime: '2025-03-20T23:30:00',
-          timeType: 'local',
-        },
-        doorRight: '1',
-        RightPlan: [
-          {
-            doorNo: 1,
-            planTemplateNo: '1',
-          },
-        ],
-      },
-    });
-    if (dto.avatar) {
-      await this.uploadFaceInfoHIKVISION({
-        employId: res.id,
-        url: `${process.env.HOST_SERVER}/${dto.avatar}`,
-      });
-    }
+    // await this.createInfoPersonHIKVISION({
+    //   UserInfo: {
+    //     employeeNo: res.id,
+    //     name: created.fullName,
+    //     userType: 'normal',
+    //     Valid: {
+    //       enable: false,
+    //       beginTime: '2025-03-20T16:00:00',
+    //       endTime: '2025-03-20T23:30:00',
+    //       timeType: 'local',
+    //     },
+    //     doorRight: '1',
+    //     RightPlan: [
+    //       {
+    //         doorNo: 1,
+    //         planTemplateNo: '1',
+    //       },
+    //     ],
+    //   },
+    // });
+    // if (dto.avatar) {
+    //   await this.uploadFaceInfoHIKVISION({
+    //     employId: res.id,
+    //     url: `${process.env.HOST_SERVER}/${dto.avatar}`,
+    //   });
+    // }
 
     return res;
   }

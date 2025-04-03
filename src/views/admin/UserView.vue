@@ -1,8 +1,13 @@
 <template>
-    <div class="users-page">
+    <div class="users-page" v-loading="loading">
         <div class="current-menu">User</div>
         <div class="toolbar">
             <div class="button-group">
+
+                <button class="btn btn-primary" @click="handleSyncUsers">
+                    <img src="@/assets/img/ic-add.svg" alt="Import" class="btn-icon" />
+                    Sync HIK
+                </button>
                 <button class="btn btn-primary" @click="handleAddUser">
                     <img src="@/assets/img/ic-add.svg" alt="Import" class="btn-icon" />
                     Add User
@@ -28,17 +33,17 @@
 </template>
 
 <script>
-import { exportUsers } from '@/api/user';
+import { exportUsers, syncHik } from '@/api/user';
 import ImportModal from '@/components/common/ImportModal.vue';
 import AddUserModal from '@/components/user/AddUserModal.vue';
 import UserTable from '@/components/user/UserTable.vue';
 import { ref } from 'vue';
-
+import { ElMessage } from 'element-plus';
 export default {
     name: 'UsersView',
     components: { UserTable, AddUserModal, ImportModal },
     setup() {
-
+        const loading = ref(false); // ✅ Thêm biến loading
         const userTableRef = ref(null);
         const addUserRef = ref(null);
         const handleImport = () => {
@@ -52,6 +57,20 @@ export default {
                 addUserRef.value.setShowDialog(true);
             }
 
+        };
+
+        const handleSyncUsers = async () => {
+            try {
+                loading.value = true; // 🔄 Bật loading
+                await syncHik();
+                refreshUserTable();
+                ElMessage.success('Sync HIK successfully!'); // ✅ Hiển thị message success
+            } catch (error) {
+                console.error('Sync HIK error:', error);
+                ElMessage.error('Sync HIK failed!'); // ❌ Hiển thị message error
+            } finally {
+                loading.value = false; // ❌ Tắt loading dù có lỗi hay không
+            }
         };
 
         const refreshUserTable = () => {
@@ -82,6 +101,7 @@ export default {
         }
 
         return {
+            loading, // ✅ Trả loading ra template
             userTableRef,
             addUserRef,
             showImport,
@@ -90,6 +110,7 @@ export default {
             handleExport,
             refreshUserTable,
             onImportSuccess,
+            handleSyncUsers
         };
     },
 };

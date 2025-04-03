@@ -15,7 +15,7 @@ export interface AcsEventCondResponse {
   AcsEvent: {
     searchID: string;
     totalMatches: number;
-    responseStatusStrg: 'OK';
+    responseStatusStrg: 'OK' | 'NO MATCH' | 'MORE';
     numOfMatches: number;
     InfoList: {
       major: number;

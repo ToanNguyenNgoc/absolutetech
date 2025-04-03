@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { EntryLog, EntryLogDocument } from './entry-log.schema';
 import { paginate } from 'src/common/pagination.util';
-import { EntryLogRaw, EntryLogRawDocument } from 'src/entry-log-raw/entry-log-raw.schema';
+import {
+  EntryLogRaw,
+  EntryLogRawDocument,
+} from 'src/entry-log-raw/entry-log-raw.schema';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
