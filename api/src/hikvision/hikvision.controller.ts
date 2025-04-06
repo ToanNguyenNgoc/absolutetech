@@ -1,16 +1,11 @@
-import { Body, Controller, Headers, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Controller, Headers, Post, Req, Res } from '@nestjs/common';
 import * as Busboy from 'busboy';
+import { Request, Response } from 'express';
 
 const eventCache = new Map<string, { serialNo: number; dateTime: string }>();
 
 @Controller('api/hikvision')
 export class HikvisionController {
-  @Post('event')
-  hikvision(@Body() data) {
-    console.log('Received Event (direct body):', data);
-  }
-
   @Post('listening')
   receiveAlarm(@Req() req: Request, @Res() res: Response, @Headers() headers) {
     console.log('Received Alarm Event!');
