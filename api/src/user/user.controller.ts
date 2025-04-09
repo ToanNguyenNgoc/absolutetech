@@ -28,9 +28,15 @@ import { Response } from 'express';
 import { convertToCSV } from 'src/common/csv.util';
 
 @Controller('api/users')
-@UseGuards(JwtAuthGuard, RolesGuard)
+// @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('import-data')
+  async importListUser(@Body() data: { entryList: CreateUserDto[] }) {
+    console.log(data);
+    return null;
+  }
 
   @Post('create-user-face')
   async createUserFace(@Body() data: { UserInfo: UserInfo }) {
