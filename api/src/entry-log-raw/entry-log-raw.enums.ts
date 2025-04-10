@@ -11,27 +11,29 @@ export interface AcsEventCond {
   timeReverseOrder?: boolean;
 }
 
+export interface InfoList {
+  major: number;
+  minor: number;
+  time: string;
+  cardType: number;
+  name: string;
+  cardReaderNo: number;
+  doorNo: number;
+  employeeNoString: string;
+  serialNo: number;
+  userType: string;
+  currentVerifyMode: string;
+  mask: string;
+  pictureURL: string;
+  FaceRect: object;
+}
+
 export interface AcsEventCondResponse {
   AcsEvent: {
     searchID: string;
     totalMatches: number;
     responseStatusStrg: 'OK' | 'NO MATCH' | 'MORE';
     numOfMatches: number;
-    InfoList: {
-      major: number;
-      minor: number;
-      time: string;
-      cardType: number;
-      name: string;
-      cardReaderNo: number;
-      doorNo: number;
-      employeeNoString: string;
-      serialNo: number;
-      userType: string;
-      currentVerifyMode: string;
-      mask: string;
-      pictureURL: string;
-      FaceRect: object;
-    }[];
+    InfoList: InfoList[];
   };
 }

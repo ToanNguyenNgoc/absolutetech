@@ -3,7 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model, Types } from 'mongoose';
-import { AcsEventCond, AcsEventCondResponse } from './entry-log-raw.enums';
+import {
+  AcsEventCond,
+  AcsEventCondResponse,
+  InfoList,
+} from './entry-log-raw.enums';
 import { EntryLogRaw, EntryLogRawDocument } from './entry-log-raw.schema';
 const dayjs = require('dayjs');
 import utc = require('dayjs/plugin/utc');
@@ -20,6 +24,38 @@ export class EntryLogRawService {
     private entryLogRawModel: Model<EntryLogRawDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
+
+  async importRawLogList(dataRawLog: InfoList[]) {
+    try {
+      for (const element of dataRawLog) {
+        try {
+          const user = await this.userModel
+            .findOne({ employeeID: element.employeeNoString })
+            .exec();
+          if (user) {
+            await this.createRawLog({
+              serialNo: element.serialNo,
+              user: user?._id as Types.ObjectId,
+              employeeNoString: element.employeeNoString,
+              name: element.name,
+              doorNo: element.doorNo,
+              time: new Date(element.time),
+              major: element.major,
+              minor: element.minor,
+              currentVerifyMode: element?.pictureURL ? 'face' : 'fp',
+            });
+          }
+        } catch (error) {
+          console.error(
+            `❌ Error importing user ${element.name}:`,
+            error.message,
+          );
+        }
+      }
+    } catch (error) {
+      console.log('❌ Fatal Error:', error);
+    }
+  }
 
   async rawLogsExists(serialNo: number): Promise<any> {
     const raw = await this.entryLogRawModel.findOne({ serialNo }).exec();
