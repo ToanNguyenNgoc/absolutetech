@@ -18,14 +18,20 @@ export class UserFingerService {
     private UserFingerModel: Model<UserFingerDocument>,
   ) {}
 
-  async createFinger(data: Partial<UserFinger>) {
-    const log = new this.UserFingerModel(data);
-    return log.save();
+  async createFinger(data: Partial<UserFinger> | Partial<UserFinger>[]) {
+    if (Array.isArray(data)) {
+      // Nếu là array → insertMany
+      return this.UserFingerModel.insertMany(data);
+    } else {
+      // Nếu là object đơn → save như cũ
+      const log = new this.UserFingerModel(data);
+      return log.save();
+    }
   }
 
-  async removeFingersByUser(userId: string) {
+  async removeFingersByUser(userId: Types.ObjectId) {
     return this.UserFingerModel.deleteMany({
-      user: new Types.ObjectId(userId),
+      user: userId,
     });
   }
 

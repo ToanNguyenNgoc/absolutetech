@@ -1,31 +1,28 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Query,
-  UseGuards,
-  Param,
+  Controller,
   Delete,
-  Put,
-  UseInterceptors,
-  UploadedFile,
+  Get,
   HttpException,
   HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { AcsEventCond, Role, UserInfo } from './user.enums';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { Response } from 'express';
 import { convertToCSV } from 'src/common/csv.util';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { AcsEventCond, mockUser, Role, UserInfo } from './user.enums';
+import { UserService } from './user.service';
 
 @Controller('api/users')
 // @UseGuards(JwtAuthGuard, RolesGuard)
@@ -34,8 +31,7 @@ export class UserController {
 
   @Post('import-data')
   async importListUser(@Body() data: { entryList: CreateUserDto[] }) {
-    console.log(data);
-    return null;
+    return await this.userService.importUsers(mockUser);
   }
 
   @Post('create-user-face')

@@ -26,11 +26,13 @@ import {
   UserInfo,
   UserInfoItem,
   UserInfoSearch,
+  UserItemRequest,
 } from './user.enums';
 import { User, UserDocument } from './user.schema';
 import { constants } from 'fs/promises';
 import { UserFinger } from 'src/user-finger/user-finger.schema';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
+import { UserModule } from './user.module';
 const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
@@ -404,7 +406,7 @@ export class UserService {
     }
   }
 
-  async userExists(employeeID: string): Promise<any> {
+  async userExists(employeeID: string) {
     const user = await this.userModel.findOne({ employeeID }).exec();
     return user;
   }
@@ -463,7 +465,7 @@ export class UserService {
           if (exists) {
             if (user.numOfFP > 0) {
               await this.userFingerService.removeFingersByUser(
-                exists._id as string,
+                exists._id as Types.ObjectId,
               );
               if (exists.avatar) {
                 console.log('deleted.avatar', exists.avatar);
@@ -522,8 +524,8 @@ export class UserService {
     }
   }
 
-  async createUser(dto: CreateUserDto): Promise<User> {
-    const hashed = await bcrypt.hash(dto.password, 10);
+  async createUser(dto: Partial<User>) {
+    const hashed = await bcrypt.hash(dto.password ?? '', 10);
     const created = new this.userModel({
       ...dto,
       password: hashed,
@@ -751,5 +753,75 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     return updatedUser;
+  }
+
+  // sync from HIK to cloud
+  async importUsers(dataUser: UserItemRequest[]) {
+    try {
+      for (const user of dataUser) {
+        try {
+          console.log(`🔄 Importing user: ${user.name} (${user.employeeNo})`);
+          const exists = await this.userExists(user.employeeNo);
+          if (exists?._id) {
+            console.log(`✅ User exists: ${user.name}`);
+            if (user.numOfFP > 0) {
+              await this.userFingerService.removeFingersByUser(
+                exists._id as Types.ObjectId,
+              );
+              console.log(`🧹 Removed old fingers for ${user.name}`);
+              await Promise.all(
+                user.fingerList.map((element) =>
+                  this.userFingerService.createFinger({
+                    user: exists._id as Types.ObjectId,
+                    finger_data: element.fingerData,
+                    no: element.fingerPrintID,
+                  }),
+                ),
+              );
+              console.log(`✋ Added new fingers for ${user.name}`);
+            }
+            if (user.faceURL) {
+              await this.userModel
+                .findOne({
+                  avatar: user.faceURL ?? exists.avatar ?? '',
+                  _id: { $ne: exists._id },
+                })
+                .exec();
+            }
+            continue;
+          }
+
+          const res = await this.createUser({
+            employeeID: user.employeeNo,
+            fullName: user.name,
+            password: '123123',
+            username: user.employeeNo,
+            avatar: user.faceURL ?? '',
+            email: `${user.employeeNo}@gmail.com`,
+            gender: user.gender,
+            role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.STAFF,
+          });
+          console.log(`🆕 Created new user: ${user.name}`);
+
+          if (user.numOfFP > 0) {
+            await Promise.all(
+              user.fingerList.map((element) =>
+                this.userFingerService.createFinger({
+                  user: res._id as Types.ObjectId,
+                  finger_data: element.fingerData,
+                  no: element.fingerPrintID,
+                }),
+              ),
+            );
+            console.log(`✋ Added fingers for new user ${user.name}`);
+          }
+        } catch (error) {
+          console.error(`❌ Error importing user ${user.name}:`, error.message);
+        }
+      }
+      console.log('🎉 Finished importing all users!');
+    } catch (error) {
+      console.log('❌ Fatal Error:', error);
+    }
   }
 }
