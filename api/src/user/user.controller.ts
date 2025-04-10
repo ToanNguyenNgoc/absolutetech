@@ -21,7 +21,7 @@ import { convertToCSV } from 'src/common/csv.util';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AcsEventCond, mockUser, Role, UserInfo } from './user.enums';
+import { AcsEventCond, Role, UserInfo, UserItemRequest } from './user.enums';
 import { UserService } from './user.service';
 
 @Controller('api/users')
@@ -30,8 +30,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('import-data')
-  async importListUser(@Body() data: { entryList: CreateUserDto[] }) {
-    return await this.userService.importUsers(mockUser);
+  async importListUser(@Body() data: UserItemRequest[]) {
+    return await this.userService.importUsers(data ?? []);
   }
 
   @Post('create-user-face')

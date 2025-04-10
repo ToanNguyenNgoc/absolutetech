@@ -9,7 +9,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import * as fs from 'fs';
-
 @Controller('api/upload')
 export class UploadController {
   @Post('avatar')
@@ -22,7 +21,6 @@ export class UploadController {
           cb(null, uploadPath);
         },
         filename: (req, file, cb) => {
-          // Giữ tên gốc
           cb(null, file.originalname);
         },
       }),
@@ -33,27 +31,12 @@ export class UploadController {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-    const uploadPath = join(process.cwd(), 'uploads', 'avatars');
-    const fullPath = join(uploadPath, file.originalname);
 
-    // Check file đã tồn tại
-    if (fs.existsSync(fullPath)) {
-      console.log('File đã tồn tại, không lưu nữa');
-      return {
-        success: true,
-        url: `api/uploads/avatars/${file.originalname}`,
-        existed: true,
-      };
-    }
-
-    // Nếu file chưa tồn tại → cho phép lưu
-    fs.writeFileSync(fullPath, fs.readFileSync(file.path)); // copy file tạm vào đúng chỗ
-    console.log(`File saved: ${file.originalname}, size: ${file.size} bytes`);
+    const relativeUrl = `api/uploads/avatars/${file.originalname}`;
 
     return {
       success: true,
-      url: `api/uploads/avatars/${file.originalname}`,
-      existed: false,
+      url: relativeUrl,
     };
   }
 }

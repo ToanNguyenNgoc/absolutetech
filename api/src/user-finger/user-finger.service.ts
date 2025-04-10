@@ -34,6 +34,9 @@ export class UserFingerService {
       user: userId,
     });
   }
+  async removeFingersAll() {
+    return this.UserFingerModel.deleteMany({});
+  }
 
   async registerFingerHIKVISION(payload: {
     fingerNo: number;

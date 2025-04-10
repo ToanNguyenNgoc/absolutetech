@@ -781,12 +781,16 @@ export class UserService {
               console.log(`✋ Added new fingers for ${user.name}`);
             }
             if (user.faceURL) {
-              await this.userModel
-                .findOne({
-                  avatar: user.faceURL ?? exists.avatar ?? '',
-                  _id: { $ne: exists._id },
-                })
-                .exec();
+              try {
+                await this.userModel
+                  .updateOne(
+                    { _id: exists._id },
+                    { $set: { avatar: user.faceURL } },
+                  )
+                  .exec();
+              } catch (error) {
+                console.log(error);
+              }
             }
             continue;
           }
