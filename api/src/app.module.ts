@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { UploadController } from './upload/upload.controller';
 import { EntryLogModule } from './entry-log/entry-log.module';
 import { FrontendMiddleware } from './frontend.middleware';
-import { HikvisionModule } from './hikvision/hikvision.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { UserFingerModule } from './user-finger/user-finger.module';
@@ -36,7 +35,6 @@ import { UserFingerModule } from './user-finger/user-finger.module';
     AuthModule,
     EntryLogModule,
     EntryLogRawModule,
-    HikvisionModule,
     UserFingerModule,
   ],
 

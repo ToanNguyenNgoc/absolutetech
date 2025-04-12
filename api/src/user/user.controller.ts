@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Controller,
@@ -21,7 +22,7 @@ import { convertToCSV } from 'src/common/csv.util';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AcsEventCond, Role, UserInfo, UserItemRequest } from './user.enums';
+import { Role, UserItemRequest } from './user.enums';
 import { UserService } from './user.service';
 
 @Controller('api/users')
@@ -32,65 +33,6 @@ export class UserController {
   @Post('import-data')
   async importListUser(@Body() data: UserItemRequest[]) {
     return await this.userService.importUsers(data ?? []);
-  }
-
-  @Post('create-user-face')
-  async createUserFace(@Body() data: { UserInfo: UserInfo }) {
-    return await this.userService.createInfoPersonHIKVISION(data);
-  }
-
-  @Post('upload-user-face')
-  uploadUserFace(@Body() data: { employId: string; url: string }) {
-    try {
-      return this.userService.uploadFaceInfoHIKVISION(data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  @Post('get-acs-event')
-  async getEventByTime(
-    @Body()
-    data: AcsEventCond,
-  ) {
-    return await this.userService.getEventByTimeHIKVISION(data);
-  }
-
-  @Post('delete-user-hik')
-  async deleteUserHik(
-    @Body()
-    data: {
-      employeeNo: string;
-    },
-  ) {
-    return await this.userService.deleteUserHIKVISION(data);
-  }
-
-  @Post('delete-face-user-hik')
-  async deleteFaceUserHik(
-    @Body()
-    data: {
-      employeeNo: string;
-    },
-  ) {
-    return await this.userService.deleteFaceUserHik(data);
-  }
-
-  @Post('register-finger')
-  async registerFinger(
-    @Body()
-    data: {
-      fingerNo: number;
-      employeeNo: string;
-    },
-  ) {
-    return await this.userService.registerFingerHIKVISION(data);
-  }
-
-  @Post('sync-hik')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
-  async syncHIK() {
-    return await this.userService.syncHIKVISION();
   }
 
   @Post()
