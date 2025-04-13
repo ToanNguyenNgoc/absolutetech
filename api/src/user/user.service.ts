@@ -33,6 +33,7 @@ export class UserService {
     const hashed = await bcrypt.hash(dto.password ?? '', 10);
     const created = new this.userModel({
       ...dto,
+      employee_hik: dto.employeeID?.toLocaleLowerCase().trim(),
       password: hashed,
     });
     const res = await created.save();
@@ -258,6 +259,8 @@ export class UserService {
 
   // sync from HIK to cloud
   async importUsers(dataUser: UserItemRequest[]) {
+    console.log(dataUser.length);
+
     try {
       for (const user of dataUser) {
         try {
@@ -349,5 +352,9 @@ export class UserService {
         error,
       );
     }
+  }
+
+  async updateIsSyncUser(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, { is_sync: 1 });
   }
 }

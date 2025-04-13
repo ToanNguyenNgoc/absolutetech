@@ -32,12 +32,18 @@ export class UserController {
 
   @Post('import-data')
   async importListUser(@Body() data: UserItemRequest[]) {
+    console.log(data);
+
     return await this.userService.importUsers(data ?? []);
+  }
+  @Get('sync-user-cloud-to-hik')
+  async syncUserCloudToHik() {
+    return await this.userService.getAllUsersNotSync();
   }
 
   @Post('update-is-sync-user')
-  async getAllUsersNotSync() {
-    return this.userService.getAllUsersNotSync();
+  async getAllUsersNotSync(@Body() data: { user_id: string }) {
+    return this.userService.updateIsSyncUser(data.user_id);
   }
 
   @Post('delete-user-by-employee')

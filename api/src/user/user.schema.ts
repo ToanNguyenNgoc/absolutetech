@@ -15,10 +15,10 @@ export class User {
   @Prop({ required: true, unique: true })
   employeeID: string;
 
-  @Prop({ unique: true })
+  @Prop({ unique: true, sparse: true })
   employee_hik: string;
 
-  @Prop()
+  @Prop({ default: 0 })
   is_sync: number;
 
   @Prop()
