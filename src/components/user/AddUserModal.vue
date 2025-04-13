@@ -11,11 +11,6 @@
                 <AvatarUploader v-model="userForm.avatar" @file-selected="onFileSelected" />
             </div>
             <div class="form-modal-add-user">
-                <!-- EmployeeID -->
-                <el-form-item label="EmployeeID">
-                    <el-input :disabled="isEditLocal" v-model="userForm.employeeID" placeholder="Employee ID" />
-                </el-form-item>
-
                 <!-- Full Name -->
                 <el-form-item label="Full Name">
                     <el-input v-model="userForm.fullName" placeholder="Enter full name" />
@@ -26,6 +21,10 @@
                     <el-input v-model="userForm.username" placeholder="Enter username" autocomplete="off" />
                 </el-form-item>
 
+                <!-- EmployeeID -->
+                <el-form-item label="EmployeeID">
+                    <el-input v-model="userForm.employeeID" placeholder="Employee ID" />
+                </el-form-item>
 
                 <!-- Role (Select) -->
                 <el-form-item label="Role">

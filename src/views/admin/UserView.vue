@@ -4,10 +4,10 @@
         <div class="toolbar">
             <div class="button-group">
 
-                <button class="btn btn-primary" @click="handleSyncUsers">
+                <!-- <button class="btn btn-primary" @click="handleSyncUsers">
                     <img src="@/assets/img/ic-add.svg" alt="Import" class="btn-icon" />
                     Sync HIK
-                </button>
+                </button> -->
                 <button class="btn btn-primary" @click="handleAddUser">
                     <img src="@/assets/img/ic-add.svg" alt="Import" class="btn-icon" />
                     Add User
