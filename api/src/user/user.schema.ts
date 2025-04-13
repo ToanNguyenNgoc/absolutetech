@@ -15,6 +15,15 @@ export class User {
   @Prop({ required: true, unique: true })
   employeeID: string;
 
+  @Prop({ unique: true })
+  employee_hik: string;
+
+  @Prop()
+  is_sync: number;
+
+  @Prop()
+  face_hik: string;
+
   @Prop({
     type: String,
     enum: Role,

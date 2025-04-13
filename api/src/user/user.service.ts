@@ -252,13 +252,17 @@ export class UserService {
     return updatedUser;
   }
 
+  async getAllUsersNotSync() {
+    return await this.userModel.find({ is_sync: 0 });
+  }
+
   // sync from HIK to cloud
   async importUsers(dataUser: UserItemRequest[]) {
     try {
       for (const user of dataUser) {
         try {
-          console.log(`🔄 Importing user: ${user.name} (${user.employeeNo})`);
-          const exists = await this.userExists(user.employeeNo);
+          console.log(`🔄 Importing user: ${user.name} (${user.employee_hik})`);
+          const exists = await this.userExists(user.employee_hik);
           if (exists?._id) {
             console.log(`✅ User exists: ${user.name}`);
             if (user.numOfFP > 0) {
@@ -282,7 +286,7 @@ export class UserService {
                 await this.userModel
                   .updateOne(
                     { _id: exists._id },
-                    { $set: { avatar: user.faceURL } },
+                    { $set: { face_hik: user.faceURL, is_sync: 1 } },
                   )
                   .exec();
               } catch (error) {
@@ -294,13 +298,15 @@ export class UserService {
 
           const res = await this.createUser({
             employeeID: user.employeeNo,
+            employee_hik: user.employeeNo,
             fullName: user.name,
-            password: '123123',
             username: user.employeeNo,
-            avatar: user.faceURL ?? '',
+            password: '123123',
+            face_hik: user.faceURL ?? '',
             email: `${user.employeeNo}@gmail.com`,
             gender: user.gender,
             role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.STAFF,
+            is_sync: 1,
           });
           console.log(`🆕 Created new user: ${user.name}`);
 
@@ -323,6 +329,25 @@ export class UserService {
       console.log('🎉 Finished importing all users!');
     } catch (error) {
       console.log('❌ Fatal Error:', error);
+    }
+  }
+
+  async deleteUserByEmployee(employee_hik: string) {
+    try {
+      console.log(`🗑 Deleting user with employeeID: ${employee_hik}`);
+      const deleted = await this.userModel.deleteOne({ employee_hik });
+      if (deleted.deletedCount > 0) {
+        console.log(
+          `✅ User with employeeID ${employee_hik} deleted successfully.`,
+        );
+      } else {
+        console.warn(`⚠️ No user found with employeeID: ${employee_hik}`);
+      }
+    } catch (error) {
+      console.error(
+        `❌ Error deleting user with employeeID ${employee_hik}:`,
+        error,
+      );
     }
   }
 }

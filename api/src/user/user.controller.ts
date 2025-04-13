@@ -35,6 +35,16 @@ export class UserController {
     return await this.userService.importUsers(data ?? []);
   }
 
+  @Post('update-is-sync-user')
+  async getAllUsersNotSync() {
+    return this.userService.getAllUsersNotSync();
+  }
+
+  @Post('delete-user-by-employee')
+  async deleteUserByEmployee(@Body() data: { employeeNo: string }) {
+    return this.userService.deleteUserByEmployee(data.employeeNo);
+  }
+
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async create(@Body() dto: CreateUserDto) {

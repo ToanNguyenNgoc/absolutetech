@@ -145,6 +145,8 @@ export interface UserItemRequest {
   PersonInfoExtends: PersonInfoExtend[];
   faceURL: string;
   fingerList: FingerList[];
+  employee_hik: string;
+  face_hik: string;
 }
 
 export interface PersonInfoExtend {
