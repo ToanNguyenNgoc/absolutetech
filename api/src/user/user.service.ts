@@ -13,8 +13,9 @@ import * as path from 'path';
 import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
+import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseFinger, Role, UserItemRequest } from './user.enums';
+import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
 @Injectable()
 export class UserService {
@@ -30,10 +31,11 @@ export class UserService {
   }
 
   async createUser(dto: Partial<User>) {
+    const shortId = uuidv4().slice(0, 4);
     const hashed = await bcrypt.hash(dto.password ?? '', 10);
     const created = new this.userModel({
       ...dto,
-      employee_hik: dto.employeeID?.toLocaleLowerCase().trim(),
+      employee_hik: `${dto.employeeID?.toLocaleLowerCase().trim()}hik${shortId}`,
       password: hashed,
     });
     const res = await created.save();
