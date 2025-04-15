@@ -12,6 +12,7 @@ import {
   Query,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -24,29 +25,33 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { UserService } from './user.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('api/users')
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('import-data')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async importListUser(@Body() data: UserItemRequest[]) {
-    console.log(data);
-
     return await this.userService.importUsers(data ?? []);
   }
   @Get('sync-user-cloud-to-hik')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async syncUserCloudToHik() {
     return await this.userService.getAllUsersNotSync();
   }
 
   @Post('update-is-sync-user')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async getAllUsersNotSync(@Body() data: { user_id: string }) {
     return this.userService.updateIsSyncUser(data.user_id);
   }
 
   @Post('delete-user-by-employee')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
   async deleteUserByEmployee(@Body() data: { employeeNo: string }) {
     return this.userService.deleteUserByEmployee(data.employeeNo);
   }
