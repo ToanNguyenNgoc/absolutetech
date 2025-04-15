@@ -1,6 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/auth/auth.controller.ts
 
-import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Get,
+  Body,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './strategies/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -24,8 +34,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('info')
   async getInfo(@Request() req) {
-    const fullUser: any = await this.userService.findOneByField('_id', req.user.userId);
-    const userObj = typeof fullUser.toObject === 'function' ? fullUser.toObject() : fullUser;
+    const fullUser: any = await this.userService.findOneByField(
+      '_id',
+      req.user.userId,
+    );
+    const userObj =
+      typeof fullUser.toObject === 'function' ? fullUser.toObject() : fullUser;
     const { password, ...result } = userObj;
     return result;
   }
