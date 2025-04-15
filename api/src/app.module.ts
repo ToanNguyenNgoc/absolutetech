@@ -11,6 +11,7 @@ import { FrontendMiddleware } from './frontend.middleware';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { UserFingerModule } from './user-finger/user-finger.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserFingerModule } from './user-finger/user-finger.module';
       dbName: process.env.MONGODB_DB_NAME,
     }),
     ScheduleModule.forRoot(),
+    MqttModule,
     UserModule,
     AuthModule,
     EntryLogModule,

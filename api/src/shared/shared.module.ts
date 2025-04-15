@@ -6,6 +6,7 @@ import {
 } from 'src/entry-log-raw/entry-log-raw.schema';
 import { EntryLog, EntryLogSchema } from 'src/entry-log/entry-log.schema';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
+import { MqttModule } from 'src/mqtt/mqtt.module';
 import {
   UserFinger,
   UserFingerSchema,
@@ -22,8 +23,15 @@ import { UserService } from 'src/user/user.service';
       { name: EntryLogRaw.name, schema: EntryLogRawSchema },
       { name: UserFinger.name, schema: UserFingerSchema },
     ]),
+    MqttModule,
   ],
   providers: [UserService, EntryLogService, UserFingerService],
-  exports: [UserService, EntryLogService, UserFingerService, MongooseModule],
+  exports: [
+    UserService,
+    EntryLogService,
+    UserFingerService,
+    MongooseModule,
+    MqttModule,
+  ],
 })
 export class SharedModule {}

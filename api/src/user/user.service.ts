@@ -17,12 +17,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
+import { MqttService } from 'src/mqtt/mqtt.service';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
+    private readonly mqttService: MqttService,
   ) {}
 
   async userExists(employeeID: string) {
@@ -35,7 +37,11 @@ export class UserService {
     const hashed = await bcrypt.hash(dto.password ?? '', 10);
     const created = new this.userModel({
       ...dto,
-      employee_hik: `${dto.employeeID?.toLocaleLowerCase().trim()}hik${shortId}`,
+      employee_hik:
+        `${dto.employeeID?.toLocaleLowerCase().trim() || ''}hik${shortId}`.slice(
+          0,
+          32,
+        ),
       password: hashed,
     });
     const res = await created.save();
@@ -136,6 +142,10 @@ export class UserService {
         console.error('Error deleting avatar file:', err);
       }
     }
+    this.mqttService.publish(
+      process.env.MQTT_TOPIC_DELETE_USER as string,
+      JSON.stringify(deleted),
+    );
     return deleted;
   }
 
