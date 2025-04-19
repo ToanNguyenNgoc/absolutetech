@@ -35,8 +35,8 @@ export class UserController {
 
   @Post('import-data')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
-  async importListUser(@Body() data: UserItemRequest[]) {
-    return await this.userService.importUsers(data ?? []);
+  async importListUser(@Body() data: { list_users: UserItemRequest[] }) {
+    return await this.userService.importUsers(data.list_users ?? []);
   }
   @Get('sync-user-cloud-to-hik')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)

@@ -14,6 +14,7 @@ export class EntryLogRawService {
   ) {}
   //Import logs fom PC
   async importRawLogList(dataRawLog: InfoList[]) {
+    console.log(dataRawLog.length);
     try {
       for (const element of dataRawLog) {
         try {

@@ -27,8 +27,10 @@ export class UserService {
     private readonly mqttService: MqttService,
   ) {}
 
-  async userExists(employeeID: string) {
-    const user = await this.userModel.findOne({ employeeID }).exec();
+  async userExists(employee_hik: string) {
+    const user = await this.userModel
+      .findOne({ employee_hik: employee_hik })
+      .exec();
     return user;
   }
 
@@ -38,6 +40,7 @@ export class UserService {
     const created = new this.userModel({
       ...dto,
       employee_hik:
+        dto.employee_hik ||
         `${dto.employeeID?.toLocaleLowerCase().trim() || ''}hik${shortId}`.slice(
           0,
           32,
@@ -271,13 +274,11 @@ export class UserService {
 
   // sync from HIK to cloud
   async importUsers(dataUser: UserItemRequest[]) {
-    console.log(dataUser.length);
-
     try {
       for (const user of dataUser) {
         try {
-          console.log(`🔄 Importing user: ${user.name} (${user.employee_hik})`);
-          const exists = await this.userExists(user.employee_hik);
+          console.log(`🔄 Importing user: ${user.name} (${user.employeeNo})`);
+          const exists = await this.userExists(user.employeeNo);
           if (exists?._id) {
             console.log(`✅ User exists: ${user.name}`);
             if (user.numOfFP > 0) {
@@ -314,7 +315,7 @@ export class UserService {
           const res = await this.createUser({
             employeeID: user.employeeNo,
             employee_hik: user.employeeNo,
-            fullName: user.name,
+            fullName: user.name || user.employeeNo,
             username: user.employeeNo,
             password: '123123',
             face_hik: user.faceURL ?? '',
