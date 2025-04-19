@@ -321,7 +321,7 @@ export class UserService {
             face_hik: user.faceURL ?? '',
             email: `${user.employeeNo}@gmail.com`,
             gender: user.gender,
-            role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.STAFF,
+            role: user.userType == 'admin' ? Role.SUPER_ADMIN : Role.STAFF,
             is_sync: 1,
           });
           console.log(`🆕 Created new user: ${user.name}`);
