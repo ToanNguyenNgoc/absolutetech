@@ -21,13 +21,6 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit() {
-    // Subscribe vào topic khi module khởi tạo
-    this.client.subscribe('absolutech/delete-user', (err) => {
-      if (!err) {
-        console.log('Subscribed to absolutech/delete-user');
-      }
-    });
-    // Xử lý tin nhắn nhận được
     this.client.on('message', (topic, message) => {
       console.log(`Received message on ${topic}: ${message.toString()}`);
     });
