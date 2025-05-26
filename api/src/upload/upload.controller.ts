@@ -21,7 +21,7 @@ export class UploadController {
   constructor(private readonly configService: ConfigService) {}
 
   @Post('avatar')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({

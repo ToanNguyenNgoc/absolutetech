@@ -16,9 +16,9 @@ export class User {
   employeeID: string;
 
   @Prop({
-    type: String,
+    type: Number,
     enum: Role,
-    default: Role.STAFF,
+    default: Role.SUPERVISOR,
   })
   role: Role;
 

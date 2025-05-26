@@ -30,7 +30,12 @@
                 <!-- Role (Select) -->
                 <el-form-item label="Role">
                     <el-select v-model="userForm.role" placeholder="Select Role">
-                        <el-option v-for="r in roles" :key="r" :label="r" :value="r" />
+                        <el-option
+                            v-for="r in Roles"
+                            :key="r.value"
+                            :label="r.label"
+                            :value="r.value"
+                        />
                     </el-select>
                 </el-form-item>
 
@@ -92,6 +97,7 @@ import { uploadFile } from '@/api/upload';
 import { computed, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
 import AvatarUploader from '../common/AvatarUploader.vue';
 import MyMessage from '../common/MyMessage.vue';
+import { Roles } from '@/constant/role';
 
 
 export default {
@@ -125,7 +131,6 @@ export default {
             email: '',
             password: '',
         });
-        const roles = ['Super Admin', 'Administrator', 'Admin Support', 'Maintainer', 'Staff'];
         const genders = ['Male', 'Female'];
 
         const dialogWidth = computed(() => {
@@ -174,9 +179,12 @@ export default {
         };
 
         const setUser = (row) => {
-            console.log('setUser:', row);
             if (row) {
                 Object.assign(userForm.value, row);
+                if (typeof row.role === 'string') {
+                    const found = Roles.find(r => r.label === row.role);
+                    userForm.value.role = found ? found.value : '';
+                }
             }
             selectedFile.value = null;
             isEditLocal.value = true;
@@ -224,7 +232,7 @@ export default {
             dialogVisible,
             genders,
             userForm,
-            roles,
+            Roles,
             isEditLocal,
             messageText,
             messageType,

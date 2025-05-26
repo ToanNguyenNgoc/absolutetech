@@ -490,7 +490,7 @@ export class UserService {
             avatar: pathImage ?? '',
             email: `${user.employeeNo}@gmail.com`,
             gender: user.gender,
-            role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.STAFF,
+            role: user.userType == 'admin' ? Role.ADMINISTRATOR : Role.SUPERVISOR,
           });
           if (user.numOfFP > 0) {
             await this.saveFingerData(client, user.employeeNo);

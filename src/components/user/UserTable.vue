@@ -9,7 +9,12 @@
             <el-table-column prop="fullName" label="Full Name" />
             <el-table-column prop="username" label="Username" />
             <el-table-column prop="employeeID" label="EmployeeID" />
-            <el-table-column prop="role" label="Role" />
+            <el-table-column prop="role" label="Role">
+                <template #default="{ row }">
+                    {{ RoleName[row.role] || row.role }}
+                </template>
+            </el-table-column>
+
             <el-table-column label="Action">
                 <template #default="{ row }">
                     <div class="action-buttons" v-if="toRaw(row)?._id !== userInfo?._id">
@@ -42,6 +47,7 @@ import { ElMessageBox } from 'element-plus';
 import MyMessage from '../common/MyMessage.vue';
 import { globalState } from "@/store/globalState";
 import FingerScanModal from '../common/FingerScanModal.vue';
+import { RoleName } from '@/constant/role';
 
 export default {
     name: 'UserTable',
@@ -158,6 +164,7 @@ export default {
             showFingerModal,
             currentSelectedFingers,
             selectedUserId, // Đảm bảo có dòng này
+            RoleName,
         };
     },
 };

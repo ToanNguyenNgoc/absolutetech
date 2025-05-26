@@ -11,7 +11,7 @@ export class UserFingerController {
   constructor(private readonly userFingerService: UserFingerService) {}
 
   @Post('register-finger')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async registerFinger(
     @Body()
     data: {
