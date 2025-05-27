@@ -6,7 +6,7 @@
             <h2 class="dialog-title" v-if="isEditLocal">Edit User</h2>
         </div>
 
-        <el-form :model="userForm" label-width="120px" class="user-form">
+        <el-form :model="userForm" class="user-form">
             <div class="avatar-section">
                 <AvatarUploader v-model="userForm.avatar" @file-selected="onFileSelected" />
             </div>
@@ -30,12 +30,7 @@
                 <!-- Role (Select) -->
                 <el-form-item label="Role">
                     <el-select v-model="userForm.role" placeholder="Select Role">
-                        <el-option
-                            v-for="r in Roles"
-                            :key="r.value"
-                            :label="r.label"
-                            :value="r.value"
-                        />
+                        <el-option v-for="r in Roles" :key="r.value" :label="r.label" :value="r.value" />
                     </el-select>
                 </el-form-item>
 
@@ -77,6 +72,17 @@
                     <el-input type="password" v-model="userForm.password" placeholder="Password"
                         autocomplete="new-password" />
                 </el-form-item>
+
+                <!-- NRIC/FIN -->
+                <el-form-item label="NRIC/FIN">
+                    <el-input v-model="userForm.nricFin" placeholder="Enter NRIC or FIN" />
+                </el-form-item>
+
+                <!-- Work Permit Expiry -->
+                <el-form-item label="Work Permit Expiry">
+                    <el-date-picker v-model="userForm.workPermitExpiry" type="date" placeholder="Select expiry date" style="width: 100%;"/>
+                </el-form-item>
+
             </div>
         </el-form>
 
@@ -130,6 +136,8 @@ export default {
             address: '',
             email: '',
             password: '',
+            nricFin: '',
+            workPermitExpiry: null,
         });
         const genders = ['Male', 'Female'];
 

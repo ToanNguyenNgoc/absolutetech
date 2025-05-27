@@ -49,6 +49,12 @@ export class User {
   @Prop()
   avatar: string;
 
+  @Prop({ alias: 'nric_fin' })
+  nricFin: string;
+
+  @Prop({ alias: 'work_permit_expiry' })
+  workPermitExpiry: Date;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 }

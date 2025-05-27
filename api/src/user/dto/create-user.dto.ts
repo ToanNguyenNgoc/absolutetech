@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { Gender, Role } from '../user.enums';
 import { IsUniqueUser } from '../validators/is-unique-user.decorator';
+import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString()
@@ -54,4 +55,14 @@ export class CreateUserDto {
 
   @IsOptional()
   avatar?: any;
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ obj }) => obj.nric_fin ?? obj.nricFin)
+  nricFin?: string;
+
+  @IsOptional()
+  @IsDateString()
+  @Transform(({ obj }) => obj.work_permit_expiry ?? obj.workPermitExpiry)
+  workPermitExpiry?: Date;
 }
