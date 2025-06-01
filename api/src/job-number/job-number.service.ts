@@ -1,11 +1,12 @@
 // job-number.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JobNumber, JobNumberDocument } from './schemas/job-number.schema';
 import { CreateJobNumberDto } from './dto/create-job-number.dto';
 import { paginate } from 'src/common/pagination.util';
 import { FileUpload, FileUploadDocument } from './schemas/file-upload.schema';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import {
   DocumentEntity,
@@ -89,5 +90,43 @@ export class JobNumberService {
       isTemp: true,
     });
     return await newFile.save();
+  }
+
+  async deleteJobNumber(id: string): Promise<{ message: string }> {
+    const jobNumber = await this.jobNumberModel.findById(id);
+    if (!jobNumber) {
+      throw new NotFoundException('Job Number not found');
+    }
+
+    const documents = await this.documentModel.find({ jobNumber: id }).exec();
+    const documentIds = documents.map((doc) => doc._id);
+
+    const files = await this.fileUploadModel
+      .find({
+        refId: { $in: documentIds },
+        refModel: 'DocumentEntity',
+      })
+      .exec();
+
+    for (const file of files) {
+      const filePath = path.join(process.cwd(), file.url);
+      console.log('🛣️ Attempting to delete:', filePath);
+
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn(`⚠️ Could not delete file ${filePath}:`, err.message);
+      }
+    }
+
+    await this.fileUploadModel.deleteMany({
+      refId: { $in: documentIds },
+      refModel: 'DocumentEntity',
+    });
+    await this.documentModel.deleteMany({ jobNumber: id });
+
+    await this.jobNumberModel.findByIdAndDelete(id);
+
+    return { message: 'Job Number deleted successfully' };
   }
 }

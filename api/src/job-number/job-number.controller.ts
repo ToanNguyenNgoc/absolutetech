@@ -10,6 +10,8 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { JobNumberService } from './job-number.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -20,7 +22,6 @@ import { CreateJobNumberDto } from './dto/create-job-number.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-import * as fs from 'fs/promises';
 
 @Controller('/api/job-numbers')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -35,11 +36,8 @@ export class JobNumberController {
 
   @Get()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
-  async findAllPaginated(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ) {
-    console.log("find cc");
+  async findAllPaginated(@Query('page') page = 1, @Query('limit') limit = 10) {
+    console.log('find cc');
     return this.jobNumberService.findAllPaginated(page, limit);
   }
 
@@ -63,5 +61,9 @@ export class JobNumberController {
     }
     return this.jobNumberService.handleFileUpload(file);
   }
+  @Delete(':id')
+  @Roles(Role.SUPER_ADMIN)
+  async delete(@Param('id') id: string) {
+    return this.jobNumberService.deleteJobNumber(id);
+  }
 }
-
