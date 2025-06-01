@@ -12,6 +12,7 @@ import {
   DocumentEntity,
   DocumentEntityDocument,
 } from './schemas/document.schema';
+import { UpdateJobNumberDto } from './dto/update-job-number.dto';
 
 @Injectable()
 export class JobNumberService {
@@ -128,5 +129,80 @@ export class JobNumberService {
     await this.jobNumberModel.findByIdAndDelete(id);
 
     return { message: 'Job Number deleted successfully' };
+  }
+
+  async update(id: string, dto: UpdateJobNumberDto) {
+    const job = await this.jobNumberModel.findById(id);
+    if (!job) throw new NotFoundException('Job Number not found');
+
+    // Update JobNumber
+    await this.jobNumberModel.findByIdAndUpdate(id, {
+      code: dto.code,
+      project: dto.project,
+      assignedTo: dto.assignedTo,
+      createdBy: dto.createdBy,
+      status: dto.status ?? 'open',
+    });
+
+    // Handle Documents
+    for (const doc of dto.documents) {
+      if (doc.documentId) {
+        // Existing document
+        await this.documentModel.findByIdAndUpdate(doc.documentId, {
+          name: doc.name,
+        });
+
+        // Sync fileIds: delete removed ones, update remaining
+        const existingFiles = await this.fileUploadModel
+          .find({ refId: doc.documentId, refModel: 'DocumentEntity' })
+          .exec();
+        const incomingIds = doc.fileIds ?? [];
+
+        const toDelete = existingFiles.filter(
+          (file: any) => !incomingIds.includes(file._id.toString()),
+        );
+
+        for (const file of toDelete) {
+          const filePath = path.join(process.cwd(), file.url);
+          try {
+            await fs.unlink(filePath);
+          } catch (e) {
+            console.warn(`⚠️ File not found to delete: ${filePath}`);
+          }
+        }
+
+        await this.fileUploadModel.deleteMany({
+          _id: { $in: toDelete.map((f) => f._id) },
+        });
+
+        await this.fileUploadModel.updateMany(
+          { _id: { $in: incomingIds } },
+          {
+            refId: doc.documentId,
+            refModel: 'DocumentEntity',
+            isTemp: false,
+          },
+        );
+      } else {
+        // New document
+        const newDoc = await this.documentModel.create({
+          name: doc.name,
+          jobNumber: id,
+        });
+
+        if (doc.fileIds?.length) {
+          await this.fileUploadModel.updateMany(
+            { _id: { $in: doc.fileIds } },
+            {
+              refId: newDoc._id,
+              refModel: 'DocumentEntity',
+              isTemp: false,
+            },
+          );
+        }
+      }
+    }
+
+    return { message: 'Job Number updated successfully' };
   }
 }

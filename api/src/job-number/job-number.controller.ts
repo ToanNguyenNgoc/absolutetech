@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Delete,
   Param,
+  Put,
 } from '@nestjs/common';
 import { JobNumberService } from './job-number.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,6 +23,7 @@ import { CreateJobNumberDto } from './dto/create-job-number.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { UpdateJobNumberDto } from './dto/update-job-number.dto';
 
 @Controller('/api/job-numbers')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -65,5 +67,10 @@ export class JobNumberController {
   @Roles(Role.SUPER_ADMIN)
   async delete(@Param('id') id: string) {
     return this.jobNumberService.deleteJobNumber(id);
+  }
+  @Put(':id')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  async update(@Param('id') id: string, @Body() dto: UpdateJobNumberDto) {
+    return this.jobNumberService.update(id, dto);
   }
 }

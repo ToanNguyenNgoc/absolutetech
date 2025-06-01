@@ -7,6 +7,7 @@ import { JobNumber, JobNumberSchema } from './schemas/job-number.schema';
 import { DocumentEntity, DocumentEntitySchema } from './schemas/document.schema';
 import { FileUpload, FileUploadSchema } from './schemas/file-upload.schema';
 import { IsUniqueJobNumberConstraint } from './validator/is-unique-job-number.decorator';
+import { IsUniqueJobNumberUpdateConstraint } from './validator/is-unique-job-number-update.decorator';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { IsUniqueJobNumberConstraint } from './validator/is-unique-job-number.de
     ]),
   ],
   controllers: [JobNumberController],
-  providers: [JobNumberService, IsUniqueJobNumberConstraint],
+  providers: [JobNumberService, IsUniqueJobNumberConstraint, IsUniqueJobNumberUpdateConstraint],
   exports: [JobNumberService],
 })
 export class JobNumberModule {}
