@@ -12,6 +12,7 @@ import { HikvisionModule } from './hikvision/hikvision.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { UserFingerModule } from './user-finger/user-finger.module';
+import { JobNumberModule } from './job-number/job-number.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UserFingerModule } from './user-finger/user-finger.module';
     EntryLogRawModule,
     HikvisionModule,
     UserFingerModule,
+    JobNumberModule,
   ],
 
   controllers: [UploadController],
