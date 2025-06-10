@@ -14,10 +14,10 @@ export class WarehouseService {
     const payload = {
       login_name: loginName ?? 'super_admin',
       timestamp: Date.now(),
+      nonce: Date.now().toString(36) + Math.random().toString(36).substring(2, 15),
     };
 
     const signature = generateSignature(payload, secret);
-    console.log('Generated Signature:', signature);
 
     try {
       const response: any = await firstValueFrom(
