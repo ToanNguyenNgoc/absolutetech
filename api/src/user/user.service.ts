@@ -517,6 +517,7 @@ export class UserService {
     const res = await created.save();
     await this.warehouseService.syncUserToLaravel('create', {
       login_name: dto.username,
+      name: dto.fullName,
       password: dto.password,
       email: dto.email ?? null,
       employee_id: dto.employeeID,
@@ -617,6 +618,16 @@ export class UserService {
     if (!updated) {
       throw new UnprocessableEntityException('User not found');
     }
+
+    await this.warehouseService.syncUserToLaravel('update', {
+      login_name: updated.username,
+      name: dto.fullName,
+      email: updated.email ?? null,
+      employee_id: updated.employeeID,
+      card_id: updated.employeeID,
+      role: updated.role,
+      dept: updated.position ?? null
+    });
     if (dto.avatar) {
       await this.uploadFaceInfoHIKVISION({
         employId: id,
@@ -628,6 +639,9 @@ export class UserService {
 
   async deleteUser(id: string): Promise<UserDocument> {
     const deleted = await this.userModel.findByIdAndDelete(id).exec();
+    await this.warehouseService.syncUserToLaravel('delete', {
+      employee_id: deleted?.employeeID,
+    });
     if (!deleted) {
       throw new UnprocessableEntityException('User not found');
     }
