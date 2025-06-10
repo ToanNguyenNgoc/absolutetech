@@ -12,6 +12,6 @@ export function changePassword(payload) {
   return axiosInstance.post("/auth/change-password", payload);
 }
 
-export async function getSSOToken(loginName) {
-    return axiosInstance.post("/auth/sso/generate-token", { login_name: loginName });
+export async function getSSOToken() {
+    return axiosInstance.post("/auth/sso/generate-token");
 }

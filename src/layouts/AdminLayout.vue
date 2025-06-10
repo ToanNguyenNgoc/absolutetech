@@ -247,7 +247,7 @@ export default {
 
         async redirectToSourceB() {
             try {
-                const response = await getSSOToken(this.userInfo.loginName);
+                const response = await getSSOToken();
                 const token = response?.data?.data?.token;
                 const targetUrl = `${process.env.VUE_APP_SOURCE_WAREHOUSE_URL}/login?token=${token}`;
                 window.open(targetUrl, "_blank");

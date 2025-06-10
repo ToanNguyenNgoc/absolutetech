@@ -1,6 +1,6 @@
 // src/auth/auth.controller.ts
 
-import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException, BadRequestException, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './strategies/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -67,8 +67,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('sso/generate-token')
-  async generateSSOToken(@Body() body: { login_name: string }) {
-    const token = await this.warehouseService.requestSSOToken(body.login_name);
+  async generateSSOToken(@Req() req) {
+    const loginName = req.user?.username;
+    const token = await this.warehouseService.requestSSOToken(loginName);
     return { token };
   }
 }

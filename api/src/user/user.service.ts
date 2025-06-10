@@ -30,6 +30,7 @@ import { User, UserDocument } from './user.schema';
 import { constants } from 'fs/promises';
 import { UserFinger } from 'src/user-finger/user-finger.schema';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
+import { WarehouseService } from 'src/external/warehouse.service';
 const DigestClient = require('digest-fetch');
 @Injectable()
 export class UserService {
@@ -37,6 +38,7 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
+    private warehouseService: WarehouseService,
   ) {}
 
   async createInfoPersonHIKVISION(data: { UserInfo: UserInfo }) {
@@ -511,7 +513,18 @@ export class UserService {
       ...dto,
       password: hashed,
     });
+    console.log('Create User', created);
     const res = await created.save();
+    await this.warehouseService.syncUserToLaravel('create', {
+      login_name: dto.username,
+      password: dto.password,
+      email: dto.email ?? null,
+      employee_id: dto.employeeID,
+      card_id: dto.employeeID,
+      role: dto.role,
+      dept: dto.position ?? null,
+      avatar: dto.avatar ?? null,
+    });
     // await this.createInfoPersonHIKVISION({
     //   UserInfo: {
     //     employeeNo: res.id,
