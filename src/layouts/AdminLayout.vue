@@ -70,6 +70,12 @@
                                 <span class="icon-menu-expand" v-show="isExpanded">Entry Logs</span>
                             </router-link>
                         </li>
+                        <li>
+                            <a class="menu-link" @click="redirectToSourceB">
+                                <img src="@/assets/entry-log.svg" alt="Warehouse" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
+                            </a>
+                        </li>
                     </ul>
                     <ul>
                         <li class="bottom-link">
@@ -116,6 +122,12 @@
                             <span>Entry Logs</span>
                         </router-link>
                     </li>
+                    <li>
+                        <a class="menu-link" @click="redirectToSourceB">
+                            <img src="@/assets/entry-log.svg" alt="Warehouse" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="drawer-user-info-mobile">
@@ -155,7 +167,7 @@
 </template>
 
 <script>
-import { info } from '@/api';
+import { getSSOToken, info } from '@/api';
 import { baseURL } from '@/constant/common';
 import { setCookie } from '@/utils/cookie';
 import { computed } from 'vue';
@@ -232,6 +244,18 @@ export default {
                 console.error('Error fetching user info:', error);
             }
         },
+
+        async redirectToSourceB() {
+            try {
+                const response = await getSSOToken(this.userInfo.loginName);
+                const token = response?.data?.data?.token;
+                const targetUrl = `${process.env.VUE_APP_SOURCE_WAREHOUSE_URL}/login?token=${token}`;
+                window.open(targetUrl, "_blank");
+            } catch (error) {
+                console.error("Failed to redirect to Source B:", error);
+                this.$message.error("Cannot redirect to Warehouse login.");
+            }
+        }
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);

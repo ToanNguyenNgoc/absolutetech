@@ -7,12 +7,14 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UserService } from 'src/user/user.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
+import { WarehouseService } from 'src/external/warehouse.service';
 
 @Controller('/api/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private warehouseService: WarehouseService
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -61,5 +63,12 @@ export class AuthController {
     await this.userService.updatePassword(userId, hashedPassword);
 
     return { message: 'Password changed successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('sso/generate-token')
+  async generateSSOToken(@Body() body: { login_name: string }) {
+    const token = await this.warehouseService.requestSSOToken(body.login_name);
+    return { token };
   }
 }

@@ -8,6 +8,7 @@
             <el-table-column type="index" label="No." width="57" />
             <el-table-column prop="fullName" label="Full Name" />
             <el-table-column prop="username" label="Username" />
+            <el-table-column prop="nricFin" label="NRIC/FIN" />
             <el-table-column prop="employeeID" label="EmployeeID" />
             <el-table-column prop="role" label="Role">
                 <template #default="{ row }">
