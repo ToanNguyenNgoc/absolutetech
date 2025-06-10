@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { generateSignature } from 'src/common/utils/hmac.util';
 
 @Injectable()
 export class WarehouseService {
@@ -8,16 +9,22 @@ export class WarehouseService {
 
   async requestSSOToken(loginName: string): Promise<string> {
     const endpoint: any = process.env.WAREHOUSE_API_URL;
-    const secret = process.env.WAREHOUSE_SSO_SECRET;
+    const secret: any = process.env.WAREHOUSE_SSO_SECRET;
+
+    const payload = {
+      login_name: loginName ?? 'super_admin',
+      timestamp: Date.now(),
+    };
+
+    const signature = generateSignature(payload, secret);
+    console.log('Generated Signature:', signature);
 
     try {
       const response: any = await firstValueFrom(
-        this.httpService.post(endpoint, {
-          login_name: 'super_admin',
-        }, {
+        this.httpService.post(endpoint, payload, {
           headers: {
-            'X-SYSTEM-KEY': secret,
-          }
+            'X-SIGNATURE': signature,
+          },
         })
       );
 
