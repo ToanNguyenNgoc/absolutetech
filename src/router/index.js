@@ -4,12 +4,18 @@ import UserView from "@/views/admin/UserView.vue";
 import EntryLogView from "@/views/admin/EntryLogView.vue";
 import { getCookie } from "@/utils/cookie";
 import AdminLayout from "@/layouts/AdminLayout.vue";
+import JobNumberView from "@/views/admin/JobNumberView.vue";
 
 const routes = [
   {
     path: "/admin",
     component: AdminLayout,
     children: [
+      {
+        path: "job-number",
+        name: "JobNumberList",
+        component: JobNumberView,
+      },
       {
         path: "users",
         name: "admin-users",
