@@ -13,7 +13,7 @@ const routes = [
     children: [
       {
         path: "job-number",
-        name: "JobNumberList",
+        name: "admin-job-number",
         component: JobNumberView,
       },
       {

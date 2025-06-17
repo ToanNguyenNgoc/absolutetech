@@ -55,6 +55,15 @@
                 <nav class="menu-nav">
                     <ul class="menu-list">
                         <li>
+                            <router-link class="menu-link" to="/admin/job-number">
+                                <img src="@/assets/img/icon-job-number.svg" alt="Job Number"
+                                    v-if="!isRouteActive('admin-job-number')" />
+                                <img src="@/assets/img/icon-job-number-active.svg" alt="Job Number"
+                                    v-if="isRouteActive('admin-job-number')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Job Number</span>
+                            </router-link>
+                        </li>
+                        <li>
                             <router-link class="menu-link" to="/admin/users">
                                 <img src="@/assets/admin.png" alt="User" v-if="!isRouteActive('admin-users')" />
                                 <img src="@/assets/admin-active.svg" alt="User" v-if="isRouteActive('admin-users')" />
@@ -107,6 +116,15 @@
 
             <nav class="drawer-menu-nav">
                 <ul class="drawer-menu-list-mobile">
+                    <li>
+                        <router-link class="menu-link" to="/admin/job-number">
+                            <img src="@/assets/img/icon-job-number.svg" alt="Job Number"
+                                v-if="!isRouteActive('admin-job-number')" />
+                            <img src="@/assets/img/icon-job-number-active.svg" alt="Job Number"
+                                v-if="isRouteActive('admin-job-number')" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Job Number</span>
+                        </router-link>
+                    </li>
                     <li>
                         <router-link class="drawer-menu-link" to="/admin/users" @click="closeDrawer">
                             <img src="@/assets/admin.png" alt="User" v-if="!isRouteActive('admin-users')" />
@@ -163,7 +181,8 @@
             </nav>
         </el-drawer>
     </div>
-    <change-password-modal :visible="isChangePasswordModalVisible" @update:visible="isChangePasswordModalVisible = $event" />
+    <change-password-modal :visible="isChangePasswordModalVisible"
+        @update:visible="isChangePasswordModalVisible = $event" />
 </template>
 
 <script>
