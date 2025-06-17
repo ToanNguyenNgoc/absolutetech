@@ -18,8 +18,16 @@
                 </template>
             </el-table-column>
             <el-table-column prop="project" label="Project" />
-            <el-table-column prop="estStartDate" label="Est. Start Date" />
-            <el-table-column prop="estEndDate" label="Est. End Date" />
+            <el-table-column prop="estStartDate" label="Est. Start Date">
+                <template #default="{ row }">
+                    {{ formatDate(row.estStartDate) }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="estEndDate" label="Est. End Date">
+                <template #default="{ row }">
+                    {{ formatDate(row.estEndDate) }}
+                </template>
+            </el-table-column>
 
             <el-table-column label="Action" width="160">
                 <template #default="{ row, $index }">
@@ -49,6 +57,7 @@ import { getJobNumbers, deleteJobNumber, createJobNumber } from '@/api/jobnumber
 import { ElMessageBox, ElMessage } from 'element-plus';
 import debounce from 'lodash/debounce';
 import { useRouter } from 'vue-router';
+import { formatDate } from '@/utils/common';
 
 export default {
     name: 'JobNumberTable',
@@ -171,6 +180,7 @@ export default {
             handleSaveNewRow,
             handleSearchInput,
             handleCurrentChange,
+            formatDate,
         };
     },
 };

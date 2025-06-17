@@ -23,13 +23,19 @@ export class JobNumberService {
     private fileUploadModel: Model<FileUploadDocument>,
     @InjectModel(DocumentEntity.name)
     private documentModel: Model<DocumentEntityDocument>,
-  ) {}
+  ) { }
 
   async create(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
     try {
-      const { documents, ...jobData } = dto;
+      const { documents, estStartDate, estEndDate, ...jobData } = dto;
 
-      const jobNumber = await this.jobNumberModel.create(jobData);
+      const createData = {
+        ...jobData,
+        estStartDate: estStartDate ? new Date(estStartDate) : undefined,
+        estEndDate: estEndDate ? new Date(estEndDate) : undefined,
+      };
+
+      const jobNumber = await this.jobNumberModel.create(createData);
 
       if (documents?.length) {
         for (const doc of documents) {
@@ -69,6 +75,8 @@ export class JobNumberService {
         populate: [
           'assignedTo',
           'createdBy',
+          'estStartDate',
+          'estEndDate',
           {
             path: 'documents',
             populate: {

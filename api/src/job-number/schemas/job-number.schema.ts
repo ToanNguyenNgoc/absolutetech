@@ -14,6 +14,12 @@ export class JobNumber {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   assignedTo: mongoose.Types.ObjectId; // Person responsible (Line #1)
 
+  @Prop({ type: Date, required: false })
+  estStartDate?: Date;
+
+  @Prop({ type: Date, required: false })
+  estEndDate?: Date;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   createdBy: mongoose.Types.ObjectId; // User who created the job
 

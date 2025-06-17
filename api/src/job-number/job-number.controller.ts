@@ -39,7 +39,6 @@ export class JobNumberController {
   @Get()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async findAllPaginated(@Query('page') page = 1, @Query('limit') limit = 10) {
-    console.log('find cc');
     return this.jobNumberService.findAllPaginated(page, limit);
   }
 
