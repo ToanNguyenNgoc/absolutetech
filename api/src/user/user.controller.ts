@@ -30,7 +30,7 @@ import { convertToCSV } from 'src/common/csv.util';
 @Controller('api/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post('create-user-face')
   async createUserFace(@Body() data: { UserInfo: UserInfo }) {
@@ -161,5 +161,12 @@ export class UserController {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
     res.send(csv);
+  }
+
+  @Get('technicians')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  async getTechnicianAndSupervisorList() {
+    console.log('Fetching technician and supervisor list');
+    return this.userService.getTechnicianAndSupervisorList();
   }
 }

@@ -36,7 +36,7 @@ export class CreateJobNumberDto {
   assignedTo: string;
 
   @IsMongoId()
-  @IsNotEmpty()
+  @IsOptional()
   createdBy: string;
 
   @IsOptional()

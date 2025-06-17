@@ -1,6 +1,6 @@
 <template>
     <div :class="{ 'admin-layout-expanded': isExpanded, 'admin-layout-close': !isExpanded }">
-        <div class="table-toolbar">
+        <div class="table-toolbar button-group">
             <el-input v-model="searchTerm" placeholder="Search" prefix-icon="el-icon-search" clearable
                 @input="handleSearchInput" class="search-input" />
             <button class="btn btn-primary" @click="handleCreateJobNumber">
@@ -91,7 +91,7 @@ export default {
         };
 
         const handleCreateJobNumber = () => {
-            router.push('/job-number/create');
+            router.push('/admin/job-number/create');
         };
 
         const handleEdit = (row) => {

@@ -39,7 +39,7 @@ export class UserService {
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
     private warehouseService: WarehouseService,
-  ) {}
+  ) { }
 
   async createInfoPersonHIKVISION(data: { UserInfo: UserInfo }) {
     try {
@@ -345,7 +345,7 @@ export class UserService {
       fs.access(saveDir, constants.F_OK, (err) => {
         console.log(`${saveDir} ${err ? 'does not exist' : 'exists'}`);
         if (err) {
-          fs.mkdir(saveDir, { recursive: true }, () => {});
+          fs.mkdir(saveDir, { recursive: true }, () => { });
         }
       });
       // 🔹 Gửi request tải ảnh bằng DigestClient
@@ -787,4 +787,12 @@ export class UserService {
     }
     return updatedUser;
   }
+
+  async getTechnicianAndSupervisorList() {
+    return this.userModel.find(
+      { role: { $in: [Role.TECHNICIAN, Role.SUPERVISOR] } },
+      { fullName: 1 }
+    ).exec();
+  }
+
 }

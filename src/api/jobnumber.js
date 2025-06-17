@@ -14,3 +14,10 @@ export function deleteJobNumber(id) {
 export function createJobNumber(payload) {
   return axiosInstance.post('/job-numbers', payload);
 }
+
+export function uploadJobFile(formData) {
+  return axiosInstance.post('/job-numbers/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+}
+

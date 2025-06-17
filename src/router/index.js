@@ -5,6 +5,7 @@ import EntryLogView from "@/views/admin/EntryLogView.vue";
 import { getCookie } from "@/utils/cookie";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import JobNumberView from "@/views/admin/JobNumberView.vue";
+import JobNumberCreate from "@/components/job-number/JobNumberCreate.vue";
 
 const routes = [
   {
@@ -15,6 +16,11 @@ const routes = [
         path: "job-number",
         name: "admin-job-number",
         component: JobNumberView,
+      },
+      {
+        path: "job-number/create",
+        name: "admin-job-number-create",
+        component: JobNumberCreate,
       },
       {
         path: "users",

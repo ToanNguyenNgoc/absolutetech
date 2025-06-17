@@ -13,6 +13,7 @@ import {
   Delete,
   Param,
   Put,
+  Request,
 } from '@nestjs/common';
 import { JobNumberService } from './job-number.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -28,12 +29,13 @@ import { UpdateJobNumberDto } from './dto/update-job-number.dto';
 @Controller('/api/job-numbers')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class JobNumberController {
-  constructor(private readonly jobNumberService: JobNumberService) {}
+  constructor(private readonly jobNumberService: JobNumberService) { }
 
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
-  async create(@Body() dto: CreateJobNumberDto) {
-    return this.jobNumberService.create(dto);
+  async create(@Body() dto: CreateJobNumberDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.jobNumberService.create({ ...dto, createdBy: userId });
   }
 
   @Get()
@@ -69,7 +71,8 @@ export class JobNumberController {
   }
   @Put(':id')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
-  async update(@Param('id') id: string, @Body() dto: UpdateJobNumberDto) {
-    return this.jobNumberService.update(id, dto);
+  async update(@Param('id') id: string, @Body() dto: UpdateJobNumberDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.jobNumberService.update(id, { ...dto, createdBy: userId });
   }
 }
