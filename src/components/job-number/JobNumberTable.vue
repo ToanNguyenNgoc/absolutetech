@@ -119,8 +119,7 @@ export default {
         };
 
         const handleDuplicate = (row) => {
-            const cloned = { ...row, _isNew: true, _id: undefined };
-            tableData.value.push(cloned);
+            router.push(`/admin/job-number/${row._id}/duplicate`);
         };
 
         const handleSaveNewRow = async (row) => {

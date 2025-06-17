@@ -29,6 +29,12 @@ const routes = [
         props: true,
       },
       {
+        path: '/admin/job-number/:id/duplicate',
+        name: 'DuplicateJobNumber',
+        component: JobNumberCreate,
+        props: true
+      },
+      {
         path: "users",
         name: "admin-users",
         component: UserView,

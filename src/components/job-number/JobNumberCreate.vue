@@ -86,7 +86,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { createJobNumber, updateJobNumber, getJobNumberById, uploadJobFile } from '@/api/jobnumber';
 import { getTechnicianUsers } from '@/api/user';
 import { ElMessage } from 'element-plus';
@@ -101,6 +101,7 @@ export default {
     setup(props) {
         const formRef = ref();
         const router = useRouter();
+        const route = useRoute();
         const form = ref({
             code: '',
             project: '',
@@ -177,32 +178,54 @@ export default {
 
         const loadDataIfEdit = async () => {
             if (props.id) {
-                isEdit.value = true;
                 try {
                     const res = await getJobNumberById(props.id);
                     const data = res.data?.data;
-                    console.log("res", res);
-                    form.value = {
-                        code: data.code,
-                        project: data.project,
-                        estStartDate: data.estStartDate ? new Date(data.estStartDate) : '',
-                        estEndDate: data.estEndDate ? new Date(data.estEndDate) : '',
-                        assignedTo: data.assignedTo?._id || '',
-                        documents: (data.documents || []).map((doc) => ({
-                            documentId: doc._id,
-                            name: doc.name,
-                            fileIds: doc.files.map((f) => f._id),
-                            fileList: doc.files.map((f) => ({
-                                name: f.name,
-                                url: '/' + f.url,
+
+                    if (route.path.includes('/edit')) {
+                        isEdit.value = true;
+                        form.value = {
+                            code: data.code,
+                            project: data.project,
+                            estStartDate: data.estStartDate ? new Date(data.estStartDate) : '',
+                            estEndDate: data.estEndDate ? new Date(data.estEndDate) : '',
+                            assignedTo: data.assignedTo?._id || '',
+                            documents: (data.documents || []).map((doc) => ({
+                                documentId: doc._id,
+                                name: doc.name,
+                                fileIds: doc.files.map((f) => f._id),
+                                fileList: doc.files.map((f) => ({
+                                    name: f.name,
+                                    url: '/' + f.url,
+                                })),
                             })),
-                        })),
-                    };
+                        };
+                    }
+                    else if (route.path.includes('/duplicate')) {
+                        isEdit.value = false;
+                        form.value = {
+                            code: '', // reset code để tránh lỗi trùng
+                            project: data.project,
+                            estStartDate: data.estStartDate ? new Date(data.estStartDate) : '',
+                            estEndDate: data.estEndDate ? new Date(data.estEndDate) : '',
+                            assignedTo: data.assignedTo?._id || '',
+                            documents: (data.documents || []).map((doc) => ({
+                                name: doc.name,
+                                fileIds: doc.files.map((f) => f._id),
+                                fileList: doc.files.map((f) => ({
+                                    name: f.name,
+                                    url: '/' + f.url,
+                                })),
+                            })),
+                        };
+                    }
+
                 } catch (err) {
                     console.error('Failed to fetch job number', err);
                 }
             }
         };
+
 
         onMounted(async () => {
             const res = await getTechnicianUsers();
