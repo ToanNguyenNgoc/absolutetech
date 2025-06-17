@@ -81,7 +81,10 @@
                         </li>
                         <li>
                             <a class="menu-link" @click="redirectToSourceB">
-                                <img src="@/assets/entry-log.svg" alt="Warehouse" />
+                                <img src="@/assets/img/warehouse.svg" alt="warehouse"
+                                    v-if="!isRouteActive('admin-warehouse')" />
+                                <img src="@/assets/img/warehouse-active.svg" alt="warehouse"
+                                    v-if="isRouteActive('admin-warehouse')" />
                                 <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
                             </a>
                         </li>
@@ -142,7 +145,7 @@
                     </li>
                     <li>
                         <a class="menu-link" @click="redirectToSourceB">
-                            <img src="@/assets/entry-log.svg" alt="Warehouse" />
+                            <img src="@/assets/img/warehouse.svg" alt="Warehouse" />
                             <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
                         </a>
                     </li>
