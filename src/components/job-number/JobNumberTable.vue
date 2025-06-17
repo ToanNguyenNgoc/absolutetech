@@ -95,7 +95,7 @@ export default {
         };
 
         const handleEdit = (row) => {
-            router.push(`/job-number/${row._id}/edit`);
+            router.push(`/admin/job-number/${row._id}/edit`);
         };
 
         const handleDelete = (row) => {

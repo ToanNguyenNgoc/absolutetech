@@ -64,6 +64,27 @@ export class JobNumberService {
     }
   }
 
+  async getDetailById(id: string) {
+    const jobNumber = await this.jobNumberModel
+      .findById(id)
+      .populate('assignedTo')
+      .populate('createdBy')
+      .populate({
+        path: 'documents',
+        populate: {
+          path: 'files',
+          match: { refModel: 'DocumentEntity' },
+        },
+      })
+      .exec();
+
+    if (!jobNumber) {
+      throw new NotFoundException('Job Number not found');
+    }
+
+    return jobNumber;
+  }
+
   async findAllPaginated(page = 1, limit = 10) {
     return paginate(
       this.jobNumberModel,

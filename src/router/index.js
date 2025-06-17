@@ -23,6 +23,12 @@ const routes = [
         component: JobNumberCreate,
       },
       {
+        path: 'job-number/:id/edit',
+        name: 'admin-job-number-edit',
+        component: JobNumberCreate,
+        props: true,
+      },
+      {
         path: "users",
         name: "admin-users",
         component: UserView,

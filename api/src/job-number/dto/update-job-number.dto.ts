@@ -6,6 +6,7 @@ import {
   IsOptional,
   ValidateNested,
   IsArray,
+  IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsUniqueJobNumberUpdate } from '../validator/is-unique-job-number-update.decorator';
@@ -42,6 +43,14 @@ export class UpdateJobNumberDto {
   @IsMongoId()
   @IsNotEmpty()
   assignedTo: string;
+
+  @IsOptional()
+  @IsDateString({}, { message: 'estStartDate must be an ISO date string' })
+  estStartDate?: string;
+
+  @IsOptional()
+  @IsDateString({}, { message: 'estEndDate must be an ISO date string' })
+  estEndDate?: string;
 
   @IsMongoId()
   @IsOptional()

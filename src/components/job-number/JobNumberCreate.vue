@@ -13,11 +13,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="Client" prop="client">
-                            <el-input v-model="form.client" placeholder="Client Name" />
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
                         <el-form-item label="Project" prop="project">
                             <el-input v-model="form.project" placeholder="Project Name" />
                         </el-form-item>
@@ -91,18 +86,23 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { createJobNumber, uploadJobFile } from '@/api/jobnumber';
+import { useRouter } from 'vue-router';
+import { createJobNumber, updateJobNumber, getJobNumberById, uploadJobFile } from '@/api/jobnumber';
 import { getTechnicianUsers } from '@/api/user';
 import { ElMessage } from 'element-plus';
-import { useRouter } from 'vue-router';
 
 export default {
-    setup() {
+    props: {
+        id: {
+            type: String,
+            default: null,
+        },
+    },
+    setup(props) {
         const formRef = ref();
         const router = useRouter();
         const form = ref({
             code: '',
-            client: '',
             project: '',
             estStartDate: '',
             estEndDate: '',
@@ -111,8 +111,8 @@ export default {
         });
 
         const users = ref([]);
-
         const uploadMode = ref('multiple');
+        const isEdit = ref(false);
 
         const rules = {
             code: [{ required: true, message: 'Required', trigger: 'blur' }],
@@ -132,16 +132,15 @@ export default {
                 const formData = new FormData();
                 formData.append('file', file.raw);
                 const res = await uploadJobFile(formData);
-
                 const fileId = res.data?.data?._id || res.data?._id;
                 if (fileId) {
                     row.fileIds = [fileId];
-                    row.fileList = [file]; // still show file in UI
+                    row.fileList = [file];
                 } else {
                     throw new Error('Missing fileId');
                 }
             } catch (err) {
-                console.error('File upload failed:', err);
+                console.error('Upload failed', err);
                 ElMessage.error('Upload failed');
             }
         };
@@ -150,34 +149,72 @@ export default {
             formRef.value.validate(async (valid) => {
                 if (!valid) return;
                 const payload = {
+                    id: props.id,
                     ...form.value,
-                    status: 'open',
                     documents: form.value.documents.map((doc) => ({
+                        documentId: doc.documentId,
                         name: doc.name,
                         fileIds: doc.fileIds,
                     })),
                 };
+
+
                 try {
-                    await createJobNumber(payload);
-                    ElMessage.success('Job Number created successfully');
+                    if (isEdit.value) {
+                        await updateJobNumber(props.id, payload);
+                        ElMessage.success('Updated successfully');
+                    } else {
+                        await createJobNumber(payload);
+                        ElMessage.success('Created successfully');
+                    }
                     router.push('/admin/job-number');
                 } catch (err) {
-                    ElMessage.error('Failed to create Job Number');
-                    console.error(err);
+                    console.error('Save failed:', err);
+                    ElMessage.error('Failed to save Job Number');
                 }
             });
+        };
+
+        const loadDataIfEdit = async () => {
+            if (props.id) {
+                isEdit.value = true;
+                try {
+                    const res = await getJobNumberById(props.id);
+                    const data = res.data?.data;
+                    console.log("res", res);
+                    form.value = {
+                        code: data.code,
+                        project: data.project,
+                        estStartDate: data.estStartDate ? new Date(data.estStartDate) : '',
+                        estEndDate: data.estEndDate ? new Date(data.estEndDate) : '',
+                        assignedTo: data.assignedTo?._id || '',
+                        documents: (data.documents || []).map((doc) => ({
+                            documentId: doc._id,
+                            name: doc.name,
+                            fileIds: doc.files.map((f) => f._id),
+                            fileList: doc.files.map((f) => ({
+                                name: f.name,
+                                url: '/' + f.url,
+                            })),
+                        })),
+                    };
+                } catch (err) {
+                    console.error('Failed to fetch job number', err);
+                }
+            }
         };
 
         onMounted(async () => {
             const res = await getTechnicianUsers();
             users.value = res.data.data || [];
+            await loadDataIfEdit();
         });
 
         return {
             form,
             formRef,
-            rules,
             users,
+            rules,
             uploadMode,
             addDocument,
             removeDocument,

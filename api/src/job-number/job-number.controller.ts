@@ -38,6 +38,13 @@ export class JobNumberController {
     return this.jobNumberService.create({ ...dto, createdBy: userId });
   }
 
+  @Get(':id')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  async getDetail(@Param('id') id: string) {
+    return this.jobNumberService.getDetailById(id);
+  }
+
+
   @Get()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async findAllPaginated(@Query('page') page = 1, @Query('limit') limit = 10) {
@@ -69,10 +76,16 @@ export class JobNumberController {
   async delete(@Param('id') id: string) {
     return this.jobNumberService.deleteJobNumber(id);
   }
+
   @Put(':id')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async update(@Param('id') id: string, @Body() dto: UpdateJobNumberDto, @Request() req) {
+    console.log('Updating job number with ID:', id);
     const userId = req.user.userId;
-    return this.jobNumberService.update(id, { ...dto, createdBy: userId });
+    return this.jobNumberService.update(id, {
+      ...dto,
+      id,
+      createdBy: userId,
+    });
   }
+
 }

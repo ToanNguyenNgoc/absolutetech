@@ -21,3 +21,10 @@ export function uploadJobFile(formData) {
   });
 }
 
+export function getJobNumberById(id) {
+  return axiosInstance.get(`/job-numbers/${id}`);
+}
+
+export function updateJobNumber(id, payload) {
+  return axiosInstance.put(`/job-numbers/${id}`, payload);
+}
