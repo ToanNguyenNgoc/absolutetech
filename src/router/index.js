@@ -6,6 +6,8 @@ import { getCookie } from "@/utils/cookie";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import JobNumberView from "@/views/admin/JobNumberView.vue";
 import JobNumberCreate from "@/components/job-number/JobNumberCreate.vue";
+import OpenTimesheetView from "@/views/admin/OpenTimesheetView.vue";
+import CloseTimesheetView from "@/views/admin/CloseTimesheetView.vue";
 
 const routes = [
   {
@@ -43,6 +45,16 @@ const routes = [
         path: "entry-logs",
         name: "admin-entry-logs",
         component: EntryLogView,
+      },
+      {
+        path: "open-timesheets",
+        name: "admin-open-timesheets",
+        component: OpenTimesheetView,
+      },
+      {
+        path: "close-timesheets",
+        name: "admin-close-timesheets",
+        component: CloseTimesheetView,
       },
     ],
   },

@@ -63,6 +63,26 @@
                                 <span class="icon-menu-expand" v-show="isExpanded">Job Number</span>
                             </router-link>
                         </li>
+                        <!-- Open Timesheets -->
+                        <li>
+                            <router-link class="menu-link" to="/admin/open-timesheets">
+                                <img src="@/assets/img/icon-open-timesheets.svg" alt="Open"
+                                    v-if="!isRouteActive('admin-open-timesheets')" />
+                                <img src="@/assets/img/icon-open-timesheets-active.svg" alt="Open"
+                                    v-if="isRouteActive('admin-open-timesheets')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Open Timesheets</span>
+                            </router-link>
+                        </li>
+                        <!-- Close Timesheets -->
+                        <li>
+                            <router-link class="menu-link" to="/admin/close-timesheets">
+                                <img src="@/assets/img/close-time-sheets.svg" alt="Close"
+                                    v-if="!isRouteActive('admin-close-timesheets')" />
+                                <img src="@/assets/img/close-time-sheets-active.svg" alt="Close"
+                                    v-if="isRouteActive('admin-close-timesheets')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Close Timesheets</span>
+                            </router-link>
+                        </li>
                         <li>
                             <router-link class="menu-link" to="/admin/users">
                                 <img src="@/assets/admin.png" alt="User" v-if="!isRouteActive('admin-users')" />
@@ -126,6 +146,26 @@
                             <img src="@/assets/img/icon-job-number-active.svg" alt="Job Number"
                                 v-if="isRouteActive('admin-job-number')" />
                             <span class="icon-menu-expand" v-show="isExpanded">Job Number</span>
+                        </router-link>
+                    </li>
+                    <!-- Open Timesheets -->
+                    <li>
+                        <router-link class="menu-link" to="/admin/open-timesheets">
+                            <img src="@/assets/img/icon-open-timesheets.svg" alt="Open"
+                                v-if="!isRouteActive('admin-open-timesheets')" />
+                            <img src="@/assets/img/icon-open-timesheets-active.svg" alt="Open"
+                                v-if="isRouteActive('admin-open-timesheets')" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Open Timesheets</span>
+                        </router-link>
+                    </li>
+                    <!-- Close Timesheets -->
+                    <li>
+                        <router-link class="menu-link" to="/admin/close-timesheets">
+                            <img src="@/assets/img/close-time-sheets.svg" alt="Close"
+                                v-if="!isRouteActive('admin-close-timesheets')" />
+                            <img src="@/assets/img/close-time-sheets-active.svg" alt="Close"
+                                v-if="isRouteActive('admin-close-timesheets')" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Close Timesheets</span>
                         </router-link>
                     </li>
                     <li>
@@ -296,6 +336,7 @@ export default {
 .avatar-name {
     white-space: nowrap;
 }
+
 .drawer-user-info-mobile__block-top {
     display: flex;
     flex-direction: column;
