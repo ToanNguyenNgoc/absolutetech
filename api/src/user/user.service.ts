@@ -5,8 +5,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import axios from 'axios';
 import * as bcrypt from 'bcrypt';
 import { parse } from 'csv-parse';
+import { XMLParser } from 'fast-xml-parser';
 import * as fs from 'fs';
 import { Model, Types } from 'mongoose';
 import * as path from 'path';
