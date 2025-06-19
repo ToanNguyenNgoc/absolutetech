@@ -5,21 +5,19 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import axios from 'axios';
 import * as bcrypt from 'bcrypt';
 import { parse } from 'csv-parse';
-import { XMLParser } from 'fast-xml-parser';
 import * as fs from 'fs';
 import { Model, Types } from 'mongoose';
 import * as path from 'path';
 import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
+import { MqttService } from 'src/mqtt/mqtt.service';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
-import { MqttService } from 'src/mqtt/mqtt.service';
 @Injectable()
 export class UserService {
   constructor(

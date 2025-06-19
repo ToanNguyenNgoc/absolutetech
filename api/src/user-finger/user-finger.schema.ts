@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-
-export type UserFingerDocument = UserFinger & Document;
+import { Types } from 'mongoose';
 
 @Schema({ collection: 'user_finger', timestamps: true }) // ✅ timestamps sẽ tự thêm createdAt & updatedAt
 export class UserFinger {

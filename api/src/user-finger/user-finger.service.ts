@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { UserFinger, UserFingerDocument } from './user-finger.schema';
+import { UserFinger } from './user-finger.schema';
 const dayjs = require('dayjs');
 import utc = require('dayjs/plugin/utc');
 import timezone = require('dayjs/plugin/timezone');
@@ -13,7 +13,7 @@ dayjs.extend(timezone);
 export class UserFingerService {
   constructor(
     @InjectModel(UserFinger.name)
-    private UserFingerModel: Model<UserFingerDocument>,
+    private UserFingerModel: Model<UserFinger>,
   ) {}
 
   async createFinger(data: Partial<UserFinger> | Partial<UserFinger>[]) {
