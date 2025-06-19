@@ -20,6 +20,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
 import { MqttService } from 'src/mqtt/mqtt.service';
+import { WarehouseService } from 'src/external/warehouse.service';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -27,6 +29,7 @@ export class UserService {
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
     private readonly mqttService: MqttService,
+    private warehouseService: WarehouseService,
   ) {}
 
   async userExists(employee_hik: string) {
@@ -51,6 +54,18 @@ export class UserService {
     });
     console.log('Create User', created);
     const res = await created.save();
+    await this.warehouseService.syncUserToLaravel('create', {
+      login_name: dto.username,
+      name: dto.fullName,
+      password: dto.password,
+      email: dto.email ?? null,
+      employee_id: dto.employeeID,
+      card_id: dto.employeeID,
+      role: dto.role,
+      dept: dto.position ?? null,
+      avatar: dto.avatar ?? null,
+    });
+
     return res;
   }
 
@@ -116,6 +131,16 @@ export class UserService {
     if (!updated) {
       throw new UnprocessableEntityException('User not found');
     }
+    await this.warehouseService.syncUserToLaravel('update', {
+      login_name: updated.username,
+      name: dto.fullName,
+      email: updated.email ?? null,
+      employee_id: updated.employeeID,
+      card_id: updated.employeeID,
+      role: updated.role,
+      dept: updated.position ?? null,
+    });
+
     return updated;
   }
 
