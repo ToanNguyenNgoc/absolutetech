@@ -10,6 +10,7 @@ import {
   Body,
   UnauthorizedException,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './strategies/local-auth.guard';
@@ -17,12 +18,14 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UserService } from 'src/user/user.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
+import { WarehouseService } from 'src/external/warehouse.service';
 
 @Controller('/api/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private warehouseService: WarehouseService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -75,5 +78,13 @@ export class AuthController {
     await this.userService.updatePassword(userId, hashedPassword);
 
     return { message: 'Password changed successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('sso/generate-token')
+  async generateSSOToken(@Req() req) {
+    const loginName = req.user?.username;
+    const token = await this.warehouseService.requestSSOToken(loginName);
+    return { token };
   }
 }

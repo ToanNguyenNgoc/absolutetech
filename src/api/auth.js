@@ -11,3 +11,7 @@ export function info() {
 export function changePassword(payload) {
   return axiosInstance.post("/auth/change-password", payload);
 }
+
+export async function getSSOToken() {
+    return axiosInstance.post("/auth/sso/generate-token");
+}

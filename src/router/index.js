@@ -4,12 +4,38 @@ import UserView from "@/views/admin/UserView.vue";
 import EntryLogView from "@/views/admin/EntryLogView.vue";
 import { getCookie } from "@/utils/cookie";
 import AdminLayout from "@/layouts/AdminLayout.vue";
+import JobNumberView from "@/views/admin/JobNumberView.vue";
+import JobNumberCreate from "@/components/job-number/JobNumberCreate.vue";
+import OpenTimesheetView from "@/views/admin/OpenTimesheetView.vue";
+import CloseTimesheetView from "@/views/admin/CloseTimesheetView.vue";
 
 const routes = [
   {
     path: "/admin",
     component: AdminLayout,
     children: [
+      {
+        path: "job-number",
+        name: "admin-job-number",
+        component: JobNumberView,
+      },
+      {
+        path: "job-number/create",
+        name: "admin-job-number-create",
+        component: JobNumberCreate,
+      },
+      {
+        path: 'job-number/:id/edit',
+        name: 'admin-job-number-edit',
+        component: JobNumberCreate,
+        props: true,
+      },
+      {
+        path: '/admin/job-number/:id/duplicate',
+        name: 'DuplicateJobNumber',
+        component: JobNumberCreate,
+        props: true
+      },
       {
         path: "users",
         name: "admin-users",
@@ -19,6 +45,16 @@ const routes = [
         path: "entry-logs",
         name: "admin-entry-logs",
         component: EntryLogView,
+      },
+      {
+        path: "open-timesheets",
+        name: "admin-open-timesheets",
+        component: OpenTimesheetView,
+      },
+      {
+        path: "close-timesheets",
+        name: "admin-close-timesheets",
+        component: CloseTimesheetView,
       },
     ],
   },

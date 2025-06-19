@@ -12,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { UserFingerModule } from './user-finger/user-finger.module';
 import { MqttModule } from './mqtt/mqtt.module';
+import { JobNumberModule } from './job-number/job-number.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MqttModule } from './mqtt/mqtt.module';
     EntryLogModule,
     EntryLogRawModule,
     UserFingerModule,
+    JobNumberModule,
   ],
 
   controllers: [UploadController],

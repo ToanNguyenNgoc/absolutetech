@@ -6,6 +6,7 @@ import {
   IsDateString,
 } from 'class-validator';
 import { Gender, Role } from '../user.enums';
+import { Transform } from 'class-transformer';
 
 export class UpdateUserDto {
   @IsString()
@@ -46,4 +47,14 @@ export class UpdateUserDto {
 
   @IsOptional()
   avatar?: any;
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ obj }) => obj.nric_fin ?? obj.nricFin)
+  nricFin?: string;
+
+  @IsOptional()
+  @IsDateString()
+  @Transform(({ obj }) => obj.work_permit_expiry ?? obj.workPermitExpiry)
+  workPermitExpiry?: Date;
 }

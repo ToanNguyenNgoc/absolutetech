@@ -55,6 +55,35 @@
                 <nav class="menu-nav">
                     <ul class="menu-list">
                         <li>
+                            <router-link class="menu-link" to="/admin/job-number">
+                                <img src="@/assets/img/icon-job-number.svg" alt="Job Number"
+                                    v-if="!isRouteActive('admin-job-number')" />
+                                <img src="@/assets/img/icon-job-number-active.svg" alt="Job Number"
+                                    v-if="isRouteActive('admin-job-number')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Job Number</span>
+                            </router-link>
+                        </li>
+                        <!-- Open Timesheets -->
+                        <li>
+                            <router-link class="menu-link" to="/admin/open-timesheets">
+                                <img src="@/assets/img/icon-open-timesheets.svg" alt="Open"
+                                    v-if="!isRouteActive('admin-open-timesheets')" />
+                                <img src="@/assets/img/icon-open-timesheets-active.svg" alt="Open"
+                                    v-if="isRouteActive('admin-open-timesheets')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Open Timesheets</span>
+                            </router-link>
+                        </li>
+                        <!-- Close Timesheets -->
+                        <li>
+                            <router-link class="menu-link" to="/admin/close-timesheets">
+                                <img src="@/assets/img/close-time-sheets.svg" alt="Close"
+                                    v-if="!isRouteActive('admin-close-timesheets')" />
+                                <img src="@/assets/img/close-time-sheets-active.svg" alt="Close"
+                                    v-if="isRouteActive('admin-close-timesheets')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Close Timesheets</span>
+                            </router-link>
+                        </li>
+                        <li>
                             <router-link class="menu-link" to="/admin/users">
                                 <img src="@/assets/admin.png" alt="User" v-if="!isRouteActive('admin-users')" />
                                 <img src="@/assets/admin-active.svg" alt="User" v-if="isRouteActive('admin-users')" />
@@ -69,6 +98,15 @@
                                     v-if="isRouteActive('admin-entry-logs')" />
                                 <span class="icon-menu-expand" v-show="isExpanded">Entry Logs</span>
                             </router-link>
+                        </li>
+                        <li>
+                            <a class="menu-link" @click="redirectToSourceB">
+                                <img src="@/assets/img/warehouse.svg" alt="warehouse"
+                                    v-if="!isRouteActive('admin-warehouse')" />
+                                <img src="@/assets/img/warehouse-active.svg" alt="warehouse"
+                                    v-if="isRouteActive('admin-warehouse')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
+                            </a>
                         </li>
                     </ul>
                     <ul>
@@ -102,6 +140,35 @@
             <nav class="drawer-menu-nav">
                 <ul class="drawer-menu-list-mobile">
                     <li>
+                        <router-link class="menu-link" to="/admin/job-number">
+                            <img src="@/assets/img/icon-job-number.svg" alt="Job Number"
+                                v-if="!isRouteActive('admin-job-number')" />
+                            <img src="@/assets/img/icon-job-number-active.svg" alt="Job Number"
+                                v-if="isRouteActive('admin-job-number')" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Job Number</span>
+                        </router-link>
+                    </li>
+                    <!-- Open Timesheets -->
+                    <li>
+                        <router-link class="menu-link" to="/admin/open-timesheets">
+                            <img src="@/assets/img/icon-open-timesheets.svg" alt="Open"
+                                v-if="!isRouteActive('admin-open-timesheets')" />
+                            <img src="@/assets/img/icon-open-timesheets-active.svg" alt="Open"
+                                v-if="isRouteActive('admin-open-timesheets')" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Open Timesheets</span>
+                        </router-link>
+                    </li>
+                    <!-- Close Timesheets -->
+                    <li>
+                        <router-link class="menu-link" to="/admin/close-timesheets">
+                            <img src="@/assets/img/close-time-sheets.svg" alt="Close"
+                                v-if="!isRouteActive('admin-close-timesheets')" />
+                            <img src="@/assets/img/close-time-sheets-active.svg" alt="Close"
+                                v-if="isRouteActive('admin-close-timesheets')" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Close Timesheets</span>
+                        </router-link>
+                    </li>
+                    <li>
                         <router-link class="drawer-menu-link" to="/admin/users" @click="closeDrawer">
                             <img src="@/assets/admin.png" alt="User" v-if="!isRouteActive('admin-users')" />
                             <img src="@/assets/admin-active.svg" alt="User" v-else />
@@ -115,6 +182,12 @@
                             <img src="@/assets/entry-log-active.svg" alt="Entry Log" v-else />
                             <span>Entry Logs</span>
                         </router-link>
+                    </li>
+                    <li>
+                        <a class="menu-link" @click="redirectToSourceB">
+                            <img src="@/assets/img/warehouse.svg" alt="Warehouse" />
+                            <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
+                        </a>
                     </li>
                 </ul>
 
@@ -151,11 +224,12 @@
             </nav>
         </el-drawer>
     </div>
-    <change-password-modal :visible="isChangePasswordModalVisible" @update:visible="isChangePasswordModalVisible = $event" />
+    <change-password-modal :visible="isChangePasswordModalVisible"
+        @update:visible="isChangePasswordModalVisible = $event" />
 </template>
 
 <script>
-import { info } from '@/api';
+import { getSSOToken, info } from '@/api';
 import { baseURL } from '@/constant/common';
 import { setCookie } from '@/utils/cookie';
 import { computed } from 'vue';
@@ -232,6 +306,18 @@ export default {
                 console.error('Error fetching user info:', error);
             }
         },
+
+        async redirectToSourceB() {
+            try {
+                const response = await getSSOToken();
+                const token = response?.data?.data?.token;
+                const targetUrl = `${process.env.VUE_APP_SOURCE_WAREHOUSE_URL}/login?token=${token}`;
+                window.open(targetUrl, "_blank");
+            } catch (error) {
+                console.error("Failed to redirect to Source B:", error);
+                this.$message.error("Cannot redirect to Warehouse login.");
+            }
+        }
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
@@ -250,6 +336,7 @@ export default {
 .avatar-name {
     white-space: nowrap;
 }
+
 .drawer-user-info-mobile__block-top {
     display: flex;
     flex-direction: column;

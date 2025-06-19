@@ -49,6 +49,7 @@ export class UserService {
         ),
       password: hashed,
     });
+    console.log('Create User', created);
     const res = await created.save();
     return res;
   }
@@ -120,6 +121,9 @@ export class UserService {
 
   async deleteUser(id: string): Promise<UserDocument> {
     const deleted = await this.userModel.findByIdAndDelete(id).exec();
+    await this.warehouseService.syncUserToLaravel('delete', {
+      employee_id: deleted?.employeeID,
+    });
     if (!deleted) {
       throw new UnprocessableEntityException('User not found');
     }

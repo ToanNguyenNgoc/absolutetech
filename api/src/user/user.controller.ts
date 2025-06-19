@@ -31,7 +31,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 @Controller('api/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post('import-data')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
@@ -57,19 +57,19 @@ export class UserController {
   }
 
   @Post('sync-hik')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async syncHIK() {
     return await this.userService.syncHIKVISION();
   }
 
   @Post()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async create(@Body() dto: CreateUserDto) {
     return this.userService.createUser(dto);
   }
 
   @Get()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async findAllPaginated(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -78,19 +78,19 @@ export class UserController {
   }
 
   @Put(':id')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async delete(@Param('id') id: string) {
     return this.userService.deleteUser(id);
   }
 
   @Post('import-file')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -117,7 +117,7 @@ export class UserController {
   }
 
   @Get('export')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async exportUsers(@Res() res: Response) {
     const users = await this.userService.findAll();
 
@@ -132,5 +132,12 @@ export class UserController {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
     res.send(csv);
+  }
+
+  @Get('technicians')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  async getTechnicianAndSupervisorList() {
+    console.log('Fetching technician and supervisor list');
+    return this.userService.getTechnicianAndSupervisorList();
   }
 }

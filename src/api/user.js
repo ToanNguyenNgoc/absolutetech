@@ -35,3 +35,7 @@ export function exportUsers() {
 export function syncHik(payload) {
   return axiosInstance.post("/users/sync-hik", payload);
 }
+
+export function getTechnicianUsers() {
+  return axiosInstance.get("/users/technicians");
+}

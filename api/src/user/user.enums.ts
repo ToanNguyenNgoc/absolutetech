@@ -1,9 +1,17 @@
 export enum Role {
-  SUPER_ADMIN = 'Super Admin',
-  ADMINISTRATOR = 'Administrator',
-  ADMIN_SUPPORT = 'Admin Support',
-  MAINTAINER = 'Maintainer',
-  STAFF = 'Staff',
+  SUPER_ADMIN = 1,
+  ADMINISTRATOR = 2,
+  TECHNICIAN = 3,
+  STOREMAN = 4,
+  SUPERVISOR = 5,
+}
+
+export const RoleName: { [key in Role]: string } = {
+  [Role.SUPER_ADMIN]: 'Super Admin',
+  [Role.ADMINISTRATOR]: 'Administrator',
+  [Role.TECHNICIAN]: 'Technician',
+  [Role.STOREMAN]: 'Storeman',
+  [Role.SUPERVISOR]: 'Supervisor',
 }
 
 export enum Gender {
