@@ -31,36 +31,36 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 @Controller('api/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Post('import-data')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
   async importListUser(@Body() data: { list_users: UserItemRequest[] }) {
     return await this.userService.importUsers(data.list_users ?? []);
   }
   @Get('sync-user-cloud-to-hik')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
   async syncUserCloudToHik() {
     return await this.userService.getAllUsersNotSync();
   }
 
   @Post('update-is-sync-user')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
   async getAllUsersNotSync(@Body() data: { user_id: string }) {
     return this.userService.updateIsSyncUser(data.user_id);
   }
 
   @Post('delete-user-by-employee')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
   async deleteUserByEmployee(@Body() data: { employeeNo: string }) {
     return this.userService.deleteUserByEmployee(data.employeeNo);
   }
 
-  @Post('sync-hik')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
-  async syncHIK() {
-    return await this.userService.syncHIKVISION();
-  }
+  // @Post('sync-hik')
+  // @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  // async syncHIK() {
+  //   return await this.userService.syncHIKVISION();
+  // }
 
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)

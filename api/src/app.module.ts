@@ -13,6 +13,7 @@ import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { UserFingerModule } from './user-finger/user-finger.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { JobNumberModule } from './job-number/job-number.module';
+import { SyncDataModule } from './sync-data/sync-data.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { JobNumberModule } from './job-number/job-number.module';
     EntryLogRawModule,
     UserFingerModule,
     JobNumberModule,
+    SyncDataModule,
   ],
 
   controllers: [UploadController],

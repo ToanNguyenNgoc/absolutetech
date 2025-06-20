@@ -7,7 +7,9 @@ import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: EntryLog.name, schema: EntryLogSchema }]),
+    MongooseModule.forFeature([
+      { name: EntryLog.name, schema: EntryLogSchema },
+    ]),
     SharedModule,
   ],
   controllers: [EntryLogController],

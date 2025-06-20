@@ -11,13 +11,13 @@ import { EntryLogRawService } from './entry-log-raw.service';
 export class EntryLogRawController {
   constructor(private readonly entryLogRawRawService: EntryLogRawService) {}
   @Get('latest-entry')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
   async getLatestEntry() {
     return this.entryLogRawRawService.getLatestEntry();
   }
 
   @Post('import-data')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.ADMIN_SUPPORT)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
   async importListEntry(@Body() data: InfoList[]) {
     return this.entryLogRawRawService.importRawLogList(data);
   }

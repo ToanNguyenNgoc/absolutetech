@@ -69,6 +69,9 @@ export class User {
 
   @Prop({ default: Date.now })
   updatedAt: Date;
+
+  @Prop({ type: Date, default: null }) // Add deletedAt field
+  deletedAt: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -82,3 +85,52 @@ UserSchema.virtual('userFingers', {
 
 UserSchema.set('toObject', { virtuals: true });
 UserSchema.set('toJSON', { virtuals: true });
+
+// Static sync columns configuration
+UserSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'fullName',
+    'username',
+    'employeeID',
+    'employee_hik',
+    'is_sync',
+    'face_hik',
+    'role',
+    'position',
+    'gender',
+    'birthday',
+    'phone',
+    'address',
+    'email',
+    'password',
+    'avatar',
+    'nricFin',
+    'workPermitExpiry',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+// Update updatedAt on save
+UserSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+// Soft delete middleware
+UserSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
+  this.where({ deletedAt: null }); // Only return non-deleted documents
+  next();
+});
+
+// Method to soft delete a user
+UserSchema.statics.softDelete = async function (id: string) {
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
+};
+
+// Method to restore a soft-deleted user
+UserSchema.statics.restore = async function (id: string) {
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
+};

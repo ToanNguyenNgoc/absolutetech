@@ -91,55 +91,63 @@ export class UserService {
     return this.userModel.findOne(query).exec();
   }
 
-  async updateUser(id: string, dto: UpdateUserDto): Promise<UserDocument> {
-    if (dto.email) {
-      const existingEmail = await this.userModel
-        .findOne({
-          email: dto.email,
-          _id: { $ne: id },
+  async updateUser(
+    id: string,
+    dto: UpdateUserDto,
+  ): Promise<UserDocument | null> {
+    try {
+      if (dto.email) {
+        const existingEmail = await this.userModel
+          .findOne({
+            email: dto.email,
+            _id: { $ne: id },
+          })
+          .exec();
+        if (existingEmail) {
+          throw new UnprocessableEntityException('Email already exists');
+        }
+      }
+      if (dto.username) {
+        const existingUsername = await this.userModel
+          .findOne({
+            username: dto.username,
+            _id: { $ne: id },
+          })
+          .exec();
+        if (existingUsername) {
+          throw new UnprocessableEntityException('Username already exists');
+        }
+      }
+
+      if ('password' in dto) {
+        delete dto['password'];
+      }
+
+      const updated = await this.userModel
+        .findByIdAndUpdate(id, dto, {
+          new: true,
+          runValidators: true,
         })
         .exec();
-      if (existingEmail) {
-        throw new UnprocessableEntityException('Email already exists');
+
+      if (!updated) {
+        throw new UnprocessableEntityException('User not found');
       }
-    }
-    if (dto.username) {
-      const existingUsername = await this.userModel
-        .findOne({
-          username: dto.username,
-          _id: { $ne: id },
-        })
-        .exec();
-      if (existingUsername) {
-        throw new UnprocessableEntityException('Username already exists');
-      }
-    }
+      await this.warehouseService.syncUserToLaravel('update', {
+        login_name: updated.username,
+        name: dto.fullName,
+        email: updated.email ?? null,
+        employee_id: updated.employeeID,
+        card_id: updated.employeeID,
+        role: updated.role,
+        dept: updated.position ?? null,
+      });
 
-    if ('password' in dto) {
-      delete dto['password'];
+      return updated;
+    } catch (error) {
+      console.log(error);
+      return null;
     }
-
-    const updated = await this.userModel
-      .findByIdAndUpdate(id, dto, {
-        new: true,
-        runValidators: true,
-      })
-      .exec();
-
-    if (!updated) {
-      throw new UnprocessableEntityException('User not found');
-    }
-    await this.warehouseService.syncUserToLaravel('update', {
-      login_name: updated.username,
-      name: dto.fullName,
-      email: updated.email ?? null,
-      employee_id: updated.employeeID,
-      card_id: updated.employeeID,
-      role: updated.role,
-      dept: updated.position ?? null,
-    });
-
-    return updated;
   }
 
   async deleteUser(id: string): Promise<UserDocument> {
@@ -398,5 +406,14 @@ export class UserService {
 
   async updateIsSyncUser(userId: string) {
     await this.userModel.findByIdAndUpdate(userId, { is_sync: 1 });
+  }
+
+  async getTechnicianAndSupervisorList() {
+    return this.userModel
+      .find(
+        { role: { $in: [Role.TECHNICIAN, Role.SUPERVISOR] } },
+        { fullName: 1 },
+      )
+      .exec();
   }
 }
