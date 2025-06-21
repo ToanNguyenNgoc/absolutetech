@@ -10,6 +10,10 @@ import {
   UserFingerSchema,
 } from 'src/user-finger/user-finger.schema';
 import { SyncData, SyncDataSchema } from './sync-data.schema';
+import {
+  JobNumber,
+  JobNumberSchema,
+} from 'src/job-number/schemas/job-number.schema';
 
 @Module({
   imports: [
@@ -17,6 +21,7 @@ import { SyncData, SyncDataSchema } from './sync-data.schema';
       { name: User.name, schema: UserSchema },
       { name: UserFinger.name, schema: UserFingerSchema },
       { name: SyncData.name, schema: SyncDataSchema },
+      { name: JobNumber.name, schema: JobNumberSchema },
     ]),
   ],
   controllers: [SyncDataController],

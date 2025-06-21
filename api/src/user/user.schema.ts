@@ -4,16 +4,19 @@ import { Gender, Role } from './user.enums';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({
+  collection: 'users',
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+})
 export class User {
   @Prop({ required: true })
-  fullName: string;
+  full_name: string;
 
   @Prop({ required: true, unique: true })
   username: string;
 
   @Prop({ required: true, unique: true })
-  employeeID: string;
+  employee_id: string;
 
   @Prop({ unique: true, sparse: true })
   employee_hik: string;
@@ -59,19 +62,13 @@ export class User {
   avatar: string;
 
   @Prop({ alias: 'nric_fin' })
-  nricFin: string;
+  nric_fin: string;
 
   @Prop({ alias: 'work_permit_expiry' })
-  workPermitExpiry: Date;
-
-  @Prop({ default: Date.now })
-  createdAt: Date;
-
-  @Prop({ default: Date.now })
-  updatedAt: Date;
+  work_permit_expiry: Date;
 
   @Prop({ type: Date, default: null }) // Add deletedAt field
-  deletedAt: Date | null;
+  deleted_at: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -90,9 +87,9 @@ UserSchema.set('toJSON', { virtuals: true });
 UserSchema.statics.getSyncColumns = function () {
   return [
     'id',
-    'fullName',
+    'full_name',
     'username',
-    'employeeID',
+    'employee_id',
     'employee_hik',
     'is_sync',
     'face_hik',
@@ -105,32 +102,26 @@ UserSchema.statics.getSyncColumns = function () {
     'email',
     'password',
     'avatar',
-    'nricFin',
-    'workPermitExpiry',
-    'createdAt',
-    'updatedAt',
-    'deletedAt',
+    'nric_fin',
+    'work_permit_expiry',
+    'created_at',
+    'updated_at',
+    'deleted_at',
   ];
 };
 
-// Update updatedAt on save
-UserSchema.pre('save', function (next) {
-  this.updatedAt = new Date();
-  next();
-});
-
 // Soft delete middleware
 UserSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
-  this.where({ deletedAt: null }); // Only return non-deleted documents
+  this.where({ deleted_at: null }); // Only return non-deleted documents
   next();
 });
 
 // Method to soft delete a user
 UserSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
 };
 
 // Method to restore a soft-deleted user
 UserSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
 };

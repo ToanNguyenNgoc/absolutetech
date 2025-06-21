@@ -11,6 +11,7 @@ import { FetchForTabletDto } from './dto/fetch-for-tablet.dto';
 import { SyncDataCreateDto } from './dto/sync-data-create.dto';
 import { SyncFromDeviceDto } from './dto/sync-from-device.dto';
 import { SyncData } from './sync-data.schema';
+import { JobNumber } from 'src/job-number/schemas/job-number.schema';
 
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
@@ -21,12 +22,21 @@ interface SyncableDocument {
   [key: string]: any;
 }
 
+interface SyncableModel<T> extends Model<T> {
+  getSyncColumns: () => string[];
+}
+
 @Injectable()
 export class SyncDataService {
   constructor(
-    @InjectModel(SyncData.name) private syncDataModel: Model<SyncData>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(UserFinger.name) private userFingerModel: Model<UserFinger>,
+    @InjectModel(SyncData.name)
+    private syncDataModel: Model<SyncData>,
+    @InjectModel(User.name)
+    private userModel: SyncableModel<UserDocument>,
+    @InjectModel(UserFinger.name)
+    private userFingerModel: SyncableModel<UserFinger>,
+    @InjectModel(JobNumber.name)
+    private jobNumberModule: SyncableModel<JobNumber>,
   ) {}
 
   async fetchForTablet(fetchForTabletDto: FetchForTabletDto) {
@@ -34,6 +44,7 @@ export class SyncDataService {
       const models = [
         { model: this.userModel, table: 'users' },
         { model: this.userFingerModel, table: 'user_fingers' },
+        { model: this.jobNumberModule, table: 'jobnumbers' },
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);
@@ -79,7 +90,7 @@ export class SyncDataService {
 
   async fetchData(
     fetchForTabletDto: FetchForTabletDto,
-    models: { model: Model<any>; table: string }[],
+    models: { model: SyncableModel<any>; table: string }[],
   ) {
     try {
       const lastTimestamp =
@@ -98,7 +109,6 @@ export class SyncDataService {
       };
 
       for (const { model, table } of models) {
-        // Filter out soft-deleted records for incremental syncs
         const query = isFetchAll
           ? { updatedAt: { $gte: new Date(lastTimestamp) } }
           : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
@@ -107,7 +117,6 @@ export class SyncDataService {
           .find(query)
           .lean({ virtuals: false })
           .exec();
-        // @ts-ignore
         const syncColumns = model.getSyncColumns?.() || [];
         if (!syncColumns.length) {
           console.warn(`No sync columns defined for table ${table}`);
@@ -115,7 +124,6 @@ export class SyncDataService {
         }
 
         for (const doc of documents as unknown as SyncableDocument[]) {
-          // Transform _id to id
           const transformedDoc = { ...doc, id: doc._id.toString() };
           // @ts-ignore
           delete transformedDoc._id;

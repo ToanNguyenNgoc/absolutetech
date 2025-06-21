@@ -1,25 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 
-@Schema({ collection: 'user_finger', timestamps: true }) // ✅ timestamps sẽ tự thêm createdAt & updatedAt
+@Schema({
+  collection: 'user_finger',
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+})
 export class UserFinger {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user: Types.ObjectId;
 
-  @Prop({ type: Number, required: false }) // ✅ Đảm bảo kiểu số rõ ràng
+  @Prop({ type: Number, required: false })
   no?: number;
 
-  @Prop({ type: String, required: false, default: null }) // ✅ Tránh lỗi nếu null
+  @Prop({ type: String, required: false, default: null })
   finger_data?: string;
 
-  @Prop({ default: Date.now })
-  createdAt: Date;
-
-  @Prop({ default: Date.now })
-  updatedAt: Date;
-
-  @Prop({ type: Date, default: null }) // Add deletedAt field
-  deletedAt: Date | null;
+  @Prop({ type: Date, default: null })
+  deleted_at?: Date | null;
 }
 
 export const UserFingerSchema = SchemaFactory.createForClass(UserFinger);
@@ -30,24 +27,21 @@ UserFingerSchema.statics.getSyncColumns = function () {
     'user',
     'no',
     'finger_data',
-    'createdAt',
-    'updatedAt',
-    'deletedAt',
+    'created_at',
+    'updated_at',
+    'deleted_at',
   ];
 };
 
-// Soft delete middleware
 UserFingerSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
-  this.where({ deletedAt: null }); // Only return non-deleted documents
+  this.where({ deleted_at: null });
   next();
 });
 
-// Method to soft delete a user finger
 UserFingerSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
 };
 
-// Method to restore a soft-deleted user finger
 UserFingerSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
 };

@@ -38,3 +38,18 @@ JobNumberSchema.virtual('documents', {
 
 JobNumberSchema.set('toObject', { virtuals: true });
 JobNumberSchema.set('toJSON', { virtuals: true });
+
+JobNumberSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'code',
+    'assignedTo',
+    'estStartDate',
+    'estStartDate',
+    'estEndDate',
+    'createdBy',
+    'status',
+    'createdAt',
+    'updatedAt',
+  ];
+};
