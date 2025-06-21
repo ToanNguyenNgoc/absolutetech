@@ -18,13 +18,13 @@ export class EntryLogRawService {
     try {
       for (const element of dataRawLog) {
         try {
-          if (await this.rawLogsExists(element.serialNo)) continue;
+          if (await this.rawLogsExists(element.serial_no)) continue;
           const user = await this.userModel
             .findOne({ employee_id: element.employee_no_string })
             .exec();
           if (user) {
             await this.createRawLog({
-              serialNo: element.serialNo,
+              serial_no: element.serial_no,
               user: user?._id as Types.ObjectId,
               employee_no_string: element.employee_no_string,
               name: element.name,
@@ -47,8 +47,8 @@ export class EntryLogRawService {
     }
   }
 
-  async rawLogsExists(serialNo: number): Promise<any> {
-    const raw = await this.entryLogRawModel.findOne({ serialNo }).exec();
+  async rawLogsExists(serial_no: number): Promise<any> {
+    const raw = await this.entryLogRawModel.findOne({ serial_no }).exec();
     return !!raw;
   }
   async createRawLog(data: Partial<EntryLogRaw>) {

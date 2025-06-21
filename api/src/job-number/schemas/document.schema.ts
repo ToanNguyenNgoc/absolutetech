@@ -3,7 +3,7 @@ import mongoose, { Document as MongooseDocument } from 'mongoose';
 
 export type DocumentEntityDocument = DocumentEntity & MongooseDocument;
 
-@Schema({ timestamps: { created_at: 'created_at', updated_at: 'updated_at' } })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class DocumentEntity {
   @Prop({ required: true })
   name: string; // Line label, e.g., "Line #2"

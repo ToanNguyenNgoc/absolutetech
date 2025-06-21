@@ -6,7 +6,7 @@ export type UserDocument = User & Document;
 
 @Schema({
   collection: 'users',
-  timestamps: { created_at: 'created_at', updated_at: 'updated_at' },
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class User {
   @Prop({ required: true })

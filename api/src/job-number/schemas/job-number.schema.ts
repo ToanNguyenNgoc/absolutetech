@@ -3,7 +3,7 @@ import mongoose, { Document as MongooseDocument } from 'mongoose';
 
 export type JobNumberDocument = JobNumber & MongooseDocument;
 
-@Schema({ timestamps: { created_at: 'created_at', updated_at: 'updated_at' } })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class JobNumber {
   @Prop({ required: true, unique: true, index: true })
   code: string; // Unique Job Number code (JN#)

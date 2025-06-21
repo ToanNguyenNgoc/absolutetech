@@ -20,7 +20,7 @@ export interface InfoList {
   cardReaderNo: number;
   door_no: number;
   employee_no_string: string;
-  serialNo: number;
+  serial_no: number;
   userType: string;
   current_verify_mode: string;
   mask: string;
