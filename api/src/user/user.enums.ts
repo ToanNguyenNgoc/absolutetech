@@ -12,7 +12,7 @@ export const RoleName: { [key in Role]: string } = {
   [Role.TECHNICIAN]: 'Technician',
   [Role.STOREMAN]: 'Storeman',
   [Role.SUPERVISOR]: 'Supervisor',
-}
+};
 
 export enum Gender {
   MALE = 'Male',

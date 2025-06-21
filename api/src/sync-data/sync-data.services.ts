@@ -127,7 +127,6 @@ export class SyncDataService {
           const transformedDoc = { ...doc, id: doc._id.toString() };
           // @ts-ignore
           delete transformedDoc._id;
-
           const created_at = moment(new Date(transformedDoc.created_at));
           const updated_at = moment(new Date(transformedDoc.updated_at));
           const lastTime = moment(lastTimestamp);

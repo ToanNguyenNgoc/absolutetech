@@ -12,19 +12,22 @@ export class JobNumber {
   project: string; // Project name
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  assignedTo: mongoose.Types.ObjectId; // Person responsible (Line #1)
+  assigned_to: mongoose.Types.ObjectId; // Person responsible (Line #1)
 
   @Prop({ type: Date, required: false })
-  estStartDate?: Date;
+  est_start_date?: Date;
 
   @Prop({ type: Date, required: false })
-  estEndDate?: Date;
+  est_end_date?: Date;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  createdBy: mongoose.Types.ObjectId; // User who created the job
+  created_by: mongoose.Types.ObjectId; // User who created the job
 
   @Prop({ default: 'open', index: true })
   status: string; // Job status: open, closed, approved
+
+  @Prop({ type: Date, default: null }) // Add deleted_at field
+  deleted_at: Date | null;
 }
 
 export const JobNumberSchema = SchemaFactory.createForClass(JobNumber);
@@ -43,11 +46,10 @@ JobNumberSchema.statics.getSyncColumns = function () {
   return [
     'id',
     'code',
-    'assignedTo',
-    'estStartDate',
-    'estStartDate',
-    'estEndDate',
-    'createdBy',
+    'assigned_to',
+    'est_start_date',
+    'est_end_date',
+    'created_by',
     'status',
     'created_at',
     'updated_at',

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type FileUploadDocument = FileUpload & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class FileUpload {
   @Prop({ required: true })
   name: string; // Display name of the file
@@ -18,22 +18,22 @@ export class FileUpload {
   extension: string;
 
   @Prop()
-  mimeType: string;
+  mime_type: string;
 
   @Prop()
   type?: string; // e.g., job-doc, profile-img
 
   @Prop({ index: true })
-  refId: string; // ID of the target entity (e.g., DocumentEntity._id)
+  ref_id: string; // ID of the target entity (e.g., DocumentEntity._id)
 
   @Prop({ index: true })
-  refModel: string; // Name of the target model: 'DocumentEntity', 'User', etc.
+  ref_model: string; // Name of the target model: 'DocumentEntity', 'User', etc.
 
   @Prop({ default: false })
-  isDeleted?: boolean;
+  is_deleted?: boolean;
 
   @Prop({ default: true })
-  isTemp: boolean;
+  is_temp: boolean;
 }
 
 export const FileUploadSchema = SchemaFactory.createForClass(FileUpload);

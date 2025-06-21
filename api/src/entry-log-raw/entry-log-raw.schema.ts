@@ -9,16 +9,16 @@ export class EntryLogRaw {
   user: Types.ObjectId;
 
   @Prop({ required: true })
-  employeeNoString: string;
+  employee_no_string: string;
 
   @Prop({ required: true, unique: true })
-  serialNo: number;
+  serial_no: number;
 
   @Prop()
   name?: string;
 
   @Prop()
-  doorNo?: number;
+  door_no?: number;
 
   @Prop({ required: true })
   time: Date;
@@ -30,7 +30,7 @@ export class EntryLogRaw {
   minor?: number;
 
   @Prop()
-  currentVerifyMode: string;
+  current_verify_mode: string;
 
   @Prop({ default: Date.now })
   created_at: Date;

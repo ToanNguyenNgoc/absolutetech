@@ -13,10 +13,10 @@ export class EntryLog {
   date: Date;
 
   @Prop({ required: true })
-  timeIn: Date;
+  time_in: Date;
 
   @Prop()
-  timeOut?: Date;
+  time_out?: Date;
 
   @Prop()
   duration?: number;

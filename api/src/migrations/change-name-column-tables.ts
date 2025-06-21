@@ -25,7 +25,6 @@ async function migrateDatabase() {
         },
       },
     );
-    console.log('Migrated users collection');
 
     // Migration cho collection user_finger
     await db.collection('user_finger').updateMany(
@@ -38,7 +37,65 @@ async function migrateDatabase() {
         },
       },
     );
-    console.log('Migrated user_finger collection');
+    await db.collection('jobnumbers').updateMany(
+      {},
+      {
+        $rename: {
+          assignedTo: 'assigned_to',
+          estStartDate: 'est_start_date',
+          estEndDate: 'est_end_date',
+          createdBy: 'created_by',
+          createdAt: 'created_at',
+          updatedAt: 'updated_at',
+          deletedAt: 'deleted_at',
+        },
+      },
+    );
+    await db.collection('fileuploads').updateMany(
+      {},
+      {
+        $rename: {
+          isDeleted: 'is_deleted',
+          isTemp: 'is_temp',
+          mineType: 'mine_type',
+          refId: 'ref_id',
+          refModal: 'ref_modal',
+          createdAt: 'created_at',
+          updatedAt: 'updated_at',
+        },
+      },
+    );
+
+    await db.collection('documententities').updateMany(
+      {},
+      {
+        $rename: {
+          jobNumber: 'job_number',
+          createdAt: 'created_at',
+          updatedAt: 'updated_at',
+        },
+      },
+    );
+
+    await db.collection('entry_logs').updateMany(
+      {},
+      {
+        $rename: {
+          timeIn: 'time_in',
+          timeOut: 'time_out',
+        },
+      },
+    );
+    await db.collection('entry_logs_raw').updateMany(
+      {},
+      {
+        $rename: {
+          employeeNoString: 'employee_no_string',
+          doorNo: 'door_no',
+          currentVerifyMode: 'current_verify_mode',
+        },
+      },
+    );
   } catch (error) {
     console.error('Migration failed:', error);
   } finally {

@@ -3,13 +3,13 @@ import mongoose, { Document as MongooseDocument } from 'mongoose';
 
 export type DocumentEntityDocument = DocumentEntity & MongooseDocument;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class DocumentEntity {
   @Prop({ required: true })
   name: string; // Line label, e.g., "Line #2"
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'JobNumber', index: true })
-  jobNumber: mongoose.Types.ObjectId; // Parent JobNumber
+  job_number: mongoose.Types.ObjectId; // Parent JobNumber
 }
 
 export const DocumentEntitySchema =
