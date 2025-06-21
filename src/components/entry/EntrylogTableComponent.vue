@@ -60,7 +60,7 @@ export default {
         const searchText = ref('');
         const isExpanded = inject('isExpanded');
 
-        let searchtime_out = null;
+        let searchTimeOut = null;
 
 
         const fetchData = async () => {
@@ -111,7 +111,7 @@ export default {
         };
 
         const forceSearch = () => {
-            cleartime_out(searchtime_out);
+            clearTimeout(searchTimeOut);
             currentPage.value = 1;
             fetchData();
         };
@@ -131,8 +131,8 @@ export default {
         watch(
             () => searchText.value,
             () => {
-                cleartime_out(searchtime_out);
-                searchtime_out = settime_out(() => {
+                clearTimeout(searchTimeOut);
+                searchTimeOut = setTimeout(() => {
                     currentPage.value = 1;
                     fetchData();
                 }, 500);
