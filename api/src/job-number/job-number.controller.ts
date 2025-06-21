@@ -29,13 +29,13 @@ import { UpdateJobNumberDto } from './dto/update-job-number.dto';
 @Controller('/api/job-numbers')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class JobNumberController {
-  constructor(private readonly jobNumberService: JobNumberService) { }
+  constructor(private readonly jobNumberService: JobNumberService) {}
 
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
   async create(@Body() dto: CreateJobNumberDto, @Request() req) {
     const userId = req.user.userId;
-    return this.jobNumberService.create({ ...dto, createdBy: userId });
+    return this.jobNumberService.create({ ...dto, created_by: userId });
   }
 
   @Get(':id')
@@ -43,7 +43,6 @@ export class JobNumberController {
   async getDetail(@Param('id') id: string) {
     return this.jobNumberService.getDetailById(id);
   }
-
 
   @Get()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
@@ -78,14 +77,17 @@ export class JobNumberController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateJobNumberDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateJobNumberDto,
+    @Request() req,
+  ) {
     console.log('Updating job number with ID:', id);
     const userId = req.user.userId;
     return this.jobNumberService.update(id, {
       ...dto,
       id,
-      createdBy: userId,
+      created_by: userId,
     });
   }
-
 }

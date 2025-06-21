@@ -26,8 +26,8 @@
                 <el-table-column prop="user.username" label="Username" />
                 <el-table-column prop="user.position" label="Dept" />
                 <el-table-column prop="date" label="Date" :formatter="formatDate" />
-                <el-table-column prop="timeIn" label="Time In" :formatter="formatTime" />
-                <el-table-column prop="timeOut" label="Time Out" :formatter="formatTime" />
+                <el-table-column prop="time_in" label="Time In" :formatter="formatTime" />
+                <el-table-column prop="time_out" label="Time Out" :formatter="formatTime" />
                 <el-table-column prop="duration" label="Duration" />
             </el-table>
         </div>
@@ -60,7 +60,7 @@ export default {
         const searchText = ref('');
         const isExpanded = inject('isExpanded');
 
-        let searchTimeout = null;
+        let searchtime_out = null;
 
 
         const fetchData = async () => {
@@ -111,7 +111,7 @@ export default {
         };
 
         const forceSearch = () => {
-            clearTimeout(searchTimeout);
+            cleartime_out(searchtime_out);
             currentPage.value = 1;
             fetchData();
         };
@@ -131,8 +131,8 @@ export default {
         watch(
             () => searchText.value,
             () => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
+                cleartime_out(searchtime_out);
+                searchtime_out = settime_out(() => {
                     currentPage.value = 1;
                     fetchData();
                 }, 500);

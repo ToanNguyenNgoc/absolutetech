@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type FileUploadDocument = FileUpload & Document;
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
+@Schema({ timestamps: { created_at: 'created_at', updated_at: 'updated_at' } })
 export class FileUpload {
   @Prop({ required: true })
   name: string; // Display name of the file

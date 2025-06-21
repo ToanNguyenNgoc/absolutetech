@@ -42,19 +42,19 @@ export class UpdateJobNumberDto {
 
   @IsMongoId()
   @IsNotEmpty()
-  assignedTo: string;
+  assigned_to: string;
 
   @IsOptional()
-  @IsDateString({}, { message: 'estStartDate must be an ISO date string' })
-  estStartDate?: string;
+  @IsDateString({}, { message: 'est_start_date must be an ISO date string' })
+  est_start_date?: string;
 
   @IsOptional()
-  @IsDateString({}, { message: 'estEndDate must be an ISO date string' })
-  estEndDate?: string;
+  @IsDateString({}, { message: 'est_end_date must be an ISO date string' })
+  est_end_date?: string;
 
   @IsMongoId()
   @IsOptional()
-  createdBy: string;
+  created_by: string;
 
   @IsOptional()
   @IsString()

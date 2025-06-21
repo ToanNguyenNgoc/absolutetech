@@ -28,12 +28,12 @@ export class JobNumberService {
 
   async create(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
     try {
-      const { documents, estStartDate, estEndDate, ...jobData } = dto;
+      const { documents, est_start_date, est_end_date, ...jobData } = dto;
 
       const created_ata = {
         ...jobData,
-        estStartDate: estStartDate ? new Date(estStartDate) : undefined,
-        estEndDate: estEndDate ? new Date(estEndDate) : undefined,
+        est_start_date: est_start_date ? new Date(est_start_date) : undefined,
+        est_end_date: est_end_date ? new Date(est_end_date) : undefined,
       };
 
       const jobNumber = await this.jobNumberModel.create(created_ata);
@@ -49,9 +49,9 @@ export class JobNumberService {
             await this.fileUploadModel.updateMany(
               { _id: { $in: doc.fileIds } },
               {
-                refId: newDocument._id,
+                ref_id: newDocument._id,
                 refModel: 'DocumentEntity',
-                isTemp: false,
+                is_temp: false,
               },
             );
           }
@@ -68,8 +68,8 @@ export class JobNumberService {
   async getDetailById(id: string) {
     const jobNumber = await this.jobNumberModel
       .findById(id)
-      .populate('assignedTo')
-      .populate('createdBy')
+      .populate('assigned_to')
+      .populate('created_by')
       .populate({
         path: 'documents',
         populate: {
@@ -95,10 +95,10 @@ export class JobNumberService {
       {},
       {
         populate: [
-          'assignedTo',
-          'createdBy',
-          'estStartDate',
-          'estEndDate',
+          'assigned_to',
+          'created_by',
+          'est_start_date',
+          'est_end_date',
           {
             path: 'documents',
             populate: {
@@ -118,7 +118,7 @@ export class JobNumberService {
       size: file.size,
       extension: path.extname(file.originalname).replace('.', ''),
       mimeType: file.mimetype,
-      isTemp: true,
+      is_temp: true,
     });
     return await newFile.save();
   }
@@ -134,7 +134,7 @@ export class JobNumberService {
 
     const files = await this.fileUploadModel
       .find({
-        refId: { $in: documentIds },
+        ref_id: { $in: documentIds },
         refModel: 'DocumentEntity',
       })
       .exec();
@@ -151,7 +151,7 @@ export class JobNumberService {
     }
 
     await this.fileUploadModel.deleteMany({
-      refId: { $in: documentIds },
+      ref_id: { $in: documentIds },
       refModel: 'DocumentEntity',
     });
     await this.documentModel.deleteMany({ jobNumber: id });
@@ -169,8 +169,8 @@ export class JobNumberService {
     await this.jobNumberModel.findByIdAndUpdate(id, {
       code: dto.code,
       project: dto.project,
-      assignedTo: dto.assignedTo,
-      createdBy: dto.createdBy,
+      assigned_to: dto.assigned_to,
+      created_by: dto.created_by,
       status: dto.status ?? 'open',
     });
 
@@ -184,7 +184,7 @@ export class JobNumberService {
 
         // Sync fileIds: delete removed ones, update remaining
         const existingFiles = await this.fileUploadModel
-          .find({ refId: doc.documentId, refModel: 'DocumentEntity' })
+          .find({ ref_id: doc.documentId, refModel: 'DocumentEntity' })
           .exec();
         const incomingIds = doc.fileIds ?? [];
 
@@ -208,9 +208,9 @@ export class JobNumberService {
         await this.fileUploadModel.updateMany(
           { _id: { $in: incomingIds } },
           {
-            refId: doc.documentId,
+            ref_id: doc.documentId,
             refModel: 'DocumentEntity',
-            isTemp: false,
+            is_temp: false,
           },
         );
       } else {
@@ -224,9 +224,9 @@ export class JobNumberService {
           await this.fileUploadModel.updateMany(
             { _id: { $in: doc.fileIds } },
             {
-              refId: newDoc._id,
+              ref_id: newDoc._id,
               refModel: 'DocumentEntity',
-              isTemp: false,
+              is_temp: false,
             },
           );
         }

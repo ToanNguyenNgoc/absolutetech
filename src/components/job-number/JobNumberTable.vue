@@ -14,18 +14,18 @@
             <el-table-column prop="code" label="JN" />
             <el-table-column label="Client">
                 <template #default="{ row }">
-                    {{ row.assignedTo?.full_name || 'N/A' }}
+                    {{ row.assigned_to?.full_name || 'N/A' }}
                 </template>
             </el-table-column>
             <el-table-column prop="project" label="Project" />
-            <el-table-column prop="estStartDate" label="Est. Start Date">
+            <el-table-column prop="est_start_date" label="Est. Start Date">
                 <template #default="{ row }">
-                    {{ formatDate(row.estStartDate) }}
+                    {{ formatDate(row.est_start_date) }}
                 </template>
             </el-table-column>
-            <el-table-column prop="estEndDate" label="Est. End Date">
+            <el-table-column prop="est_end_date" label="Est. End Date">
                 <template #default="{ row }">
-                    {{ formatDate(row.estEndDate) }}
+                    {{ formatDate(row.est_end_date) }}
                 </template>
             </el-table-column>
 
@@ -127,9 +127,9 @@ export default {
                 const payload = {
                     code: row.code,
                     project: row.project,
-                    estStartDate: row.estStartDate,
-                    estEndDate: row.estEndDate,
-                    // add client_id or assignedTo if needed
+                    est_start_date: row.est_start_date,
+                    est_end_date: row.est_end_date,
+                    // add client_id or assigned_to if needed
                 };
                 await createJobNumber(payload);
                 ElMessage.success('Saved successfully');
@@ -151,7 +151,7 @@ export default {
                 return (
                     item.code?.toLowerCase().includes(term) ||
                     item.project?.toLowerCase().includes(term) ||
-                    item.assignedTo?.full_name?.toLowerCase().includes(term)
+                    item.assigned_to?.full_name?.toLowerCase().includes(term)
                 );
             });
         }, 500);

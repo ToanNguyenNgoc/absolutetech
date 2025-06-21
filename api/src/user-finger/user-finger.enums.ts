@@ -24,11 +24,11 @@ export interface AcsEventCondResponse {
       cardType: number;
       name: string;
       cardReaderNo: number;
-      doorNo: number;
-      employeeNoString: string;
+      door_no: number;
+      employee_no_string: string;
       serialNo: number;
       userType: string;
-      currentVerifyMode: string;
+      current_verify_mode: string;
       mask: string;
       pictureURL: string;
       FaceRect: object;

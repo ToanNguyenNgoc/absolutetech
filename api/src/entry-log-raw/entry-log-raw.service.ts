@@ -20,19 +20,19 @@ export class EntryLogRawService {
         try {
           if (await this.rawLogsExists(element.serialNo)) continue;
           const user = await this.userModel
-            .findOne({ employee_id: element.employeeNoString })
+            .findOne({ employee_id: element.employee_no_string })
             .exec();
           if (user) {
             await this.createRawLog({
               serialNo: element.serialNo,
               user: user?._id as Types.ObjectId,
-              employeeNoString: element.employeeNoString,
+              employee_no_string: element.employee_no_string,
               name: element.name,
-              doorNo: element.doorNo,
+              door_no: element.door_no,
               time: new Date(element.time),
               major: element.major,
               minor: element.minor,
-              currentVerifyMode: element?.pictureURL ? 'face' : 'fp',
+              current_verify_mode: element?.pictureURL ? 'face' : 'fp',
             });
           }
         } catch (error) {

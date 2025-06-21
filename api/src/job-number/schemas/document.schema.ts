@@ -3,7 +3,7 @@ import mongoose, { Document as MongooseDocument } from 'mongoose';
 
 export type DocumentEntityDocument = DocumentEntity & MongooseDocument;
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
+@Schema({ timestamps: { created_at: 'created_at', updated_at: 'updated_at' } })
 export class DocumentEntity {
   @Prop({ required: true })
   name: string; // Line label, e.g., "Line #2"
@@ -15,11 +15,11 @@ export class DocumentEntity {
 export const DocumentEntitySchema =
   SchemaFactory.createForClass(DocumentEntity);
 
-// Virtual files based on refId + refModel
+// Virtual files based on ref_id + refModel
 DocumentEntitySchema.virtual('files', {
   ref: 'FileUpload',
   localField: '_id',
-  foreignField: 'refId',
+  foreignField: 'ref_id',
   justOne: false,
 });
 

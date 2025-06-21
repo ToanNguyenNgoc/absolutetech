@@ -43,19 +43,21 @@ export class EntryLogService {
 
   async createFakeLog(userId: string): Promise<EntryLog> {
     const now = new Date();
-    const timeIn = new Date(
+    const time_in = new Date(
       now.getTime() - Math.floor(Math.random() * 60) * 60000,
     );
-    const timeOut = new Date(
-      timeIn.getTime() + (30 + Math.floor(Math.random() * 90)) * 60000,
+    const time_out = new Date(
+      time_in.getTime() + (30 + Math.floor(Math.random() * 90)) * 60000,
     );
-    const duration = Math.round((timeOut.getTime() - timeIn.getTime()) / 60000);
+    const duration = Math.round(
+      (time_out.getTime() - time_in.getTime()) / 60000,
+    );
 
     const entryLog = new this.entryLogModel({
       user: userId,
       date: now,
-      timeIn,
-      timeOut,
+      time_in,
+      time_out,
       duration,
     });
     return entryLog.save();
@@ -121,8 +123,8 @@ export class EntryLogService {
         const newEntryLog = new this.entryLogModel({
           user: userId,
           date: today,
-          timeIn: checkIn,
-          timeOut: checkOut,
+          time_in: checkIn,
+          time_out: checkOut,
           duration,
         });
         const savedEntryLog = await newEntryLog.save();

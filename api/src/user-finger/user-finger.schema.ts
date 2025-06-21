@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 @Schema({
   collection: 'user_finger',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: { created_at: 'created_at', updated_at: 'updated_at' },
 })
 export class UserFinger {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })

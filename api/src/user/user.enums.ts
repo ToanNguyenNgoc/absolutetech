@@ -30,7 +30,7 @@ export interface Valid {
 }
 
 export interface RightPlan {
-  doorNo: number;
+  door_no: number;
   planTemplateNo: string;
 }
 
@@ -102,7 +102,7 @@ export interface PersonInfoExtend {
 }
 
 export interface RightPlan {
-  doorNo: number;
+  door_no: number;
   planTemplateNo: string;
 }
 
@@ -162,7 +162,7 @@ export interface PersonInfoExtend {
 }
 
 export interface RightPlan {
-  doorNo: number;
+  door_no: number;
   planTemplateNo: string;
 }
 
@@ -190,7 +190,7 @@ export const mockUser: any = [
     belongGroup: '',
     password: '',
     doorRight: '1',
-    RightPlan: [{ doorNo: 1, planTemplateNo: '1' }],
+    RightPlan: [{ door_no: 1, planTemplateNo: '1' }],
     maxOpenDoorTime: 0,
     openDoorTime: 0,
     roomNumber: 0,
@@ -219,7 +219,7 @@ export const mockUser: any = [
     belongGroup: '',
     password: '',
     doorRight: '1',
-    RightPlan: [{ doorNo: 1, planTemplateNo: '1' }],
+    RightPlan: [{ door_no: 1, planTemplateNo: '1' }],
     maxOpenDoorTime: 0,
     openDoorTime: 0,
     roomNumber: 0,

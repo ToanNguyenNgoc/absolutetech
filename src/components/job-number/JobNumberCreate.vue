@@ -18,18 +18,18 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="Est. Start Date" prop="estStartDate">
-                            <el-date-picker v-model="form.estStartDate" type="date" placeholder="Start Date" />
+                        <el-form-item label="Est. Start Date" prop="est_start_date">
+                            <el-date-picker v-model="form.est_start_date" type="date" placeholder="Start Date" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="Est. End Date" prop="estEndDate">
-                            <el-date-picker v-model="form.estEndDate" type="date" placeholder="End Date" />
+                        <el-form-item label="Est. End Date" prop="est_end_date">
+                            <el-date-picker v-model="form.est_end_date" type="date" placeholder="End Date" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="Technician/Supervisor" prop="assignedTo">
-                            <el-select v-model="form.assignedTo" placeholder="Select">
+                        <el-form-item label="Technician/Supervisor" prop="assigned_to">
+                            <el-select v-model="form.assigned_to" placeholder="Select">
                                 <el-option v-for="user in users" :key="user._id" :label="user.full_name"
                                     :value="user._id" />
                             </el-select>
@@ -105,9 +105,9 @@ export default {
         const form = ref({
             code: '',
             project: '',
-            estStartDate: '',
-            estEndDate: '',
-            assignedTo: '',
+            est_start_date: '',
+            est_end_date: '',
+            assigned_to: '',
             documents: [],
         });
 
@@ -187,9 +187,9 @@ export default {
                         form.value = {
                             code: data.code,
                             project: data.project,
-                            estStartDate: data.estStartDate ? new Date(data.estStartDate) : '',
-                            estEndDate: data.estEndDate ? new Date(data.estEndDate) : '',
-                            assignedTo: data.assignedTo?._id || '',
+                            est_start_date: data.est_start_date ? new Date(data.est_start_date) : '',
+                            est_end_date: data.est_end_date ? new Date(data.est_end_date) : '',
+                            assigned_to: data.assigned_to?._id || '',
                             documents: (data.documents || []).map((doc) => ({
                                 documentId: doc._id,
                                 name: doc.name,
@@ -206,9 +206,9 @@ export default {
                         form.value = {
                             code: '', // reset code để tránh lỗi trùng
                             project: data.project,
-                            estStartDate: data.estStartDate ? new Date(data.estStartDate) : '',
-                            estEndDate: data.estEndDate ? new Date(data.estEndDate) : '',
-                            assignedTo: data.assignedTo?._id || '',
+                            est_start_date: data.est_start_date ? new Date(data.est_start_date) : '',
+                            est_end_date: data.est_end_date ? new Date(data.est_end_date) : '',
+                            assigned_to: data.assigned_to?._id || '',
                             documents: (data.documents || []).map((doc) => ({
                                 name: doc.name,
                                 fileIds: doc.files.map((f) => f._id),
