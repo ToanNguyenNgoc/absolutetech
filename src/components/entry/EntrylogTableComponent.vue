@@ -21,8 +21,8 @@
         }">
             <el-table v-loading="loading" :data="tableData" class="custom-table" border style="margin-top: 16px;">
                 <el-table-column type="index" label="No." width="60" />
-                <el-table-column prop="user.employeeID" label="EmployeeID" />
-                <el-table-column prop="user.fullName" label="Full Name" />
+                <el-table-column prop="user.employee_id" label="employee_id" />
+                <el-table-column prop="user.full_name" label="Full Name" />
                 <el-table-column prop="user.username" label="Username" />
                 <el-table-column prop="user.position" label="Dept" />
                 <el-table-column prop="date" label="Date" :formatter="formatDate" />
@@ -267,6 +267,7 @@ export default {
     .entry-logs-page {
         padding: unset;
     }
+
     .total-text {
         left: 0px;
     }
@@ -284,6 +285,7 @@ export default {
 :deep(.el-table__header td) {
     padding: 16px;
 }
+
 .btn {
     display: inline-flex;
     align-items: center;

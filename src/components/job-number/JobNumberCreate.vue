@@ -30,7 +30,7 @@
                     <el-col :span="8">
                         <el-form-item label="Technician/Supervisor" prop="assignedTo">
                             <el-select v-model="form.assignedTo" placeholder="Select">
-                                <el-option v-for="user in users" :key="user._id" :label="user.fullName"
+                                <el-option v-for="user in users" :key="user._id" :label="user.full_name"
                                     :value="user._id" />
                             </el-select>
                         </el-form-item>

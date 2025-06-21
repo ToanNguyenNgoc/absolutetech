@@ -6,35 +6,30 @@ export type EntryLogDocument = EntryLog & Document;
 
 @Schema({ collection: 'entry_logs' })
 export class EntryLog {
-
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user: User;
-
 
   @Prop({ required: true })
   date: Date;
 
-
   @Prop({ required: true })
   timeIn: Date;
 
-
   @Prop()
   timeOut?: Date;
-
 
   @Prop()
   duration?: number;
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  created_at: Date;
 }
 
 export const EntryLogSchema = SchemaFactory.createForClass(EntryLog);
 
 EntryLogSchema.virtual('rawLogs', {
   ref: 'EntryLogRaw',
-  localField: '_id', 
+  localField: '_id',
   foreignField: 'entry_log_id',
 });
 

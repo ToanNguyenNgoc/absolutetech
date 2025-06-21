@@ -61,13 +61,13 @@ export class User {
   @Prop()
   avatar: string;
 
-  @Prop({ alias: 'nric_fin' })
+  @Prop()
   nric_fin: string;
 
-  @Prop({ alias: 'work_permit_expiry' })
+  @Prop()
   work_permit_expiry: Date;
 
-  @Prop({ type: Date, default: null }) // Add deletedAt field
+  @Prop({ type: Date, default: null }) // Add deleted_at field
   deleted_at: Date | null;
 }
 

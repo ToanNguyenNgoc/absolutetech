@@ -71,21 +71,21 @@ export class EntryLogController {
 
     const exportData = entryLogs.map((log: any) => {
       const obj = typeof log.toObject === 'function' ? log.toObject() : log;
-      const { _id, date, timeIn, timeOut, duration, createdAt, user } = obj;
+      const { _id, date, timeIn, timeOut, duration, created_at, user } = obj;
       const userObj =
         user && typeof user.toObject === 'function' ? user.toObject() : user;
       return {
         EntryLogId: _id,
-        FullName: userObj?.fullName || '',
+        full_name: userObj?.full_name || '',
         Username: userObj?.username || '',
-        EmployeeID: userObj?.employeeID || '',
+        employee_id: userObj?.employee_id || '',
         Dept: userObj?.position || '',
         Role: userObj?.role || '',
         Date: date || '',
         TimeIn: timeIn || '',
         TimeOut: timeOut || '',
         Duration: duration || '',
-        CreatedAt: createdAt || '',
+        created_at: created_at || '',
       };
     });
 

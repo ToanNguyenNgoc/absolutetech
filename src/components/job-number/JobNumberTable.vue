@@ -14,7 +14,7 @@
             <el-table-column prop="code" label="JN" />
             <el-table-column label="Client">
                 <template #default="{ row }">
-                    {{ row.assignedTo?.fullName || 'N/A' }}
+                    {{ row.assignedTo?.full_name || 'N/A' }}
                 </template>
             </el-table-column>
             <el-table-column prop="project" label="Project" />
@@ -151,7 +151,7 @@ export default {
                 return (
                     item.code?.toLowerCase().includes(term) ||
                     item.project?.toLowerCase().includes(term) ||
-                    item.assignedTo?.fullName?.toLowerCase().includes(term)
+                    item.assignedTo?.full_name?.toLowerCase().includes(term)
                 );
             });
         }, 500);

@@ -11,14 +11,14 @@
                 <AvatarUploader v-model="userForm.avatar" @file-selected="onFileSelected" />
             </div>
             <div class="form-modal-add-user">
-                <!-- EmployeeID -->
-                <el-form-item label="EmployeeID">
-                    <el-input :disabled="isEditLocal" v-model="userForm.employeeID" placeholder="Employee ID" />
+                <!-- employee_id -->
+                <el-form-item label="employee_id">
+                    <el-input :disabled="isEditLocal" v-model="userForm.employee_id" placeholder="Employee ID" />
                 </el-form-item>
 
                 <!-- Full Name -->
                 <el-form-item label="Full Name">
-                    <el-input v-model="userForm.fullName" placeholder="Enter full name" />
+                    <el-input v-model="userForm.full_name" placeholder="Enter full name" />
                 </el-form-item>
 
                 <!-- Username -->
@@ -75,12 +75,13 @@
 
                 <!-- NRIC/FIN -->
                 <el-form-item label="NRIC/FIN">
-                    <el-input v-model="userForm.nricFin" placeholder="Enter NRIC or FIN" />
+                    <el-input v-model="userForm.nric_fin" placeholder="Enter NRIC or FIN" />
                 </el-form-item>
 
                 <!-- Work Permit Expiry -->
                 <el-form-item label="Work Permit Expiry">
-                    <el-date-picker v-model="userForm.workPermitExpiry" type="date" placeholder="Select expiry date" style="width: 100%;"/>
+                    <el-date-picker v-model="userForm.work_permit_expiry" type="date" placeholder="Select expiry date"
+                        style="width: 100%;" />
                 </el-form-item>
 
             </div>
@@ -125,9 +126,9 @@ export default {
 
         const userForm = ref({
             avatar: '',
-            fullName: '',
+            full_name: '',
             username: '',
-            employeeID: '',
+            employee_id: '',
             position: '',
             role: '',
             gender: '',
@@ -136,8 +137,8 @@ export default {
             address: '',
             email: '',
             password: '',
-            nricFin: '',
-            workPermitExpiry: null,
+            nric_fin: '',
+            work_permit_expiry: null,
         });
         const genders = ['Male', 'Female'];
 
@@ -161,9 +162,9 @@ export default {
         const handleAddUser = () => {
             userForm.value = {
                 avatar: '',
-                fullName: '',
+                full_name: '',
                 username: '',
-                employeeID: '',
+                employee_id: '',
                 position: '',
                 role: '',
                 gender: '',

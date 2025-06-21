@@ -13,7 +13,7 @@ import { Transform } from 'class-transformer';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  fullName: string;
+  full_name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -22,7 +22,7 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsUniqueUser({ message: 'Employee ID already exists' })
-  employeeID?: string;
+  employee_id?: string;
 
   @IsEnum(Role)
   @IsOptional()
@@ -58,11 +58,11 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  @Transform(({ obj }) => obj.nric_fin ?? obj.nricFin)
-  nricFin?: string;
+  @Transform(({ obj }) => obj.nric_fin ?? obj.nric_fin)
+  nric_fin?: string;
 
   @IsOptional()
   @IsDateString()
-  @Transform(({ obj }) => obj.work_permit_expiry ?? obj.workPermitExpiry)
-  workPermitExpiry?: Date;
+  @Transform(({ obj }) => obj.work_permit_expiry ?? obj.work_permit_expiry)
+  work_permit_expiry?: Date;
 }

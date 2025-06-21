@@ -16,9 +16,9 @@ import { JobNumber } from 'src/job-number/schemas/job-number.schema';
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
   id?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date | null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at?: Date | null;
   [key: string]: any;
 }
 
@@ -110,8 +110,8 @@ export class SyncDataService {
 
       for (const { model, table } of models) {
         const query = isFetchAll
-          ? { updatedAt: { $gte: new Date(lastTimestamp) } }
-          : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
+          ? { updated_at: { $gte: new Date(lastTimestamp) } }
+          : { updated_at: { $gte: new Date(lastTimestamp) }, deleted_at: null };
 
         const documents = await model
           .find(query)
@@ -128,12 +128,12 @@ export class SyncDataService {
           // @ts-ignore
           delete transformedDoc._id;
 
-          const createdAt = moment(new Date(transformedDoc.createdAt));
-          const updatedAt = moment(new Date(transformedDoc.updatedAt));
+          const created_at = moment(new Date(transformedDoc.created_at));
+          const updated_at = moment(new Date(transformedDoc.updated_at));
           const lastTime = moment(lastTimestamp);
 
-          if (isFetchAll || lastTime.isBefore(createdAt)) {
-            if (transformedDoc.deletedAt) {
+          if (isFetchAll || lastTime.isBefore(created_at)) {
+            if (transformedDoc.deleted_at) {
               result.delete.push(
                 `DELETE FROM ${table} WHERE id = ${SqlString.escape(transformedDoc.id)}`,
               );
@@ -142,8 +142,8 @@ export class SyncDataService {
                 this.toSqlInsert(transformedDoc, table, syncColumns),
               );
             }
-          } else if (updatedAt.isAfter(createdAt)) {
-            if (transformedDoc.deletedAt) {
+          } else if (updated_at.isAfter(created_at)) {
+            if (transformedDoc.deleted_at) {
               result.delete.push(
                 `DELETE FROM ${table} WHERE id = ${SqlString.escape(transformedDoc.id)}`,
               );

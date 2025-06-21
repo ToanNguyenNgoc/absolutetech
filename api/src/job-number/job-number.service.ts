@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // job-number.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -23,19 +24,19 @@ export class JobNumberService {
     private fileUploadModel: Model<FileUploadDocument>,
     @InjectModel(DocumentEntity.name)
     private documentModel: Model<DocumentEntityDocument>,
-  ) { }
+  ) {}
 
   async create(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
     try {
       const { documents, estStartDate, estEndDate, ...jobData } = dto;
 
-      const createData = {
+      const created_ata = {
         ...jobData,
         estStartDate: estStartDate ? new Date(estStartDate) : undefined,
         estEndDate: estEndDate ? new Date(estEndDate) : undefined,
       };
 
-      const jobNumber = await this.jobNumberModel.create(createData);
+      const jobNumber = await this.jobNumberModel.create(created_ata);
 
       if (documents?.length) {
         for (const doc of documents) {

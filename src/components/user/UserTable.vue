@@ -6,10 +6,10 @@
         <el-table v-loading="loading" :data="tableData" class="custom-table" border style="margin-top: 16px;"
             :fit="true" ref="tableRef">
             <el-table-column type="index" label="No." width="57" />
-            <el-table-column prop="fullName" label="Full Name" />
+            <el-table-column prop="full_name" label="Full Name" />
             <el-table-column prop="username" label="Username" />
-            <el-table-column prop="nricFin" label="NRIC/FIN" />
-            <el-table-column prop="employeeID" label="EmployeeID" />
+            <el-table-column prop="nric_fin" label="NRIC/FIN" />
+            <el-table-column prop="employee_id" label="employee_id" />
             <el-table-column prop="role" label="Role">
                 <template #default="{ row }">
                     {{ RoleName[row.role] || row.role }}

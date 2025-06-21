@@ -25,7 +25,7 @@
                         <ul>
                             <li>
                                 <img src="@/assets/icon-user.svg" alt="">
-                                <span class="avatar-name">{{ userInfo?.fullName }}</span>
+                                <span class="avatar-name">{{ userInfo?.full_name }}</span>
                             </li>
                             <li>
                                 <img src="@/assets/icon-information.svg" alt="">
@@ -198,7 +198,7 @@
                                 <img class="avt-mobile"
                                     :src="userInfo?.avatar ? baseURL + '/' + userInfo.avatar : require('@/assets/img/avt-default.png')"
                                     alt="Logo" />
-                                <p>{{ userInfo?.fullName }}</p>
+                                <p>{{ userInfo?.full_name }}</p>
                             </div>
                             <div class="drawer-user-info-mobile__right" @click="openChangePasswordModal">
                                 Change Password

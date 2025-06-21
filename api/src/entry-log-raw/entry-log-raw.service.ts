@@ -20,7 +20,7 @@ export class EntryLogRawService {
         try {
           if (await this.rawLogsExists(element.serialNo)) continue;
           const user = await this.userModel
-            .findOne({ employeeID: element.employeeNoString })
+            .findOne({ employee_id: element.employeeNoString })
             .exec();
           if (user) {
             await this.createRawLog({
@@ -57,6 +57,6 @@ export class EntryLogRawService {
   }
 
   async getLatestEntry(): Promise<EntryLogRawDocument | null> {
-    return this.entryLogRawModel.findOne().sort({ createdAt: -1 }).exec();
+    return this.entryLogRawModel.findOne().sort({ created_at: -1 }).exec();
   }
 }

@@ -33,7 +33,7 @@ export class EntryLogRaw {
   currentVerifyMode: string;
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  created_at: Date;
 
   @Prop({ type: Types.ObjectId, ref: 'EntryLog' })
   entry_log_id?: Types.ObjectId;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Injectable,
   NotFoundException,
@@ -10,7 +9,6 @@ import { parse } from 'csv-parse';
 import * as fs from 'fs';
 import { Model, Types } from 'mongoose';
 import * as path from 'path';
-import { paginate } from 'src/common/pagination.util';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { MqttService } from 'src/mqtt/mqtt.service';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
@@ -19,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
 import { WarehouseService } from 'src/external/warehouse.service';
+import { paginate } from 'src/common/pagination.util';
 
 @Injectable()
 export class UserService {
@@ -44,7 +43,7 @@ export class UserService {
       ...dto,
       employee_hik:
         dto.employee_hik ||
-        `${dto.employeeID?.toLocaleLowerCase().trim() || ''}hik${shortId}`.slice(
+        `${dto.employee_id?.toLocaleLowerCase().trim() || ''}hik${shortId}`.slice(
           0,
           32,
         ),
@@ -54,11 +53,11 @@ export class UserService {
     const res = await created.save();
     await this.warehouseService.syncUserToLaravel('create', {
       login_name: dto.username,
-      name: dto.fullName,
+      name: dto.full_name,
       password: dto.password,
       email: dto.email ?? null,
-      employee_id: dto.employeeID,
-      card_id: dto.employeeID,
+      employee_id: dto.employee_id,
+      card_id: dto.employee_id,
       role: dto.role,
       dept: dto.position ?? null,
       avatar: dto.avatar ?? null,
@@ -135,10 +134,10 @@ export class UserService {
       }
       await this.warehouseService.syncUserToLaravel('update', {
         login_name: updated.username,
-        name: dto.fullName,
+        name: dto.full_name,
         email: updated.email ?? null,
-        employee_id: updated.employeeID,
-        card_id: updated.employeeID,
+        employee_id: updated.employee_id,
+        card_id: updated.employee_id,
         role: updated.role,
         dept: updated.position ?? null,
       });
@@ -153,7 +152,7 @@ export class UserService {
   async deleteUser(id: string): Promise<UserDocument> {
     const deleted = await this.userModel.findByIdAndDelete(id).exec();
     await this.warehouseService.syncUserToLaravel('delete', {
-      employee_id: deleted?.employeeID,
+      employee_id: deleted?.employee_id,
     });
     if (!deleted) {
       throw new UnprocessableEntityException('User not found');
@@ -215,10 +214,10 @@ export class UserService {
 
     for (const record of records) {
       const {
-        fullName,
+        full_name,
         username,
         email,
-        employeeID,
+        employee_id,
         role,
         position,
         gender,
@@ -229,22 +228,22 @@ export class UserService {
       } = record;
 
       const existed = await this.userModel.findOne({
-        $or: [{ username }, { email }, { employeeID }],
+        $or: [{ username }, { email }, { employee_id }],
       });
 
       if (existed) {
         skippedUsers.push({
           row: record,
-          reason: 'Duplicate username/email/employeeID',
+          reason: 'Duplicate username/email/employee_id',
         });
         continue;
       }
 
       const user = new this.userModel({
-        fullName,
+        full_name,
         username,
         email,
-        employeeID,
+        employee_id,
         role,
         position,
         gender,
@@ -350,9 +349,9 @@ export class UserService {
           }
 
           const res = await this.createUser({
-            employeeID: user.employeeNo,
+            employee_id: user.employeeNo,
             employee_hik: user.employeeNo,
-            fullName: user.name || user.employeeNo,
+            full_name: user.name || user.employeeNo,
             username: user.employeeNo,
             password: '123123',
             face_hik: user.faceURL ?? '',
@@ -387,18 +386,18 @@ export class UserService {
 
   async deleteUserByEmployee(employee_hik: string) {
     try {
-      console.log(`🗑 Deleting user with employeeID: ${employee_hik}`);
+      console.log(`🗑 Deleting user with employee_id: ${employee_hik}`);
       const deleted = await this.userModel.deleteOne({ employee_hik });
       if (deleted.deletedCount > 0) {
         console.log(
-          `✅ User with employeeID ${employee_hik} deleted successfully.`,
+          `✅ User with employee_id ${employee_hik} deleted successfully.`,
         );
       } else {
-        console.warn(`⚠️ No user found with employeeID: ${employee_hik}`);
+        console.warn(`⚠️ No user found with employee_id: ${employee_hik}`);
       }
     } catch (error) {
       console.error(
-        `❌ Error deleting user with employeeID ${employee_hik}:`,
+        `❌ Error deleting user with employee_id ${employee_hik}:`,
         error,
       );
     }
@@ -412,7 +411,7 @@ export class UserService {
     return this.userModel
       .find(
         { role: { $in: [Role.TECHNICIAN, Role.SUPERVISOR] } },
-        { fullName: 1 },
+        { full_name: 1 },
       )
       .exec();
   }

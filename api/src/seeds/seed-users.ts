@@ -9,19 +9,22 @@ async function bootstrap() {
 
   const users = [
     {
-      fullName: 'Super Admin',
+      full_name: 'Super Admin',
       username: 'super_admin',
       email: 'super_admin@yopmail.com',
       password: '123123',
-      employeeID: 'super_admin',
+      employee_id: 'super_admin',
+      employee_hik: 'super_admin',
+      is_sync: 1,
+      face_hik: '',
       role: Role.SUPER_ADMIN,
-      position: 'Developer',
+      position: 'super_admin',
       gender: Gender.MALE,
       birthday: new Date('1990-01-01'),
       phone: '123456789',
       address: '123 Main Street',
       avatar: '',
-    }
+    },
   ];
 
   for (const user of users) {
