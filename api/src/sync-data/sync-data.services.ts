@@ -2,7 +2,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import moment from 'moment';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import SqlString from 'sqlstring';
 import { UserFinger } from 'src/user-finger/user-finger.schema';
 import { User, UserDocument } from 'src/user/user.schema';
@@ -177,8 +177,8 @@ export class SyncDataService {
       let val = doc[col];
       if (val instanceof Date) {
         val = moment(val).format('YYYY-MM-DD HH:mm:ss');
-      } else if (col === 'user' && val instanceof Object) {
-        val = val.toString(); // Convert ObjectId to string for UserFinger
+      } else if (val instanceof mongoose.Types.ObjectId) {
+        val = val.toString();
       }
       fields.push(`\`${col}\``);
       values.push(SqlString.escape(val));
@@ -196,8 +196,8 @@ export class SyncDataService {
       let val = doc[col];
       if (val instanceof Date) {
         val = moment(val).format('YYYY-MM-DD HH:mm:ss');
-      } else if (col === 'user' && val instanceof Object) {
-        val = val.toString(); // Convert ObjectId to string for UserFinger
+      } else if (val instanceof mongoose.Types.ObjectId) {
+        val = val.toString();
       }
       pairs.push(`\`${col}\`=${SqlString.escape(val)}`);
     }

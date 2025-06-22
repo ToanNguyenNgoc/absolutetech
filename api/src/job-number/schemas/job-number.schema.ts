@@ -11,7 +11,10 @@ export class JobNumber {
   @Prop({ required: true })
   project: string; // Project name
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
   assigned_to: mongoose.Types.ObjectId; // Person responsible (Line #1)
 
   @Prop({ type: Date, required: false })
