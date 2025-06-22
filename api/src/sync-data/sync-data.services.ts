@@ -174,13 +174,17 @@ export class SyncDataService {
     const values: string[] = [];
 
     for (const col of columns) {
+      let column = col;
       let val = doc[col];
       if (val instanceof Date) {
         val = moment(val).format('YYYY-MM-DD HH:mm:ss');
       } else if (val instanceof mongoose.Types.ObjectId) {
+        if (column != 'id') {
+          column = `${column}_id`;
+        }
         val = val.toString();
       }
-      fields.push(`\`${col}\``);
+      fields.push(`\`${column}\``);
       values.push(SqlString.escape(val));
     }
     return `INSERT OR REPLACE INTO ${table} (${fields.join(', ')}) VALUES (${values.join(', ')})`;
@@ -193,13 +197,17 @@ export class SyncDataService {
     const pairs: string[] = [];
 
     for (const col of columns) {
+      let column = col;
       let val = doc[col];
       if (val instanceof Date) {
         val = moment(val).format('YYYY-MM-DD HH:mm:ss');
       } else if (val instanceof mongoose.Types.ObjectId) {
+        if (column != 'id') {
+          column = `${column}_id`;
+        }
         val = val.toString();
       }
-      pairs.push(`\`${col}\`=${SqlString.escape(val)}`);
+      pairs.push(`\`${column}\`=${SqlString.escape(val)}`);
     }
 
     return `UPDATE ${table} SET ${pairs.join(', ')} WHERE id = ${SqlString.escape(doc.id)}`;

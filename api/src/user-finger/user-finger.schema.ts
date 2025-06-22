@@ -24,7 +24,7 @@ export const UserFingerSchema = SchemaFactory.createForClass(UserFinger);
 UserFingerSchema.statics.getSyncColumns = function () {
   return [
     'id',
-    'user',
+    'user_id',
     'no',
     'finger_data',
     'created_at',

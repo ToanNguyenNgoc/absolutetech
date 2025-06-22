@@ -23,7 +23,10 @@ export class JobNumber {
   @Prop({ type: Date, required: false })
   est_end_date?: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
   created_by: mongoose.Types.ObjectId; // User who created the job
 
   @Prop({ default: 'open', index: true })
