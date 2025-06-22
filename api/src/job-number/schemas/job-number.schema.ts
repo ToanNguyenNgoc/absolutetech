@@ -52,6 +52,7 @@ JobNumberSchema.statics.getSyncColumns = function () {
   return [
     'id',
     'code',
+    'project',
     'assigned_to',
     'est_start_date',
     'est_end_date',
