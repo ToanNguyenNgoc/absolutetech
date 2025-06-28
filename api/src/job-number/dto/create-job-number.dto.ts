@@ -37,7 +37,7 @@ export class CreateJobNumberDto {
 
   @IsString()
   @IsNotEmpty()
-  location: string;
+  location_at: string;
 
   @IsMongoId()
   @IsNotEmpty()

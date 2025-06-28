@@ -12,10 +12,10 @@ export class JobNumber {
   project: string;
 
   @Prop({ required: true })
-  client: string;
+  location_at: string;
 
   @Prop({ required: true })
-  location: string;
+  client: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -59,7 +59,7 @@ JobNumberSchema.statics.getSyncColumns = function () {
     'id',
     'code',
     'client',
-    'location',
+    'location_at',
     'project',
     'assigned_to', //super_visor
     'est_start_date',

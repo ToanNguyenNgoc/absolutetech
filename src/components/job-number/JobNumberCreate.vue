@@ -23,8 +23,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="Location" prop="location">
-                            <el-input v-model="form.location" placeholder="Location Name" />
+                        <el-form-item label="Location" prop="location_at">
+                            <el-input v-model="form.location_at" placeholder="Location Name" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
@@ -116,7 +116,7 @@ export default {
             code: '',
             project: '',
             client: '',
-            location: '',
+            location_at: '',
             est_start_date: '',
             est_end_date: '',
             assigned_to: '',
@@ -200,7 +200,7 @@ export default {
                             code: data.code,
                             project: data.project,
                             client: data.client,
-                            location: data.location,
+                            location_at: data.location_at,
                             est_start_date: data.est_start_date ? new Date(data.est_start_date) : '',
                             est_end_date: data.est_end_date ? new Date(data.est_end_date) : '',
                             assigned_to: data.assigned_to?._id || '',
@@ -221,7 +221,7 @@ export default {
                             code: '', // reset code để tránh lỗi trùng
                             project: data.project,
                             client: data.client,
-                            location: data.location,
+                            location_at: data.location_at,
                             est_start_date: data.est_start_date ? new Date(data.est_start_date) : '',
                             est_end_date: data.est_end_date ? new Date(data.est_end_date) : '',
                             assigned_to: data.assigned_to?._id || '',

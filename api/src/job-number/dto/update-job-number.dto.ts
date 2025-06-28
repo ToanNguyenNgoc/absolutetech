@@ -42,7 +42,7 @@ export class UpdateJobNumberDto {
 
   @IsString()
   @IsNotEmpty()
-  location: string;
+  location_at: string;
 
   @IsString()
   @IsNotEmpty()
