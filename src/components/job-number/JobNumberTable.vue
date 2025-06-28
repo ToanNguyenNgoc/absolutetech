@@ -12,7 +12,9 @@
         <el-table v-loading="loading" :data="tableData" class="custom-table" border style="margin-top: 16px;">
             <el-table-column type="index" label="No." width="57" />
             <el-table-column prop="code" label="JN" />
-            <el-table-column label="Client">
+            <el-table-column prop="client" label="Client" />
+
+            <el-table-column label="Assign">
                 <template #default="{ row }">
                     {{ row.assigned_to?.full_name || 'N/A' }}
                 </template>

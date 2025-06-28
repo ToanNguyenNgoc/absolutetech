@@ -31,6 +31,14 @@ export class CreateJobNumberDto {
   @IsNotEmpty()
   project: string;
 
+  @IsString()
+  @IsNotEmpty()
+  client: string;
+
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+
   @IsMongoId()
   @IsNotEmpty()
   assigned_to: string;

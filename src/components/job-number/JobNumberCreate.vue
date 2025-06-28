@@ -18,6 +18,16 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
+                        <el-form-item label="Client" prop="client">
+                            <el-input v-model="form.client" placeholder="Client Name" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="Location" prop="location">
+                            <el-input v-model="form.location" placeholder="Location Name" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
                         <el-form-item label="Est. Start Date" prop="est_start_date">
                             <el-date-picker v-model="form.est_start_date" type="date" placeholder="Start Date" />
                         </el-form-item>
@@ -105,6 +115,8 @@ export default {
         const form = ref({
             code: '',
             project: '',
+            client: '',
+            location: '',
             est_start_date: '',
             est_end_date: '',
             assigned_to: '',
@@ -187,6 +199,8 @@ export default {
                         form.value = {
                             code: data.code,
                             project: data.project,
+                            client: data.client,
+                            location: data.location,
                             est_start_date: data.est_start_date ? new Date(data.est_start_date) : '',
                             est_end_date: data.est_end_date ? new Date(data.est_end_date) : '',
                             assigned_to: data.assigned_to?._id || '',
@@ -206,6 +220,8 @@ export default {
                         form.value = {
                             code: '', // reset code để tránh lỗi trùng
                             project: data.project,
+                            client: data.client,
+                            location: data.location,
                             est_start_date: data.est_start_date ? new Date(data.est_start_date) : '',
                             est_end_date: data.est_end_date ? new Date(data.est_end_date) : '',
                             assigned_to: data.assigned_to?._id || '',

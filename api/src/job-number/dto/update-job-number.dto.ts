@@ -38,6 +38,14 @@ export class UpdateJobNumberDto {
 
   @IsString()
   @IsNotEmpty()
+  client: string;
+
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+
+  @IsString()
+  @IsNotEmpty()
   project: string;
 
   @IsMongoId()

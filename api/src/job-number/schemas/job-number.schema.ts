@@ -9,7 +9,13 @@ export class JobNumber {
   code: string; // Unique Job Number code (JN#)
 
   @Prop({ required: true })
-  project: string; // Project name
+  project: string;
+
+  @Prop({ required: true })
+  client: string;
+
+  @Prop({ required: true })
+  location: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -52,8 +58,10 @@ JobNumberSchema.statics.getSyncColumns = function () {
   return [
     'id',
     'code',
+    'client',
+    'location',
     'project',
-    'assigned_to',
+    'assigned_to', //super_visor
     'est_start_date',
     'est_end_date',
     'created_by',

@@ -82,7 +82,6 @@ export class JobNumberService {
     if (!jobNumber) {
       throw new NotFoundException('Job Number not found');
     }
-
     return jobNumber;
   }
 
