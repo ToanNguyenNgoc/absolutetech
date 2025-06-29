@@ -32,26 +32,26 @@ export class JobNumberController {
   constructor(private readonly jobNumberService: JobNumberService) {}
 
   @Post()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async create(@Body() dto: CreateJobNumberDto, @Request() req) {
     const userId = req.user.userId;
     return this.jobNumberService.create({ ...dto, created_by: userId });
   }
 
   @Get(':id')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async getDetail(@Param('id') id: string) {
     return this.jobNumberService.getDetailById(id);
   }
 
   @Get()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async findAllPaginated(@Query('page') page = 1, @Query('limit') limit = 10) {
     return this.jobNumberService.findAllPaginated(page, limit);
   }
 
   @Post('upload')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({

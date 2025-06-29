@@ -17,7 +17,7 @@ export class EntryLogController {
   ) {}
 
   @Get()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async findAll(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -39,7 +39,7 @@ export class EntryLogController {
     );
   }
   // @Get('seed')
-  // @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  // @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   // async seedEntryLogs(): Promise<{ message: string }> {
   //   const users: any = await this.userService.findAll();
   //   for (const user of users) {
@@ -51,7 +51,7 @@ export class EntryLogController {
   // }
 
   @Get('export')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async exportEntryLogs(@Query('search') search: string, @Res() res: Response) {
     let entryLogs;
     if (search) {

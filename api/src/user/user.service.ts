@@ -357,7 +357,7 @@ export class UserService {
             face_hik: user.faceURL ?? '',
             email: `${user.employeeNo}@gmail.com`,
             gender: user.gender,
-            role: user.userType == 'admin' ? Role.SUPER_ADMIN : Role.STOREMAN,
+            role: user.userType == 'admin' ? Role.SUPER_ADMIN : Role.STORE,
             is_sync: 1,
           });
           console.log(`🆕 Created new user: ${user.name}`);
@@ -410,7 +410,7 @@ export class UserService {
   async getTechnicianAndSupervisorList() {
     return this.userModel
       .find(
-        { role: { $in: [Role.TECHNICIAN, Role.SUPERVISOR] } },
+        { role: { $in: [Role.SUPERVISOR, Role.SUPERVISOR] } },
         { full_name: 1 },
       )
       .exec();

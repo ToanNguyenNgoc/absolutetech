@@ -34,42 +34,42 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('import-data')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STORE)
   async importListUser(@Body() data: { list_users: UserItemRequest[] }) {
     return await this.userService.importUsers(data.list_users ?? []);
   }
   @Get('sync-user-cloud-to-hik')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STORE)
   async syncUserCloudToHik() {
     return await this.userService.getAllUsersNotSync();
   }
 
   @Post('update-is-sync-user')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STORE)
   async getAllUsersNotSync(@Body() data: { user_id: string }) {
     return this.userService.updateIsSyncUser(data.user_id);
   }
 
   @Post('delete-user-by-employee')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STOREMAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.STORE)
   async deleteUserByEmployee(@Body() data: { employeeNo: string }) {
     return this.userService.deleteUserByEmployee(data.employeeNo);
   }
 
   // @Post('sync-hik')
-  // @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  // @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   // async syncHIK() {
   //   return await this.userService.syncHIKVISION();
   // }
 
   @Post()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async create(@Body() dto: CreateUserDto) {
     return this.userService.createUser(dto);
   }
 
   @Get()
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async findAllPaginated(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -78,19 +78,19 @@ export class UserController {
   }
 
   @Put(':id')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async delete(@Param('id') id: string) {
     return this.userService.deleteUser(id);
   }
 
   @Post('import-file')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -117,7 +117,7 @@ export class UserController {
   }
 
   @Get('export')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async exportUsers(@Res() res: Response) {
     const users = await this.userService.findAll();
 
@@ -135,7 +135,7 @@ export class UserController {
   }
 
   @Get('technicians')
-  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.TECHNICIAN)
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async getTechnicianAndSupervisorList() {
     console.log('Fetching technician and supervisor list');
     return this.userService.getTechnicianAndSupervisorList();
