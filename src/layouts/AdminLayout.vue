@@ -529,7 +529,6 @@ export default {
 .admin-main {
     display: flex;
     flex: 1;
-    overflow: hidden;
 }
 
 .main-container {

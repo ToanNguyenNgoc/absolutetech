@@ -47,7 +47,7 @@ export const JobNumberSchema = SchemaFactory.createForClass(JobNumber);
 JobNumberSchema.virtual('documents', {
   ref: 'DocumentEntity',
   localField: '_id',
-  foreignField: 'jobNumber',
+  foreignField: 'job_number',
   justOne: false,
 });
 

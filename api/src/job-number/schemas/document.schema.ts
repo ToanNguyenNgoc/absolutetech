@@ -8,7 +8,7 @@ export class DocumentEntity {
   @Prop({ required: true })
   name: string; // Line label, e.g., "Line #2"
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'JobNumber', index: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'job_number', index: true })
   job_number: mongoose.Types.ObjectId; // Parent JobNumber
 }
 
