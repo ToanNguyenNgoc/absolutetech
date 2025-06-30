@@ -24,7 +24,7 @@ export class JobNumberService {
     private fileUploadModel: Model<FileUploadDocument>,
     @InjectModel(DocumentEntity.name)
     private documentModel: Model<DocumentEntityDocument>,
-  ) {}
+  ) { }
 
   async create(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
     try {
@@ -42,7 +42,7 @@ export class JobNumberService {
         for (const doc of documents) {
           const newDocument = await this.documentModel.create({
             name: doc.name,
-            jobNumber: jobNumber._id,
+            job_number: jobNumber._id,
           });
 
           if (doc.fileIds?.length) {
@@ -50,7 +50,7 @@ export class JobNumberService {
               { _id: { $in: doc.fileIds } },
               {
                 ref_id: newDocument._id,
-                refModel: 'DocumentEntity',
+                ref_model: 'DocumentEntity',
                 is_temp: false,
               },
             );
@@ -74,7 +74,7 @@ export class JobNumberService {
         path: 'documents',
         populate: {
           path: 'files',
-          match: { refModel: 'DocumentEntity' },
+          match: { ref_model: 'DocumentEntity' },
         },
       })
       .exec();
@@ -102,7 +102,7 @@ export class JobNumberService {
             path: 'documents',
             populate: {
               path: 'files',
-              match: { refModel: 'DocumentEntity' },
+              match: { ref_model: 'DocumentEntity' },
             },
           },
         ],
@@ -116,7 +116,7 @@ export class JobNumberService {
       url: `uploads/job-files/${file.filename}`,
       size: file.size,
       extension: path.extname(file.originalname).replace('.', ''),
-      mimeType: file.mimetype,
+      mime_type: file.mimetype,
       is_temp: true,
     });
     return await newFile.save();
@@ -128,13 +128,13 @@ export class JobNumberService {
       throw new NotFoundException('Job Number not found');
     }
 
-    const documents = await this.documentModel.find({ jobNumber: id }).exec();
+    const documents = await this.documentModel.find({ job_number: id }).exec();
     const documentIds = documents.map((doc) => doc._id);
 
     const files = await this.fileUploadModel
       .find({
         ref_id: { $in: documentIds },
-        refModel: 'DocumentEntity',
+        ref_model: 'DocumentEntity',
       })
       .exec();
 
@@ -151,9 +151,9 @@ export class JobNumberService {
 
     await this.fileUploadModel.deleteMany({
       ref_id: { $in: documentIds },
-      refModel: 'DocumentEntity',
+      ref_model: 'DocumentEntity',
     });
-    await this.documentModel.deleteMany({ jobNumber: id });
+    await this.documentModel.deleteMany({ job_number: id });
 
     await this.jobNumberModel.findByIdAndDelete(id);
 
@@ -173,8 +173,38 @@ export class JobNumberService {
       status: dto.status ?? 'open',
     });
 
-    // Handle Documents
-    for (const doc of dto.documents) {
+    // --- STEP 1: Xác định những document nào cần xóa ---
+    const oldDocs = await this.documentModel.find({ job_number: id }).lean();
+    const oldDocIds = oldDocs.map(d => d._id.toString());
+    const incomingDocIds = (dto.documents ?? [])
+      .filter(d => d.documentId)
+      .map(d => d.documentId);
+    const docIdsToDelete = oldDocIds.filter(id => !incomingDocIds.includes(id));
+
+    // --- STEP 2: Xóa file & document bị loại khỏi danh sách ---
+    if (docIdsToDelete.length > 0) {
+      const filesToDelete = await this.fileUploadModel.find({
+        ref_id: { $in: docIdsToDelete },
+        ref_model: 'DocumentEntity',
+      }).lean();
+
+      for (const file of filesToDelete) {
+        const filePath = path.join(process.cwd(), file.url);
+        try {
+          await fs.unlink(filePath);
+        } catch (e) {
+          console.warn(`⚠️ File not found to delete: ${filePath}`);
+        }
+      }
+      await this.fileUploadModel.deleteMany({
+        ref_id: { $in: docIdsToDelete },
+        ref_model: 'DocumentEntity',
+      });
+      await this.documentModel.deleteMany({ _id: { $in: docIdsToDelete } });
+    }
+
+    // --- STEP 3: Update hoặc tạo mới document ---
+    for (const doc of dto.documents ?? []) {
       if (doc.documentId) {
         // Existing document
         await this.documentModel.findByIdAndUpdate(doc.documentId, {
@@ -183,7 +213,7 @@ export class JobNumberService {
 
         // Sync fileIds: delete removed ones, update remaining
         const existingFiles = await this.fileUploadModel
-          .find({ ref_id: doc.documentId, refModel: 'DocumentEntity' })
+          .find({ ref_id: doc.documentId, ref_model: 'DocumentEntity' })
           .exec();
         const incomingIds = doc.fileIds ?? [];
 
@@ -208,7 +238,7 @@ export class JobNumberService {
           { _id: { $in: incomingIds } },
           {
             ref_id: doc.documentId,
-            refModel: 'DocumentEntity',
+            ref_model: 'DocumentEntity',
             is_temp: false,
           },
         );
@@ -216,7 +246,7 @@ export class JobNumberService {
         // New document
         const newDoc = await this.documentModel.create({
           name: doc.name,
-          jobNumber: id,
+          job_number: id,
         });
 
         if (doc.fileIds?.length) {
@@ -224,7 +254,7 @@ export class JobNumberService {
             { _id: { $in: doc.fileIds } },
             {
               ref_id: newDoc._id,
-              refModel: 'DocumentEntity',
+              ref_model: 'DocumentEntity',
               is_temp: false,
             },
           );
