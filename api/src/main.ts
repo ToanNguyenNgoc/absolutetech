@@ -8,6 +8,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { useContainer, ValidationError } from 'class-validator';
+import { SwaggerModule } from '@nestjs/swagger';
+import { customOptions, options } from './docs';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new AllExceptionsFilter());
@@ -49,6 +51,9 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
+  //ADD: swagger
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('docs', app, document, customOptions);
 
   await app.listen(process.env.PORT ?? 3000);
 }
