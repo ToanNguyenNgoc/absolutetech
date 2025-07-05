@@ -1,19 +1,21 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from './user/user.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
-import { UploadController } from './upload/upload.controller';
+import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { EntryLogModule } from './entry-log/entry-log.module';
 import { FrontendMiddleware } from './frontend.middleware';
-import { ScheduleModule } from '@nestjs/schedule';
-import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
-import { UserFingerModule } from './user-finger/user-finger.module';
-import { MqttModule } from './mqtt/mqtt.module';
 import { JobNumberModule } from './job-number/job-number.module';
+import { MqttModule } from './mqtt/mqtt.module';
 import { SyncDataModule } from './sync-data/sync-data.module';
+import { TimesheetDetailModule } from './timesheet-detail/timesheet-detail.module';
+import { TimesheetModule } from './timesheet/timesheet.module';
+import { UploadController } from './upload/upload.controller';
+import { UserFingerModule } from './user-finger/user-finger.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { SyncDataModule } from './sync-data/sync-data.module';
     UserFingerModule,
     JobNumberModule,
     SyncDataModule,
+    TimesheetModule,
+    TimesheetDetailModule,
   ],
 
   controllers: [UploadController],
