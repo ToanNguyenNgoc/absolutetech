@@ -5,6 +5,9 @@ export type JobNumberDocument = JobNumber & MongooseDocument;
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class JobNumber {
+  @Prop({ type: String, default: () => crypto.randomUUID() })
+  id: string;
+
   @Prop({ required: true, unique: true, index: true })
   code: string; // Unique Job Number code (JN#)
 
@@ -21,7 +24,7 @@ export class JobNumber {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
-  assigned_to: mongoose.Types.ObjectId; // Person responsible (Line #1)
+  assigned_to: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, required: false })
   est_start_date?: Date;
@@ -33,7 +36,7 @@ export class JobNumber {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
-  created_by: mongoose.Types.ObjectId; // User who created the job
+  created_by: mongoose.Types.ObjectId;
 
   @Prop({ default: 'open', index: true })
   status: string; // Job status: open, closed, approved
@@ -53,6 +56,11 @@ JobNumberSchema.virtual('documents', {
 
 JobNumberSchema.set('toObject', { virtuals: true });
 JobNumberSchema.set('toJSON', { virtuals: true });
+
+JobNumberSchema.pre('save', function (next) {
+  if (!this.id) this.id = crypto.randomUUID();
+  next();
+});
 
 JobNumberSchema.statics.getSyncColumns = function () {
   return [

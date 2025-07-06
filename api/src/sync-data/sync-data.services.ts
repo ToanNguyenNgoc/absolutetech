@@ -12,6 +12,8 @@ import { SyncDataCreateDto } from './dto/sync-data-create.dto';
 import { SyncFromDeviceDto } from './dto/sync-from-device.dto';
 import { SyncData } from './sync-data.schema';
 import { JobNumber } from 'src/job-number/schemas/job-number.schema';
+import { Timesheet } from 'src/timesheet/timesheet.schema';
+import { TimesheetDetail } from 'src/timesheet-detail/timesheet-detail.schema';
 
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
@@ -28,6 +30,8 @@ interface SyncableModel<T> extends Model<T> {
 
 @Injectable()
 export class SyncDataService {
+  private tableMap: Record<string, Model<any>>;
+
   constructor(
     @InjectModel(SyncData.name)
     private syncDataModel: Model<SyncData>,
@@ -37,7 +41,19 @@ export class SyncDataService {
     private userFingerModel: SyncableModel<UserFinger>,
     @InjectModel(JobNumber.name)
     private jobNumberModule: SyncableModel<JobNumber>,
-  ) {}
+    @InjectModel(Timesheet.name)
+    private timesheetModel: SyncableModel<Timesheet>,
+    @InjectModel(TimesheetDetail.name)
+    private timesheetDetailModel: SyncableModel<TimesheetDetail>,
+  ) {
+    this.tableMap = {
+      timesheet: this.timesheetModel,
+      timesheetDetail: this.timesheetDetailModel,
+      jobNumber: this.jobNumberModule,
+      userFinger: this.userFingerModel,
+      user: this.userModel,
+    };
+  }
 
   async fetchForTablet(fetchForTabletDto: FetchForTabletDto) {
     try {
@@ -45,6 +61,8 @@ export class SyncDataService {
         { model: this.userModel, table: 'users' },
         { model: this.userFingerModel, table: 'user_fingers' },
         { model: this.jobNumberModule, table: 'jobnumbers' },
+        { model: this.timesheetModel, table: 'timesheets' },
+        { model: this.timesheetDetailModel, table: 'timesheet_details' },
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);
@@ -58,6 +76,7 @@ export class SyncDataService {
         });
       }
       return {
+        code: true,
         scripts: scriptExecute,
         timestamp_fetch: timeFetch,
       };
@@ -66,14 +85,37 @@ export class SyncDataService {
     }
   }
 
-  async syncFromDevice(syncFromDeviceDto: SyncFromDeviceDto) {
+  async syncFromDevice(data: SyncFromDeviceDto) {
     try {
-      await this.insertNewSyncData({
-        device_id: syncFromDeviceDto.device_id,
-        timestamp_push: DateUtil.currentDateString(),
-        data: JSON.stringify(syncFromDeviceDto.scripts),
+      const timeSync = DateUtil.currentDateString();
+      for (const [tableName, rows] of Object.entries(data.tables)) {
+        const model = this.tableMap[tableName];
+        console.log('tableName', tableName);
+        console.log('rows', rows);
+        console.log('model', model);
+        if (model && rows.length) {
+          await model.bulkWrite(
+            rows.map((row) => ({
+              updateOne: {
+                filter: { id: row.id }, // use Pk id UUID
+                update: { $set: row },
+                upsert: true,
+              },
+            })),
+          );
+        }
+      }
+      console.log({
+        code: true,
+        timestamp_fetch: timeSync,
       });
+      return {
+        code: true,
+        timestamp_fetch: timeSync,
+      };
     } catch (error) {
+      console.log('syncFromDevice', error);
+
       throw new BadRequestException(
         `Failed to sync from device: ${error.message}`,
       );
@@ -124,7 +166,7 @@ export class SyncDataService {
         }
 
         for (const doc of documents as unknown as SyncableDocument[]) {
-          const transformedDoc = { ...doc, id: doc._id.toString() };
+          const transformedDoc = { ...doc, id: doc.id || doc._id.toString() };
           // @ts-ignore
           delete transformedDoc._id;
           const created_at = moment(new Date(transformedDoc.created_at));

@@ -14,6 +14,11 @@ import {
   JobNumber,
   JobNumberSchema,
 } from 'src/job-number/schemas/job-number.schema';
+import { Timesheet, TimesheetSchema } from 'src/timesheet/timesheet.schema';
+import {
+  TimesheetDetail,
+  TimesheetDetailSchema,
+} from 'src/timesheet-detail/timesheet-detail.schema';
 
 @Module({
   imports: [
@@ -22,6 +27,8 @@ import {
       { name: UserFinger.name, schema: UserFingerSchema },
       { name: SyncData.name, schema: SyncDataSchema },
       { name: JobNumber.name, schema: JobNumberSchema },
+      { name: Timesheet.name, schema: TimesheetSchema },
+      { name: TimesheetDetail.name, schema: TimesheetDetailSchema },
     ]),
   ],
   controllers: [SyncDataController],
