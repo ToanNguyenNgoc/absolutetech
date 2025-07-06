@@ -49,6 +49,9 @@ export class SyncDataService {
     this.tableMap = {
       timesheet: this.timesheetModel,
       timesheetDetail: this.timesheetDetailModel,
+      jobNumber: this.jobNumberModule,
+      userFinger: this.userFingerModel,
+      user: this.userModel,
     };
   }
 
@@ -58,6 +61,8 @@ export class SyncDataService {
         { model: this.userModel, table: 'users' },
         { model: this.userFingerModel, table: 'user_fingers' },
         { model: this.jobNumberModule, table: 'jobnumbers' },
+        { model: this.timesheetModel, table: 'timesheets' },
+        { model: this.timesheetDetailModel, table: 'timesheet_details' },
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);
@@ -85,9 +90,9 @@ export class SyncDataService {
       const timeSync = DateUtil.currentDateString();
       for (const [tableName, rows] of Object.entries(data.tables)) {
         const model = this.tableMap[tableName];
-        // console.log('tableName', tableName);
-        // console.log('rows', rows);
-        // console.log('model', model);
+        console.log('tableName', tableName);
+        console.log('rows', rows);
+        console.log('model', model);
         if (model && rows.length) {
           await model.bulkWrite(
             rows.map((row) => ({
@@ -161,7 +166,7 @@ export class SyncDataService {
         }
 
         for (const doc of documents as unknown as SyncableDocument[]) {
-          const transformedDoc = { ...doc, id: doc._id.toString() };
+          const transformedDoc = { ...doc, id: doc.id || doc._id.toString() };
           // @ts-ignore
           delete transformedDoc._id;
           const created_at = moment(new Date(transformedDoc.created_at));

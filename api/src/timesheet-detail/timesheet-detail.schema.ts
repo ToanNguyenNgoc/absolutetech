@@ -52,14 +52,26 @@ export const TimesheetDetailSchema =
 TimesheetDetailSchema.statics.getSyncColumns = function () {
   return [
     'id',
-    'user_id',
-    'no',
-    'finger_data',
+    'timesheet_id',
+    'attendance_id',
+    'time_in',
+    'time_out',
+    'over_time',
+    'on_rope',
+    'in_charge',
+    'other',
+    'remarks',
+    'signature_tech',
     'created_at',
     'updated_at',
     'deleted_at',
   ];
 };
+
+TimesheetDetailSchema.pre('save', function (next) {
+  if (!this.id) this.id = crypto.randomUUID();
+  next();
+});
 
 TimesheetDetailSchema.pre(
   ['find', 'findOne', 'findOneAndUpdate'],

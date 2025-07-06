@@ -38,14 +38,22 @@ export const TimesheetSchema = SchemaFactory.createForClass(Timesheet);
 TimesheetSchema.statics.getSyncColumns = function () {
   return [
     'id',
-    'user_id',
-    'no',
-    'finger_data',
+    'jobnumber_id',
+    'supervisor_id',
+    'date_time',
+    'signature',
+    'time_end',
+    'status',
     'created_at',
     'updated_at',
     'deleted_at',
   ];
 };
+
+TimesheetSchema.pre('save', function (next) {
+  if (!this.id) this.id = crypto.randomUUID();
+  next();
+});
 
 TimesheetSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
   this.where({ deleted_at: null });
