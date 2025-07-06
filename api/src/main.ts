@@ -10,8 +10,11 @@ import {
 import { useContainer, ValidationError } from 'class-validator';
 import { SwaggerModule } from '@nestjs/swagger';
 import { customOptions, options } from './docs';
+import * as bodyParser from 'body-parser';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(bodyParser.json({ limit: '20mb' }));
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalPipes(

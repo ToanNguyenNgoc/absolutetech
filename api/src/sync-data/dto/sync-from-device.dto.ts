@@ -1,9 +1,9 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class SyncFromDeviceDto {
   @IsNotEmpty()
   device_id: string;
 
-  @IsNotEmpty()
-  scripts: string[];
+  @IsOptional()
+  tables: Record<string, any[]>;
 }

@@ -9,6 +9,9 @@ export type UserDocument = User & Document;
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class User {
+  @Prop({ type: String, default: () => crypto.randomUUID() })
+  id: string;
+
   @Prop({ required: true })
   full_name: string;
 
@@ -109,6 +112,11 @@ UserSchema.statics.getSyncColumns = function () {
     'deleted_at',
   ];
 };
+
+UserSchema.pre('save', function (next) {
+  if (!this.id) this.id = crypto.randomUUID();
+  next();
+});
 
 // Soft delete middleware
 UserSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
