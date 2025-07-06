@@ -5,6 +5,9 @@ export type FileUploadDocument = FileUpload & Document;
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class FileUpload {
+  @Prop({ type: String, default: () => crypto.randomUUID() })
+  id: string;
+
   @Prop({ required: true })
   name: string; // Display name of the file
 

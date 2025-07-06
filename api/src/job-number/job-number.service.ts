@@ -24,7 +24,7 @@ export class JobNumberService {
     private fileUploadModel: Model<FileUploadDocument>,
     @InjectModel(DocumentEntity.name)
     private documentModel: Model<DocumentEntityDocument>,
-  ) { }
+  ) {}
 
   async create(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
     try {
@@ -175,18 +175,22 @@ export class JobNumberService {
 
     // --- STEP 1: Xác định những document nào cần xóa ---
     const oldDocs = await this.documentModel.find({ job_number: id }).lean();
-    const oldDocIds = oldDocs.map(d => d._id.toString());
+    const oldDocIds = oldDocs.map((d) => d._id.toString());
     const incomingDocIds = (dto.documents ?? [])
-      .filter(d => d.documentId)
-      .map(d => d.documentId);
-    const docIdsToDelete = oldDocIds.filter(id => !incomingDocIds.includes(id));
+      .filter((d) => d.documentId)
+      .map((d) => d.documentId);
+    const docIdsToDelete = oldDocIds.filter(
+      (id) => !incomingDocIds.includes(id),
+    );
 
     // --- STEP 2: Xóa file & document bị loại khỏi danh sách ---
     if (docIdsToDelete.length > 0) {
-      const filesToDelete = await this.fileUploadModel.find({
-        ref_id: { $in: docIdsToDelete },
-        ref_model: 'DocumentEntity',
-      }).lean();
+      const filesToDelete = await this.fileUploadModel
+        .find({
+          ref_id: { $in: docIdsToDelete },
+          ref_model: 'DocumentEntity',
+        })
+        .lean();
 
       for (const file of filesToDelete) {
         const filePath = path.join(process.cwd(), file.url);
