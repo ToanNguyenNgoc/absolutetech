@@ -22,7 +22,7 @@ const state = reactive({
   response: ''
 });
 
-const socket = io(baseURL.replace('/api', ''), {
+const socket = io(String(process.env.VUE_APP_API_URL), {
   autoConnect: false,
   reconnection: true,
   reconnectionAttempts: 5,
