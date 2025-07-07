@@ -23,27 +23,13 @@ export const NAME = {
   JWT: 'jwt',
   MEDIA: 'media',
 };
-export const QUEUE_NAME = {
-  send_mail: 'send_mail',
-  instance_province: 'instance_province',
-  province: 'province',
-};
 export const CACHE_KEY_NAME = {
   user_online: 'user_online',
 };
 export class WS_EVENT_NAME {
-  static notification_org = 'notification.org';
-  static notification = 'notification.user';
-  static chat_topic = 'chat.topic';
-  static leave_topic = 'leave.topic';
-  static chat_topic_typing = 'chat.topic.typing';
-
-  // static message_global = 'message_global';
-  // static create_topic = 'create_topic';
-  // static recipient_user = 'recipient_user';
-  // static receive_topic = 'receive_topic';
-  // static join_all = 'join_all';
-  // static join = 'join';
-  // static message = 'message';
-  // static typing = 'typing';
+  static sync_data_device = 'sync_data_device';
+  static sync_data_tasking_device = 'sync_data_tasking_device';
+}
+export class QUEUE_NAME {
+  static sync_data = 'sync_data';
 }

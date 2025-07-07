@@ -19,6 +19,9 @@ import {
   TimesheetDetail,
   TimesheetDetailSchema,
 } from 'src/timesheet-detail/timesheet-detail.schema';
+import { BullModule } from '@nestjs/bull';
+import { QUEUE_NAME } from 'src/constants';
+import { SyncDataConsumers } from 'src/consumers/sync-data.consumers';
 
 @Module({
   imports: [
@@ -30,9 +33,10 @@ import {
       { name: Timesheet.name, schema: TimesheetSchema },
       { name: TimesheetDetail.name, schema: TimesheetDetailSchema },
     ]),
+    BullModule.registerQueue({ name: QUEUE_NAME.sync_data }),
   ],
   controllers: [SyncDataController],
-  providers: [SyncDataService],
+  providers: [SyncDataService, SyncDataConsumers],
   exports: [SyncDataService],
 })
 export class SyncDataModule {}
