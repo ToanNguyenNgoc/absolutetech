@@ -16,8 +16,8 @@ export class SyncDataController {
 
   @Post('sync-json')
   async fetchForTablet(@Body() data: FetchForTabletDto) {
-    return this.syncDataQueue.add(data, { delay: 1000 });
-    // return await this.syncDataService.fetchForTablet(data);
+    await this.syncDataQueue.add(data, { delay: 1000 });
+    return await this.syncDataService.fetchForTablet(data);
   }
 
   @Post('push-json')
