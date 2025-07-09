@@ -14,7 +14,10 @@ import { SyncData } from './sync-data.schema';
 import { JobNumber } from 'src/job-number/schemas/job-number.schema';
 import { Timesheet } from 'src/timesheet/timesheet.schema';
 import { TimesheetDetail } from 'src/timesheet-detail/timesheet-detail.schema';
-import { DocumentEntityDocument } from 'src/job-number/schemas/document.schema';
+import {
+  DocumentEntity,
+  DocumentEntityDocument,
+} from 'src/job-number/schemas/document.schema';
 import { FileUploadDocument } from 'src/job-number/schemas/file-upload.schema';
 
 interface SyncableDocument {
@@ -47,7 +50,7 @@ export class SyncDataService {
     private timesheetModel: SyncableModel<Timesheet>,
     @InjectModel(TimesheetDetail.name)
     private timesheetDetailModel: SyncableModel<TimesheetDetail>,
-    @InjectModel(TimesheetDetail.name)
+    @InjectModel(DocumentEntity.name)
     private documentModal: SyncableModel<DocumentEntityDocument>,
     @InjectModel(TimesheetDetail.name)
     private fileUpload: SyncableModel<FileUploadDocument>,

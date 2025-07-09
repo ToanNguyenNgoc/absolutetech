@@ -51,5 +51,12 @@ DocumentEntitySchema.set('toObject', { virtuals: true });
 DocumentEntitySchema.set('toJSON', { virtuals: true });
 
 DocumentEntitySchema.statics.getSyncColumns = function () {
-  return ['id', 'job_number_id', 'created_at', 'updated_at', 'deleted_at'];
+  return [
+    'id',
+    'name',
+    'job_number_id',
+    'created_at',
+    'updated_at',
+    'deleted_at',
+  ];
 };
