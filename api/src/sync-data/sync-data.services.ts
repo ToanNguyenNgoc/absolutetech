@@ -14,6 +14,8 @@ import { SyncData } from './sync-data.schema';
 import { JobNumber } from 'src/job-number/schemas/job-number.schema';
 import { Timesheet } from 'src/timesheet/timesheet.schema';
 import { TimesheetDetail } from 'src/timesheet-detail/timesheet-detail.schema';
+import { DocumentEntityDocument } from 'src/job-number/schemas/document.schema';
+import { FileUploadDocument } from 'src/job-number/schemas/file-upload.schema';
 
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
@@ -45,6 +47,10 @@ export class SyncDataService {
     private timesheetModel: SyncableModel<Timesheet>,
     @InjectModel(TimesheetDetail.name)
     private timesheetDetailModel: SyncableModel<TimesheetDetail>,
+    @InjectModel(TimesheetDetail.name)
+    private documentModal: SyncableModel<DocumentEntityDocument>,
+    @InjectModel(TimesheetDetail.name)
+    private fileUpload: SyncableModel<FileUploadDocument>,
   ) {
     this.tableMap = {
       timesheet: this.timesheetModel,
@@ -52,6 +58,8 @@ export class SyncDataService {
       jobNumber: this.jobNumberModule,
       userFinger: this.userFingerModel,
       user: this.userModel,
+      document: this.documentModal,
+      fileUpload: this.fileUpload,
     };
   }
 
@@ -63,6 +71,8 @@ export class SyncDataService {
         { model: this.jobNumberModule, table: 'jobnumbers' },
         { model: this.timesheetModel, table: 'timesheets' },
         { model: this.timesheetDetailModel, table: 'timesheet_details' },
+        { model: this.documentModal, table: 'documententities' },
+        { model: this.fileUpload, table: 'fileuploads' },
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);

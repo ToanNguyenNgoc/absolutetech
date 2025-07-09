@@ -3,7 +3,10 @@ import mongoose, { Document as MongooseDocument } from 'mongoose';
 
 export type JobNumberDocument = JobNumber & MongooseDocument;
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
+@Schema({
+  collection: 'jobnumbers',
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+})
 export class JobNumber {
   @Prop({ type: String, default: () => crypto.randomUUID() })
   id: string;
@@ -76,5 +79,6 @@ JobNumberSchema.statics.getSyncColumns = function () {
     'status',
     'created_at',
     'updated_at',
+    'deleted_at',
   ];
 };

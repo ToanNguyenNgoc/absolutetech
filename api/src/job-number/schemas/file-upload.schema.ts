@@ -3,16 +3,19 @@ import { Document } from 'mongoose';
 
 export type FileUploadDocument = FileUpload & Document;
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
+@Schema({
+  collection: 'fileuploads',
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+})
 export class FileUpload {
   @Prop({ type: String, default: () => crypto.randomUUID() })
   id: string;
 
   @Prop({ required: true })
-  name: string; // Display name of the file
+  name: string;
 
   @Prop({ required: true })
-  url: string; // File URL (S3 or local)
+  url: string;
 
   @Prop()
   size: number;
@@ -24,13 +27,13 @@ export class FileUpload {
   mime_type: string;
 
   @Prop()
-  type?: string; // e.g., job-doc, profile-img
+  type?: string;
 
   @Prop({ index: true })
-  ref_id: string; // ID of the target entity (e.g., DocumentEntity._id)
+  ref_id: string;
 
   @Prop({ index: true })
-  ref_model: string; // Name of the target model: 'DocumentEntity', 'User', etc.
+  ref_model: string;
 
   @Prop({ default: false })
   is_deleted?: boolean;
@@ -40,3 +43,27 @@ export class FileUpload {
 }
 
 export const FileUploadSchema = SchemaFactory.createForClass(FileUpload);
+
+FileUploadSchema.pre('save', function (next) {
+  if (!this.id) this.id = crypto.randomUUID();
+  next();
+});
+
+FileUploadSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'name',
+    'url',
+    'size',
+    'extension',
+    'mime_type',
+    'type',
+    'ref_id',
+    'ref_model',
+    'is_deleted',
+    'is_temp',
+    'created_at',
+    'updated_at',
+    'deleted_at',
+  ];
+};

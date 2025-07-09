@@ -19,6 +19,14 @@ import {
   TimesheetDetail,
   TimesheetDetailSchema,
 } from 'src/timesheet-detail/timesheet-detail.schema';
+import {
+  DocumentEntity,
+  DocumentEntitySchema,
+} from 'src/job-number/schemas/document.schema';
+import {
+  FileUpload,
+  FileUploadSchema,
+} from 'src/job-number/schemas/file-upload.schema';
 
 @Module({
   imports: [
@@ -29,6 +37,8 @@ import {
       { name: JobNumber.name, schema: JobNumberSchema },
       { name: Timesheet.name, schema: TimesheetSchema },
       { name: TimesheetDetail.name, schema: TimesheetDetailSchema },
+      { name: DocumentEntity.name, schema: DocumentEntitySchema },
+      { name: FileUpload.name, schema: FileUploadSchema },
     ]),
   ],
   controllers: [SyncDataController],

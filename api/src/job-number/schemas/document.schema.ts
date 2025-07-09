@@ -1,9 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document as MongooseDocument } from 'mongoose';
+import mongoose, { Document as MongooseDocument, Types } from 'mongoose';
 
 export type DocumentEntityDocument = DocumentEntity & MongooseDocument;
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
+@Schema({
+  collection: 'documententities',
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+})
 export class DocumentEntity {
   @Prop({ type: String, default: () => crypto.randomUUID() })
   id: string;
@@ -16,7 +19,13 @@ export class DocumentEntity {
     ref: 'job_number',
     index: true,
   })
-  job_number: mongoose.Types.ObjectId; // Parent JobNumber
+  job_number: mongoose.Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'JobNumber', index: true })
+  job_number_id?: string;
+
+  @Prop({ type: Date, default: null }) // Add deleted_at field
+  deleted_at: Date | null;
 }
 
 export const DocumentEntitySchema =
@@ -24,8 +33,12 @@ export const DocumentEntitySchema =
 
 DocumentEntitySchema.pre('save', function (next) {
   if (!this.id) this.id = crypto.randomUUID();
+  if (this.job_number && !this.job_number_id) {
+    this.job_number_id = this.job_number.toString();
+  }
   next();
 });
+
 // Virtual files based on ref_id + refModel
 DocumentEntitySchema.virtual('files', {
   ref: 'FileUpload',
@@ -36,3 +49,7 @@ DocumentEntitySchema.virtual('files', {
 
 DocumentEntitySchema.set('toObject', { virtuals: true });
 DocumentEntitySchema.set('toJSON', { virtuals: true });
+
+DocumentEntitySchema.statics.getSyncColumns = function () {
+  return ['id', 'job_number_id', 'created_at', 'updated_at', 'deleted_at'];
+};
