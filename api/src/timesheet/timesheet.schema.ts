@@ -15,6 +15,7 @@ export class Timesheet {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })
   office_supervisor_id?: string;
+
   @Prop()
   date_time?: Date;
 
@@ -38,6 +39,7 @@ TimesheetSchema.statics.getSyncColumns = function () {
     'id',
     'jobnumber_id',
     'supervisor_id',
+    'office_supervisor_id',
     'date_time',
     'signature',
     'time_end',
