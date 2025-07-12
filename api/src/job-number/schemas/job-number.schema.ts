@@ -59,13 +59,13 @@ JobNumberSchema.set('toObject', { virtuals: true });
 JobNumberSchema.set('toJSON', { virtuals: true });
 
 JobNumberSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 JobNumberSchema.virtual('assigned_to_id').get(function () {
-  return this.assigned_to._id;
+  return this.assigned_to._id.toString();
 });
 JobNumberSchema.virtual('created_by_id').get(function () {
-  return this.created_by._id;
+  return this.created_by._id.toString();
 });
 
 JobNumberSchema.plugin(mongooseLeanVirtuals);

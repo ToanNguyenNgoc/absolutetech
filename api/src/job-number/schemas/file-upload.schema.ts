@@ -43,7 +43,7 @@ export class FileUpload {
 export const FileUploadSchema = SchemaFactory.createForClass(FileUpload);
 
 FileUploadSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 FileUploadSchema.plugin(mongooseLeanVirtuals);
 

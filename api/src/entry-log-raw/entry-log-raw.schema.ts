@@ -43,11 +43,11 @@ export class EntryLogRaw {
 export const EntryLogRawSchema = SchemaFactory.createForClass(EntryLogRaw);
 
 EntryLogRawSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 
 EntryLogRawSchema.virtual('user_id').get(function () {
-  return this.user._id;
+  return this.user._id.toString();
 });
 
 EntryLogRawSchema.plugin(mongooseLeanVirtuals);

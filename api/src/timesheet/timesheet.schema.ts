@@ -49,7 +49,7 @@ TimesheetSchema.statics.getSyncColumns = function () {
 };
 
 TimesheetSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 
 TimesheetSchema.plugin(mongooseLeanVirtuals);

@@ -28,11 +28,11 @@ export class EntryLog {
 export const EntryLogSchema = SchemaFactory.createForClass(EntryLog);
 
 EntryLogSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 
 EntryLogSchema.virtual('user_id').get(function () {
-  return this.user._id;
+  return this.user._id.toString();
 });
 
 EntryLogSchema.plugin(mongooseLeanVirtuals);

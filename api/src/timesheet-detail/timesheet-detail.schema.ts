@@ -67,7 +67,7 @@ TimesheetDetailSchema.statics.getSyncColumns = function () {
 };
 
 TimesheetDetailSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 
 TimesheetDetailSchema.plugin(mongooseLeanVirtuals);

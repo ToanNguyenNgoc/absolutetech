@@ -23,11 +23,11 @@ export class UserFinger {
 export const UserFingerSchema = SchemaFactory.createForClass(UserFinger);
 
 UserFingerSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 
 UserFingerSchema.virtual('user_id').get(function () {
-  return this.user._id;
+  return this.user._id.toString();
 });
 
 UserFingerSchema.plugin(mongooseLeanVirtuals);

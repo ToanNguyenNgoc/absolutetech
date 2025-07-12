@@ -112,7 +112,7 @@ UserSchema.statics.getSyncColumns = function () {
 };
 
 UserSchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
 
 UserSchema.plugin(mongooseLeanVirtuals);
