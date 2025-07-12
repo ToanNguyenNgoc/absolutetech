@@ -8,9 +8,6 @@ export type JobNumberDocument = JobNumber & MongooseDocument;
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class JobNumber {
-  @Prop({ type: String, default: () => crypto.randomUUID() })
-  id: string;
-
   @Prop({ required: true, unique: true, index: true })
   code: string; // Unique Job Number code (JN#)
 
@@ -60,9 +57,8 @@ JobNumberSchema.virtual('documents', {
 JobNumberSchema.set('toObject', { virtuals: true });
 JobNumberSchema.set('toJSON', { virtuals: true });
 
-JobNumberSchema.pre('save', function (next) {
-  if (!this.id) this.id = crypto.randomUUID();
-  next();
+JobNumberSchema.virtual('id').get(function () {
+  return this._id;
 });
 
 JobNumberSchema.statics.getSyncColumns = function () {

@@ -6,9 +6,6 @@ export type EntryLogDocument = EntryLog & Document;
 
 @Schema({ collection: 'entry_logs' })
 export class EntryLog {
-  @Prop({ type: String, default: () => crypto.randomUUID() })
-  id: string;
-
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user: User;
 
@@ -30,9 +27,8 @@ export class EntryLog {
 
 export const EntryLogSchema = SchemaFactory.createForClass(EntryLog);
 
-EntryLogSchema.pre('save', function (next) {
-  if (!this.id) this.id = crypto.randomUUID();
-  next();
+EntryLogSchema.virtual('id').get(function () {
+  return this._id;
 });
 EntryLogSchema.virtual('rawLogs', {
   ref: 'EntryLogRaw',

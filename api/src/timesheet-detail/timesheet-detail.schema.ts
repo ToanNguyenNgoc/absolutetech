@@ -6,9 +6,6 @@ import { Types } from 'mongoose';
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class TimesheetDetail {
-  @Prop({ type: String, default: () => crypto.randomUUID() })
-  id: string;
-
   @Prop({ type: Types.ObjectId, ref: 'Timesheet' })
   timesheet_id: string;
 
@@ -68,11 +65,9 @@ TimesheetDetailSchema.statics.getSyncColumns = function () {
   ];
 };
 
-TimesheetDetailSchema.pre('save', function (next) {
-  if (!this.id) this.id = crypto.randomUUID();
-  next();
+TimesheetDetailSchema.virtual('id').get(function () {
+  return this._id;
 });
-
 TimesheetDetailSchema.pre(
   ['find', 'findOne', 'findOneAndUpdate'],
   function (next) {

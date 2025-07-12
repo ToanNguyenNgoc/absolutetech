@@ -8,9 +8,6 @@ export type FileUploadDocument = FileUpload & Document;
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class FileUpload {
-  @Prop({ type: String, default: () => crypto.randomUUID() })
-  id: string;
-
   @Prop({ required: true })
   name: string;
 
@@ -44,9 +41,8 @@ export class FileUpload {
 
 export const FileUploadSchema = SchemaFactory.createForClass(FileUpload);
 
-FileUploadSchema.pre('save', function (next) {
-  if (!this.id) this.id = crypto.randomUUID();
-  next();
+FileUploadSchema.virtual('id').get(function () {
+  return this._id;
 });
 
 FileUploadSchema.statics.getSyncColumns = function () {

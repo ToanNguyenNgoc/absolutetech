@@ -6,9 +6,6 @@ import { Types } from 'mongoose';
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class Timesheet {
-  @Prop({ type: String, default: () => crypto.randomUUID() })
-  id: string;
-
   @Prop({ type: Types.ObjectId, ref: 'JobNumber', required: false })
   jobnumber_id?: string;
 
@@ -50,9 +47,8 @@ TimesheetSchema.statics.getSyncColumns = function () {
   ];
 };
 
-TimesheetSchema.pre('save', function (next) {
-  if (!this.id) this.id = crypto.randomUUID();
-  next();
+TimesheetSchema.virtual('id').get(function () {
+  return this._id;
 });
 
 TimesheetSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {

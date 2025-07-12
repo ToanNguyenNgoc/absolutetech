@@ -6,9 +6,6 @@ import { Types } from 'mongoose';
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class UserFinger {
-  @Prop({ type: String, default: () => crypto.randomUUID() })
-  id: string;
-
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user: Types.ObjectId;
 
@@ -24,9 +21,8 @@ export class UserFinger {
 
 export const UserFingerSchema = SchemaFactory.createForClass(UserFinger);
 
-UserFingerSchema.pre('save', function (next) {
-  if (!this.id) this.id = crypto.randomUUID();
-  next();
+UserFingerSchema.virtual('id').get(function () {
+  return this._id;
 });
 
 UserFingerSchema.statics.getSyncColumns = function () {

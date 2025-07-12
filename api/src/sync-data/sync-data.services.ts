@@ -18,7 +18,10 @@ import {
   DocumentEntity,
   DocumentEntityDocument,
 } from 'src/job-number/schemas/document.schema';
-import { FileUploadDocument } from 'src/job-number/schemas/file-upload.schema';
+import {
+  FileUpload,
+  FileUploadDocument,
+} from 'src/job-number/schemas/file-upload.schema';
 
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
@@ -52,7 +55,7 @@ export class SyncDataService {
     private timesheetDetailModel: SyncableModel<TimesheetDetail>,
     @InjectModel(DocumentEntity.name)
     private documentModal: SyncableModel<DocumentEntityDocument>,
-    @InjectModel(TimesheetDetail.name)
+    @InjectModel(FileUpload.name)
     private fileUpload: SyncableModel<FileUploadDocument>,
   ) {
     this.tableMap = {
@@ -110,8 +113,8 @@ export class SyncDataService {
           await model.bulkWrite(
             rows.map((row) => ({
               updateOne: {
-                filter: { id: row.id }, // use Pk id UUID
-                update: { $set: row },
+                filter: { _id: row.id },
+                update: { $set: { ...row, _id: row.id } },
                 upsert: true,
               },
             })),
