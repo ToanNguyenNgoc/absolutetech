@@ -14,6 +14,7 @@ import { SyncData } from './sync-data.schema';
 import { JobNumber } from 'src/job-number/schemas/job-number.schema';
 import { Timesheet } from 'src/timesheet/timesheet.schema';
 import { TimesheetDetail } from 'src/timesheet-detail/timesheet-detail.schema';
+
 import {
   DocumentEntity,
   DocumentEntityDocument,
@@ -72,11 +73,11 @@ export class SyncDataService {
   async fetchForTablet(fetchForTabletDto: FetchForTabletDto) {
     try {
       const models = [
-        { model: this.userModel, table: 'users' },
-        { model: this.userFingerModel, table: 'user_fingers' },
-        { model: this.jobNumberModule, table: 'jobnumbers' },
-        { model: this.timesheetModel, table: 'timesheets' },
-        { model: this.timesheetDetailModel, table: 'timesheet_details' },
+        // { model: this.userModel, table: 'users' },
+        // { model: this.userFingerModel, table: 'user_fingers' },
+        // { model: this.jobNumberModule, table: 'jobnumbers' },
+        // { model: this.timesheetModel, table: 'timesheets' },
+        // { model: this.timesheetDetailModel, table: 'timesheet_details' },
         { model: this.documentModal, table: 'documententities' },
         { model: this.fileUpload, table: 'fileuploads' },
       ];
@@ -173,8 +174,10 @@ export class SyncDataService {
 
         const documents = await model
           .find(query)
-          .lean({ virtuals: false })
+          .lean({ virtuals: true })
           .exec();
+        console.log(documents);
+
         const syncColumns = model.getSyncColumns?.() || [];
         if (!syncColumns.length) {
           console.warn(`No sync columns defined for table ${table}`);

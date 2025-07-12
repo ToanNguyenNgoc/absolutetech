@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document as MongooseDocument, Types } from 'mongoose';
+import mongoose, { Document as MongooseDocument } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 export type DocumentEntityDocument = DocumentEntity & MongooseDocument;
 
@@ -18,9 +19,6 @@ export class DocumentEntity {
   })
   job_number: mongoose.Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'JobNumber', index: true })
-  job_number_id?: string;
-
   @Prop({ type: Date, default: null }) // Add deleted_at field
   deleted_at: Date | null;
 }
@@ -29,8 +27,13 @@ export const DocumentEntitySchema =
   SchemaFactory.createForClass(DocumentEntity);
 
 DocumentEntitySchema.virtual('id').get(function () {
-  return this._id;
+  return this._id.toString();
 });
+DocumentEntitySchema.virtual('job_number_id').get(function () {
+  return this.job_number._id.toString();
+});
+
+DocumentEntitySchema.plugin(mongooseLeanVirtuals);
 
 // Virtual files based on ref_id + refModel
 DocumentEntitySchema.virtual('files', {

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Gender, Role } from './user.enums';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 export type UserDocument = User & Document;
 
@@ -113,6 +114,8 @@ UserSchema.statics.getSyncColumns = function () {
 UserSchema.virtual('id').get(function () {
   return this._id;
 });
+
+UserSchema.plugin(mongooseLeanVirtuals);
 
 // Soft delete middleware
 UserSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {

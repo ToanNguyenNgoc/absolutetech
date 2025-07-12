@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'timesheets',
@@ -50,6 +51,8 @@ TimesheetSchema.statics.getSyncColumns = function () {
 TimesheetSchema.virtual('id').get(function () {
   return this._id;
 });
+
+TimesheetSchema.plugin(mongooseLeanVirtuals);
 
 TimesheetSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
   this.where({ deleted_at: null });

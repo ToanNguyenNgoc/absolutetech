@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'user_finger',
@@ -24,6 +25,8 @@ export const UserFingerSchema = SchemaFactory.createForClass(UserFinger);
 UserFingerSchema.virtual('id').get(function () {
   return this._id;
 });
+
+UserFingerSchema.plugin(mongooseLeanVirtuals);
 
 UserFingerSchema.statics.getSyncColumns = function () {
   return [

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document as MongooseDocument } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 export type JobNumberDocument = JobNumber & MongooseDocument;
 
@@ -60,6 +61,7 @@ JobNumberSchema.set('toJSON', { virtuals: true });
 JobNumberSchema.virtual('id').get(function () {
   return this._id;
 });
+JobNumberSchema.plugin(mongooseLeanVirtuals);
 
 JobNumberSchema.statics.getSyncColumns = function () {
   return [

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 export type FileUploadDocument = FileUpload & Document;
 
@@ -44,6 +45,7 @@ export const FileUploadSchema = SchemaFactory.createForClass(FileUpload);
 FileUploadSchema.virtual('id').get(function () {
   return this._id;
 });
+FileUploadSchema.plugin(mongooseLeanVirtuals);
 
 FileUploadSchema.statics.getSyncColumns = function () {
   return [
