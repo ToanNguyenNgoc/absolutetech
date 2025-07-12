@@ -73,11 +73,11 @@ export class SyncDataService {
   async fetchForTablet(fetchForTabletDto: FetchForTabletDto) {
     try {
       const models = [
-        // { model: this.userModel, table: 'users' },
-        // { model: this.userFingerModel, table: 'user_fingers' },
-        // { model: this.jobNumberModule, table: 'jobnumbers' },
-        // { model: this.timesheetModel, table: 'timesheets' },
-        // { model: this.timesheetDetailModel, table: 'timesheet_details' },
+        { model: this.userModel, table: 'users' },
+        { model: this.userFingerModel, table: 'user_fingers' },
+        { model: this.jobNumberModule, table: 'jobnumbers' },
+        { model: this.timesheetModel, table: 'timesheets' },
+        { model: this.timesheetDetailModel, table: 'timesheet_details' },
         { model: this.documentModal, table: 'documententities' },
         { model: this.fileUpload, table: 'fileuploads' },
       ];
