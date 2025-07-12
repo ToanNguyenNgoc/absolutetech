@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 export type EntryLogRawDocument = EntryLogRaw & Document;
 
@@ -44,3 +45,9 @@ export const EntryLogRawSchema = SchemaFactory.createForClass(EntryLogRaw);
 EntryLogRawSchema.virtual('id').get(function () {
   return this._id;
 });
+
+EntryLogRawSchema.virtual('user_id').get(function () {
+  return this.user._id;
+});
+
+EntryLogRawSchema.plugin(mongooseLeanVirtuals);

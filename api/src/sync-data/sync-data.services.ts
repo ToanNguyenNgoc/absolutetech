@@ -239,11 +239,6 @@ export class SyncDataService {
       let val = doc[col];
       if (val instanceof Date) {
         val = moment(val).format('YYYY-MM-DD HH:mm:ss');
-      } else if (val instanceof mongoose.Types.ObjectId) {
-        if (column != 'id') {
-          column = `${column}_id`;
-        }
-        val = val.toString();
       }
       fields.push(`\`${column}\``);
       values.push(SqlString.escape(val));
@@ -262,11 +257,6 @@ export class SyncDataService {
       let val = doc[col];
       if (val instanceof Date) {
         val = moment(val).format('YYYY-MM-DD HH:mm:ss');
-      } else if (val instanceof mongoose.Types.ObjectId) {
-        if (column != 'id') {
-          column = `${column}_id`;
-        }
-        val = val.toString();
       }
       pairs.push(`\`${column}\`=${SqlString.escape(val)}`);
     }

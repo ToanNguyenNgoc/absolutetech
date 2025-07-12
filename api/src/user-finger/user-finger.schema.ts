@@ -26,6 +26,10 @@ UserFingerSchema.virtual('id').get(function () {
   return this._id;
 });
 
+UserFingerSchema.virtual('user_id').get(function () {
+  return this.user._id;
+});
+
 UserFingerSchema.plugin(mongooseLeanVirtuals);
 
 UserFingerSchema.statics.getSyncColumns = function () {

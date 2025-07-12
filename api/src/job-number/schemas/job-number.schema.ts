@@ -61,6 +61,13 @@ JobNumberSchema.set('toJSON', { virtuals: true });
 JobNumberSchema.virtual('id').get(function () {
   return this._id;
 });
+JobNumberSchema.virtual('assigned_to_id').get(function () {
+  return this.assigned_to._id;
+});
+JobNumberSchema.virtual('created_by_id').get(function () {
+  return this.created_by._id;
+});
+
 JobNumberSchema.plugin(mongooseLeanVirtuals);
 
 JobNumberSchema.statics.getSyncColumns = function () {
@@ -70,10 +77,10 @@ JobNumberSchema.statics.getSyncColumns = function () {
     'client',
     'location_at',
     'project',
-    'assigned_to', //super_visor
+    'assigned_to_id',
     'est_start_date',
     'est_end_date',
-    'created_by',
+    'created_by_id',
     'status',
     'created_at',
     'updated_at',
