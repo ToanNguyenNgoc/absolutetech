@@ -58,6 +58,10 @@ JobNumberSchema.virtual('documents', {
 JobNumberSchema.set('toObject', { virtuals: true });
 JobNumberSchema.set('toJSON', { virtuals: true });
 
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
 JobNumberSchema.virtual('id').get(function () {
   return this._id.toString();
 });
@@ -87,3 +91,8 @@ JobNumberSchema.statics.getSyncColumns = function () {
     'deleted_at',
   ];
 };
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */
