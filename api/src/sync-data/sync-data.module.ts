@@ -27,6 +27,9 @@ import {
   FileUpload,
   FileUploadSchema,
 } from 'src/job-number/schemas/file-upload.schema';
+import { BullModule } from '@nestjs/bull';
+import { QUEUE_NAME } from 'src/constants';
+import { SyncDataConsumers } from 'src/consumers/sync-data.consumers';
 
 @Module({
   imports: [
@@ -40,9 +43,10 @@ import {
       { name: DocumentEntity.name, schema: DocumentEntitySchema },
       { name: FileUpload.name, schema: FileUploadSchema },
     ]),
+    BullModule.registerQueue({ name: QUEUE_NAME.sync_data }),
   ],
   controllers: [SyncDataController],
-  providers: [SyncDataService],
+  providers: [SyncDataService, SyncDataConsumers],
   exports: [SyncDataService],
 })
 export class SyncDataModule {}

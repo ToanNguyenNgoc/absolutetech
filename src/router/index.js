@@ -8,6 +8,7 @@ import JobNumberView from "@/views/admin/JobNumberView.vue";
 import JobNumberCreate from "@/components/job-number/JobNumberCreate.vue";
 import OpenTimesheetView from "@/views/admin/OpenTimesheetView.vue";
 import CloseTimesheetView from "@/views/admin/CloseTimesheetView.vue";
+import SocketView from "@/views/socket/SocketView.vue";
 
 const routes = [
   {
@@ -63,6 +64,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/socket",
+    name: "socket",
+    component: SocketView,
   },
 ];
 

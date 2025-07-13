@@ -16,6 +16,9 @@ import { TimesheetModule } from './timesheet/timesheet.module';
 import { UploadController } from './upload/upload.controller';
 import { UserFingerModule } from './user-finger/user-finger.module';
 import { UserModule } from './user/user.module';
+import { GatewayModule } from './gateway/gateway.module';
+import { BullModule } from '@nestjs/bull';
+import { bullConfig } from './configs';
 
 @Module({
   imports: [
@@ -36,6 +39,7 @@ import { UserModule } from './user/user.module';
       dbName: process.env.MONGODB_DB_NAME,
     }),
     ScheduleModule.forRoot(),
+    BullModule.forRoot(bullConfig),
     MqttModule,
     UserModule,
     AuthModule,
@@ -46,6 +50,9 @@ import { UserModule } from './user/user.module';
     SyncDataModule,
     TimesheetModule,
     TimesheetDetailModule,
+
+    //Socket gateway
+    GatewayModule,
   ],
 
   controllers: [UploadController],
