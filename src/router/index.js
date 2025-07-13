@@ -9,6 +9,8 @@ import JobNumberCreate from "@/components/job-number/JobNumberCreate.vue";
 import OpenTimesheetView from "@/views/admin/OpenTimesheetView.vue";
 import CloseTimesheetView from "@/views/admin/CloseTimesheetView.vue";
 import SocketView from "@/views/socket/SocketView.vue";
+import OpenTimesheetDetail from "@/components/timesheet/OpenTimesheetDetail.vue";
+import OpenTimesheetEdit from "@/components/timesheet/OpenTimesheetEdit.vue";
 
 const routes = [
   {
@@ -26,16 +28,16 @@ const routes = [
         component: JobNumberCreate,
       },
       {
-        path: 'job-number/:id/edit',
-        name: 'admin-job-number-edit',
+        path: "job-number/:id/edit",
+        name: "admin-job-number-edit",
         component: JobNumberCreate,
         props: true,
       },
       {
-        path: '/admin/job-number/:id/duplicate',
-        name: 'DuplicateJobNumber',
+        path: "/admin/job-number/:id/duplicate",
+        name: "DuplicateJobNumber",
         component: JobNumberCreate,
-        props: true
+        props: true,
       },
       {
         path: "users",
@@ -52,6 +54,20 @@ const routes = [
         name: "admin-open-timesheets",
         component: OpenTimesheetView,
       },
+      // Thêm vào mảng routes
+      {
+        path: "open-timesheets/:id",
+        name: "admin-open-timesheet-detail",
+        component: OpenTimesheetDetail,
+        props: true,
+      },
+      {
+        path: "open-timesheets/:id/edit",
+        name: "admin-open-timesheet-edit",
+        component: OpenTimesheetEdit,
+        props: true,
+      },
+
       {
         path: "close-timesheets",
         name: "admin-close-timesheets",

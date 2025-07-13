@@ -37,9 +37,6 @@ export class TimesheetService {
 
     const itemsWithDetails = await Promise.all(
       result.list.map(async (item) => {
-        const timesheetId =
-          typeof item._id === 'string' ? item._id : item._id.toString();
-
         const details = await this.timesheetDetailModel
           .find({
             $or: [
@@ -104,13 +101,27 @@ export class TimesheetService {
       })
       .populate('attendance_id')
       .lean();
+      
+    const {
+      jobnumber_id,
+      supervisor_id,
+      office_supervisor_id,
+      ...restTimesheet
+    } = timesheet;
 
     return {
-      ...timesheet,
-      details: details.map((d) => ({
-        ...d,
-        id: d._id.toString(),
-      })),
+      ...restTimesheet,
+      jobnumber: jobnumber_id,
+      supervisor: supervisor_id,
+      office_supervisor: office_supervisor_id,
+      details: details.map((d) => {
+        const { _id, attendance_id, ...restDetail } = d;
+        return {
+          ...restDetail,
+          id: _id.toString(),
+          attendance: attendance_id,
+        };
+      }),
     };
   }
 }
