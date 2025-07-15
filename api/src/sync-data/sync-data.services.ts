@@ -170,11 +170,11 @@ export class SyncDataService {
           console.warn(`No sync columns defined for table ${table}`);
           continue;
         }
-        const query = isFetchAll
-          ? { updatedAt: { $gte: new Date(lastTimestamp) } }
-          : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
+        // const query = isFetchAll
+        //   ? { updatedAt: { $gte: new Date(lastTimestamp) } }
+        //   : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
         const documents = await model
-          .find(query)
+          .find({ deletedAt: null })
           .lean({ virtuals: true })
           .exec();
         result[table] = documents.map((doc) => {

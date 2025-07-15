@@ -44,7 +44,7 @@ TimesheetSchema.statics.getSyncColumns = function () {
     'signature',
     'time_end',
     'status',
-    'createdA',
+    'createdAt',
     'updatedAt',
     'deletedAt',
   ];
