@@ -6,7 +6,7 @@ export type JobNumberDocument = JobNumber & MongooseDocument;
 
 @Schema({
   collection: 'jobnumbers',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class JobNumber {
   @Prop({ required: true, unique: true, index: true })
@@ -43,7 +43,7 @@ export class JobNumber {
   status: string; // Job status: open, closed, approved
 
   @Prop({ type: Date, default: null }) // Add deleted_at field
-  deleted_at: Date | null;
+  deletedAt?: Date;
 }
 
 export const JobNumberSchema = SchemaFactory.createForClass(JobNumber);
@@ -86,9 +86,9 @@ JobNumberSchema.statics.getSyncColumns = function () {
     'est_end_date',
     'created_by_id',
     'status',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
   ];
 };
 

@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'timesheet_details',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class TimesheetDetail {
   @Prop({ type: Types.ObjectId, ref: 'Timesheet' })
@@ -41,7 +41,7 @@ export class TimesheetDetail {
   json_data?: string;
 
   @Prop()
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const TimesheetDetailSchema =
@@ -60,9 +60,9 @@ TimesheetDetailSchema.statics.getSyncColumns = function () {
     'other',
     'remarks',
     'signature_tech',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
   ];
 };
 
