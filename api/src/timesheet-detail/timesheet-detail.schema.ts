@@ -22,14 +22,14 @@ export class TimesheetDetail {
   @Prop()
   over_time?: string;
 
-  @Prop({ default: 0 })
-  on_rope: number;
+  @Prop({ default: false })
+  on_rope: boolean;
 
-  @Prop({ default: 0 })
-  in_charge: number;
+  @Prop({ default: false })
+  in_charge: boolean;
 
-  @Prop({ default: 0 })
-  other: number;
+  @Prop({ default: false })
+  other: boolean;
 
   @Prop()
   remarks?: string;

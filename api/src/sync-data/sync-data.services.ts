@@ -83,6 +83,8 @@ export class SyncDataService {
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);
+      console.log('scriptExecute', scriptExecute);
+
       const timeFetch = DateUtil.currentDateString();
 
       if (fetchForTabletDto.timestamp_fetch) {
@@ -163,20 +165,25 @@ export class SyncDataService {
       const isFetchAll = !fetchForTabletDto.timestamp_fetch;
       const result = {};
       for (const { model, table } of models) {
-        const query = isFetchAll
-          ? { updatedAt: { $gte: new Date(lastTimestamp) } }
-          : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
-
-        const documents = await model
-          .find(query)
-          .lean({ virtuals: true })
-          .exec();
         const syncColumns = model.getSyncColumns?.() || [];
         if (!syncColumns.length) {
           console.warn(`No sync columns defined for table ${table}`);
           continue;
         }
-        result[table] = documents;
+        const query = isFetchAll
+          ? { updatedAt: { $gte: new Date(lastTimestamp) } }
+          : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
+        const documents = await model
+          .find(query)
+          .lean({ virtuals: true })
+          .exec();
+        result[table] = documents.map((doc) => {
+          const filtered = {};
+          for (const col of syncColumns) {
+            filtered[col] = doc[col];
+          }
+          return filtered;
+        });
       }
       return result;
     } catch (error) {
