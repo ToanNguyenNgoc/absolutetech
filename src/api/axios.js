@@ -1,11 +1,11 @@
-import { getCookie } from '@/utils/cookie';
-import axios from 'axios';
+import { getCookie } from "@/utils/cookie";
+import axios from "axios";
 
-export const baseURL = process.env.VUE_APP_API_URL
-  ? `${process.env.VUE_APP_API_URL}/api`
-  : '/api';
+// export const baseURL = process.env.VUE_APP_API_URL
+//   ? `${process.env.VUE_APP_API_URL}/api`
+//   : '/api';
 
-// export const baseURL = 'http://localhost:3001/api'
+export const baseURL = "http://localhost:7891/api";
 
 const instance = axios.create({
   baseURL,
@@ -13,9 +13,9 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = getCookie('access_token');
+    const token = getCookie("access_token");
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -26,10 +26,10 @@ instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      document.cookie = 'access_token=; max-age=0; path=/;';
+      document.cookie = "access_token=; max-age=0; path=/;";
 
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);
