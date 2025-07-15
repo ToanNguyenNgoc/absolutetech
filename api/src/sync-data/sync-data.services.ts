@@ -161,12 +161,7 @@ export class SyncDataService {
         throw new Error('Invalid timestamp format');
       }
       const isFetchAll = !fetchForTabletDto.timestamp_fetch;
-      const result: { insert: string[]; update: string[]; delete: string[] } = {
-        insert: [],
-        update: [],
-        delete: [],
-      };
-
+      const result = {};
       for (const { model, table } of models) {
         const query = isFetchAll
           ? { updatedAt: { $gte: new Date(lastTimestamp) } }
@@ -176,51 +171,13 @@ export class SyncDataService {
           .find(query)
           .lean({ virtuals: true })
           .exec();
-        console.log(documents);
-
         const syncColumns = model.getSyncColumns?.() || [];
         if (!syncColumns.length) {
           console.warn(`No sync columns defined for table ${table}`);
           continue;
         }
-
-        for (const doc of documents as unknown as SyncableDocument[]) {
-          const transformedDoc = { ...doc, id: doc.id || doc._id.toString() };
-          // @ts-ignore
-          delete transformedDoc._id;
-          const createdAt = moment(new Date(transformedDoc.createdAt));
-          const updatedAt = moment(new Date(transformedDoc.updatedAt));
-          const lastTime = moment(lastTimestamp);
-
-          if (isFetchAll || lastTime.isBefore(createdAt)) {
-            if (transformedDoc.deletedAt) {
-              result.delete.push(
-                `DELETE FROM ${table} WHERE id = ${SqlString.escape(transformedDoc.id)}`,
-              );
-            } else {
-              result.insert.push(
-                this.toSqlInsert(transformedDoc, table, syncColumns),
-              );
-            }
-          } else if (updatedAt.isAfter(createdAt)) {
-            if (transformedDoc.deletedAt) {
-              result.delete.push(
-                `DELETE FROM ${table} WHERE id = ${SqlString.escape(transformedDoc.id)}`,
-              );
-            } else {
-              result.update.push(
-                this.toSqlUpdate(transformedDoc, table, syncColumns),
-              );
-            }
-          } else {
-            result.insert.push(
-              this.toSqlInsert(transformedDoc, table, syncColumns),
-            );
-          }
-        }
+        result[table] = documents;
       }
-
-      console.log('Generated SQL:', result);
       return result;
     } catch (error) {
       throw new Error(`Failed to fetch data: ${error.message}`);

@@ -71,7 +71,7 @@ export class EntryLogController {
 
     const exportData = entryLogs.map((log: any) => {
       const obj = typeof log.toObject === 'function' ? log.toObject() : log;
-      const { _id, date, time_in, time_out, duration, created_at, user } = obj;
+      const { _id, date, time_in, time_out, duration, createdAt, user } = obj;
       const userObj =
         user && typeof user.toObject === 'function' ? user.toObject() : user;
       return {
@@ -85,7 +85,7 @@ export class EntryLogController {
         time_in: time_in || '',
         time_out: time_out || '',
         Duration: duration || '',
-        created_at: created_at || '',
+        createdAt: createdAt || '',
       };
     });
 

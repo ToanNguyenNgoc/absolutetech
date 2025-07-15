@@ -44,7 +44,7 @@ TimesheetSchema.statics.getSyncColumns = function () {
     'signature',
     'time_end',
     'status',
-    'createdAt',
+    'createdA',
     'updatedAt',
     'deletedAt',
   ];
@@ -57,14 +57,14 @@ TimesheetSchema.virtual('id').get(function () {
 TimesheetSchema.plugin(mongooseLeanVirtuals);
 
 TimesheetSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
-  this.where({ deleted_at: null });
+  this.where({ deletedAt: null });
   next();
 });
 
 TimesheetSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
 };
 
 TimesheetSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
 };

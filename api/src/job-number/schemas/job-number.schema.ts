@@ -42,7 +42,7 @@ export class JobNumber {
   @Prop({ default: 'open', index: true })
   status: string; // Job status: open, closed, approved
 
-  @Prop({ type: Date, default: null }) // Add deleted_at field
+  @Prop({ type: Date, default: null }) // Add deletedAt field
   deletedAt?: Date;
 }
 

@@ -39,7 +39,7 @@ export class FileUpload {
   @Prop({ default: true })
   is_temp: boolean;
 
-  @Prop({ type: Date, default: null }) // Add deleted_at field
+  @Prop({ type: Date, default: null }) // Add deletedAt field
   deletedAt?: Date;
 }
 

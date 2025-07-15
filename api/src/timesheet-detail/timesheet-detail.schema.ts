@@ -75,15 +75,15 @@ TimesheetDetailSchema.plugin(mongooseLeanVirtuals);
 TimesheetDetailSchema.pre(
   ['find', 'findOne', 'findOneAndUpdate'],
   function (next) {
-    this.where({ deleted_at: null });
+    this.where({ deletedAt: null });
     next();
   },
 );
 
 TimesheetDetailSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
 };
 
 TimesheetDetailSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
 };

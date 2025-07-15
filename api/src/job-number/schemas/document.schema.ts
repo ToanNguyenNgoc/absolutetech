@@ -19,7 +19,7 @@ export class DocumentEntity {
   })
   job_number: mongoose.Types.ObjectId;
 
-  @Prop({ type: Date, default: null }) // Add deleted_at field
+  @Prop({ type: Date, default: null }) // Add deletedAt field
   deletedAt?: Date;
 }
 
