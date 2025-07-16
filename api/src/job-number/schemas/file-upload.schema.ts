@@ -6,7 +6,7 @@ export type FileUploadDocument = FileUpload & Document;
 
 @Schema({
   collection: 'fileuploads',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class FileUpload {
   @Prop({ required: true })
@@ -38,6 +38,9 @@ export class FileUpload {
 
   @Prop({ default: true })
   is_temp: boolean;
+
+  @Prop({ type: Date, default: null }) // Add deletedAt field
+  deletedAt?: Date;
 }
 
 export const FileUploadSchema = SchemaFactory.createForClass(FileUpload);
@@ -60,8 +63,8 @@ FileUploadSchema.statics.getSyncColumns = function () {
     'ref_model',
     'is_deleted',
     'is_temp',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
   ];
 };

@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'user_finger',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' },
 })
 export class UserFinger {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
@@ -17,7 +17,7 @@ export class UserFinger {
   finger_data?: string;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date | null;
+  deletedAt?: Date | null;
 }
 
 export const UserFingerSchema = SchemaFactory.createForClass(UserFinger);
@@ -38,21 +38,21 @@ UserFingerSchema.statics.getSyncColumns = function () {
     'user_id',
     'no',
     'finger_data',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'createdAt',
+    'deletedAt',
   ];
 };
 
 UserFingerSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
-  this.where({ deleted_at: null });
+  this.where({ deletedAt: null });
   next();
 });
 
 UserFingerSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
 };
 
 UserFingerSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
 };

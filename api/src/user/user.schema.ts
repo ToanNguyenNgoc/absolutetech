@@ -7,7 +7,7 @@ export type UserDocument = User & Document;
 
 @Schema({
   collection: 'users',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class User {
   @Prop({ required: true })
@@ -68,8 +68,8 @@ export class User {
   @Prop()
   work_permit_expiry: Date;
 
-  @Prop({ type: Date, default: null }) // Add deleted_at field
-  deleted_at: Date | null;
+  @Prop({ type: Date, default: null }) // Add deletedAt field
+  deletedAt: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -105,9 +105,9 @@ UserSchema.statics.getSyncColumns = function () {
     'avatar',
     'nric_fin',
     'work_permit_expiry',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
   ];
 };
 
@@ -119,16 +119,16 @@ UserSchema.plugin(mongooseLeanVirtuals);
 
 // Soft delete middleware
 UserSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
-  this.where({ deleted_at: null }); // Only return non-deleted documents
+  this.where({ deletedAt: null }); // Only return non-deleted documents
   next();
 });
 
 // Method to soft delete a user
 UserSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
 };
 
 // Method to restore a soft-deleted user
 UserSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
 };

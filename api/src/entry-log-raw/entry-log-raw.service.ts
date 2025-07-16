@@ -57,6 +57,6 @@ export class EntryLogRawService {
   }
 
   async getLatestEntry(): Promise<EntryLogRawDocument | null> {
-    return this.entryLogRawModel.findOne().sort({ created_at: -1 }).exec();
+    return this.entryLogRawModel.findOne().sort({ createdAt: -1 }).exec();
   }
 }

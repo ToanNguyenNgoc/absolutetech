@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'timesheets',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class Timesheet {
   @Prop({ type: Types.ObjectId, ref: 'JobNumber', required: false })
@@ -29,7 +29,7 @@ export class Timesheet {
   status: string;
 
   @Prop()
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const TimesheetSchema = SchemaFactory.createForClass(Timesheet);
@@ -44,9 +44,9 @@ TimesheetSchema.statics.getSyncColumns = function () {
     'signature',
     'time_end',
     'status',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
   ];
 };
 
@@ -57,14 +57,14 @@ TimesheetSchema.virtual('id').get(function () {
 TimesheetSchema.plugin(mongooseLeanVirtuals);
 
 TimesheetSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
-  this.where({ deleted_at: null });
+  this.where({ deletedAt: null });
   next();
 });
 
 TimesheetSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
 };
 
 TimesheetSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
 };

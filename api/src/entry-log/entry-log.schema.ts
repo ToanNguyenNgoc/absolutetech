@@ -22,7 +22,7 @@ export class EntryLog {
   duration?: number;
 
   @Prop({ default: Date.now })
-  created_at: Date;
+  createdAt: Date;
 }
 
 export const EntryLogSchema = SchemaFactory.createForClass(EntryLog);

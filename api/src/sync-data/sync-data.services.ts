@@ -27,9 +27,9 @@ import {
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
   id?: string;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
   [key: string]: any;
 }
 
@@ -83,6 +83,8 @@ export class SyncDataService {
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);
+      console.log('scriptExecute', scriptExecute);
+
       const timeFetch = DateUtil.currentDateString();
 
       if (fetchForTabletDto.timestamp_fetch) {
@@ -161,66 +163,28 @@ export class SyncDataService {
         throw new Error('Invalid timestamp format');
       }
       const isFetchAll = !fetchForTabletDto.timestamp_fetch;
-      const result: { insert: string[]; update: string[]; delete: string[] } = {
-        insert: [],
-        update: [],
-        delete: [],
-      };
-
+      const result = {};
       for (const { model, table } of models) {
-        const query = isFetchAll
-          ? { updated_at: { $gte: new Date(lastTimestamp) } }
-          : { updated_at: { $gte: new Date(lastTimestamp) }, deleted_at: null };
-
-        const documents = await model
-          .find(query)
-          .lean({ virtuals: true })
-          .exec();
-        console.log(documents);
-
         const syncColumns = model.getSyncColumns?.() || [];
         if (!syncColumns.length) {
           console.warn(`No sync columns defined for table ${table}`);
           continue;
         }
-
-        for (const doc of documents as unknown as SyncableDocument[]) {
-          const transformedDoc = { ...doc, id: doc.id || doc._id.toString() };
-          // @ts-ignore
-          delete transformedDoc._id;
-          const created_at = moment(new Date(transformedDoc.created_at));
-          const updated_at = moment(new Date(transformedDoc.updated_at));
-          const lastTime = moment(lastTimestamp);
-
-          if (isFetchAll || lastTime.isBefore(created_at)) {
-            if (transformedDoc.deleted_at) {
-              result.delete.push(
-                `DELETE FROM ${table} WHERE id = ${SqlString.escape(transformedDoc.id)}`,
-              );
-            } else {
-              result.insert.push(
-                this.toSqlInsert(transformedDoc, table, syncColumns),
-              );
-            }
-          } else if (updated_at.isAfter(created_at)) {
-            if (transformedDoc.deleted_at) {
-              result.delete.push(
-                `DELETE FROM ${table} WHERE id = ${SqlString.escape(transformedDoc.id)}`,
-              );
-            } else {
-              result.update.push(
-                this.toSqlUpdate(transformedDoc, table, syncColumns),
-              );
-            }
-          } else {
-            result.insert.push(
-              this.toSqlInsert(transformedDoc, table, syncColumns),
-            );
+        // const query = isFetchAll
+        //   ? { updatedAt: { $gte: new Date(lastTimestamp) } }
+        //   : { updatedAt: { $gte: new Date(lastTimestamp) }, deletedAt: null };
+        const documents = await model
+          .find({ deletedAt: null })
+          .lean({ virtuals: true })
+          .exec();
+        result[table] = documents.map((doc) => {
+          const filtered = {};
+          for (const col of syncColumns) {
+            filtered[col] = doc[col];
           }
-        }
+          return filtered;
+        });
       }
-
-      console.log('Generated SQL:', result);
       return result;
     } catch (error) {
       throw new Error(`Failed to fetch data: ${error.message}`);

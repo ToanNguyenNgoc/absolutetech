@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'timesheet_details',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class TimesheetDetail {
   @Prop({ type: Types.ObjectId, ref: 'Timesheet' })
@@ -22,14 +22,14 @@ export class TimesheetDetail {
   @Prop()
   over_time?: string;
 
-  @Prop({ default: 0 })
-  on_rope: number;
+  @Prop({ default: false })
+  on_rope: boolean;
 
-  @Prop({ default: 0 })
-  in_charge: number;
+  @Prop({ default: false })
+  in_charge: boolean;
 
-  @Prop({ default: 0 })
-  other: number;
+  @Prop({ default: false })
+  other: boolean;
 
   @Prop()
   remarks?: string;
@@ -41,7 +41,7 @@ export class TimesheetDetail {
   json_data?: string;
 
   @Prop()
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const TimesheetDetailSchema =
@@ -60,9 +60,9 @@ TimesheetDetailSchema.statics.getSyncColumns = function () {
     'other',
     'remarks',
     'signature_tech',
-    'created_at',
-    'updated_at',
-    'deleted_at',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
   ];
 };
 
@@ -75,15 +75,15 @@ TimesheetDetailSchema.plugin(mongooseLeanVirtuals);
 TimesheetDetailSchema.pre(
   ['find', 'findOne', 'findOneAndUpdate'],
   function (next) {
-    this.where({ deleted_at: null });
+    this.where({ deletedAt: null });
     next();
   },
 );
 
 TimesheetDetailSchema.statics.softDelete = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
 };
 
 TimesheetDetailSchema.statics.restore = async function (id: string) {
-  return this.findByIdAndUpdate(id, { deleted_at: null }, { new: true });
+  return this.findByIdAndUpdate(id, { deletedAt: null }, { new: true });
 };

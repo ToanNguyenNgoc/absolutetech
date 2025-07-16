@@ -19,9 +19,9 @@ async function migrateDatabase() {
           employeeID: 'employee_id',
           nricFin: 'nric_fin',
           workPermitExpiry: 'work_permit_expiry',
-          createdAt: 'created_at',
-          updatedAt: 'updated_at',
-          deletedAt: 'deleted_at',
+          createdAt: 'createdAt',
+          updatedAt: 'createdAt',
+          deletedAt: 'deletedAt',
         },
       },
     );
@@ -31,9 +31,9 @@ async function migrateDatabase() {
       {},
       {
         $rename: {
-          createdAt: 'created_at',
-          updatedAt: 'updated_at',
-          deletedAt: 'deleted_at',
+          createdAt: 'createdAt',
+          updatedAt: 'createdAt',
+          deletedAt: 'deletedAt',
         },
       },
     );
@@ -45,9 +45,9 @@ async function migrateDatabase() {
           estStartDate: 'est_start_date',
           estEndDate: 'est_end_date',
           createdBy: 'created_by',
-          createdAt: 'created_at',
-          updatedAt: 'updated_at',
-          deletedAt: 'deleted_at',
+          createdAt: 'createdAt',
+          updatedAt: 'createdAt',
+          deletedAt: 'deletedAt',
         },
       },
     );
@@ -60,8 +60,8 @@ async function migrateDatabase() {
           mineType: 'mine_type',
           refId: 'ref_id',
           refModal: 'ref_modal',
-          createdAt: 'created_at',
-          updatedAt: 'updated_at',
+          createdAt: 'createdAt',
+          updatedAt: 'createdAt',
         },
       },
     );
@@ -71,8 +71,8 @@ async function migrateDatabase() {
       {
         $rename: {
           jobNumber: 'job_number',
-          createdAt: 'created_at',
-          updatedAt: 'updated_at',
+          createdAt: 'createdAt',
+          updatedAt: 'createdAt',
         },
       },
     );

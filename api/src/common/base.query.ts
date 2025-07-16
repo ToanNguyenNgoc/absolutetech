@@ -7,6 +7,6 @@ export class BaseQuery {
   readonly limit?: number;
   @ApiProperty({ required: false })
   readonly search?: string;
-  @ApiProperty({ default: '-created_at', required: false })
+  @ApiProperty({ default: '-createdAt', required: false })
   readonly sort?: string;
 }

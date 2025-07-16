@@ -2,7 +2,7 @@ interface SearchOptions {
   search?: string;
   searchFields?: string[];
   filters?: Record<string, any>;
-  sort?: string; // Example: 'created_at' or '-created_at'
+  sort?: string; // Example: 'createdAt' or '-createdAt'
   page?: number;
   limit?: number;
 }
@@ -12,7 +12,7 @@ export function buildMongoQuery(options: SearchOptions) {
     search,
     searchFields = [],
     filters = {},
-    sort = '-created_at',
+    sort = '-createdAt',
     page = 1,
     limit = 15,
   } = options;

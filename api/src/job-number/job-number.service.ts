@@ -30,13 +30,13 @@ export class JobNumberService {
     try {
       const { documents, est_start_date, est_end_date, ...jobData } = dto;
 
-      const created_ata = {
+      const createdAta = {
         ...jobData,
         est_start_date: est_start_date ? new Date(est_start_date) : undefined,
         est_end_date: est_end_date ? new Date(est_end_date) : undefined,
       };
 
-      const jobNumber = await this.jobNumberModel.create(created_ata);
+      const jobNumber = await this.jobNumberModel.create(createdAta);
 
       if (documents?.length) {
         for (const doc of documents) {

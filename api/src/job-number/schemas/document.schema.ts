@@ -6,7 +6,7 @@ export type DocumentEntityDocument = DocumentEntity & MongooseDocument;
 
 @Schema({
   collection: 'documententities',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class DocumentEntity {
   @Prop({ required: true })
@@ -19,8 +19,8 @@ export class DocumentEntity {
   })
   job_number: mongoose.Types.ObjectId;
 
-  @Prop({ type: Date, default: null }) // Add deleted_at field
-  deleted_at: Date | null;
+  @Prop({ type: Date, default: null }) // Add deletedAt field
+  deletedAt?: Date;
 }
 
 export const DocumentEntitySchema =
@@ -47,12 +47,5 @@ DocumentEntitySchema.set('toObject', { virtuals: true });
 DocumentEntitySchema.set('toJSON', { virtuals: true });
 
 DocumentEntitySchema.statics.getSyncColumns = function () {
-  return [
-    'id',
-    'name',
-    'job_number_id',
-    'created_at',
-    'updated_at',
-    'deleted_at',
-  ];
+  return ['id', 'name', 'job_number_id', 'createdAt', 'updatedAt', 'deletedAt'];
 };
