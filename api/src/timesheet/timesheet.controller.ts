@@ -13,7 +13,7 @@ export class TimesheetController {
     @Query('limit') limit = 10,
   ) {
     return this.timesheetService.findAllPaginated({
-      status: ['done', 'reopen'],
+      status: ['done', 'reopen', 'approve'],
       jobnumber,
       page,
       limit,
