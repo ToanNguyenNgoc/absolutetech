@@ -45,3 +45,7 @@ export const approveTimesheet = (id) => {
 export const closeTimesheet = (id) => {
     return axiosInstance.put(`/timesheets/${id}/close`);
 };
+
+export const reopenTimesheet = (id) => {
+    return axiosInstance.put(`/timesheets/${id}/reopen`);
+};

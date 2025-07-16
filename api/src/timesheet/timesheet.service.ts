@@ -215,5 +215,19 @@ export class TimesheetService {
     await timesheet.save();
     return this.getDetailWithDetails(timesheetId);
   }
-  ;
+
+  async reopenTimesheet(timesheetId: string) {
+    const timesheet = await this.timesheetModel.findById(timesheetId);
+
+    if (!timesheet) {
+      throw new NotFoundException('Timesheet not found.');
+    }
+
+    if (timesheet.status == 'close') {
+      timesheet.status = 'reopen';
+      await timesheet.save();
+      return this.getDetailWithDetails(timesheetId);
+    }
+    throw new BadRequestException('Timesheet is not close yet.');
+  }
 }

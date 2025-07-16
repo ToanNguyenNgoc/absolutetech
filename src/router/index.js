@@ -11,6 +11,7 @@ import CloseTimesheetView from "@/views/admin/CloseTimesheetView.vue";
 import SocketView from "@/views/socket/SocketView.vue";
 import OpenTimesheetDetail from "@/components/timesheet/OpenTimesheetDetail.vue";
 import OpenTimesheetEdit from "@/components/timesheet/OpenTimesheetEdit.vue";
+import CloseTimesheetDetail from "@/components/timesheet/CloseTimesheetDetail.vue";
 
 const routes = [
   {
@@ -72,6 +73,12 @@ const routes = [
         path: "close-timesheets",
         name: "admin-close-timesheets",
         component: CloseTimesheetView,
+      },
+      {
+        path: "close-timesheets/:id",
+        name: "admin-close-timesheet-detail",
+        component: CloseTimesheetDetail,
+        props: true,
       },
     ],
   },

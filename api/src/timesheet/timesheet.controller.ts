@@ -27,7 +27,7 @@ export class TimesheetController {
     @Query('limit') limit = 10,
   ) {
     return this.timesheetService.findAllPaginated({
-      status: ['closed'],
+      status: ['close'],
       jobnumber,
       page,
       limit,
@@ -58,5 +58,10 @@ export class TimesheetController {
   @Put(':id/close')
   async closeTimesheet(@Param('id') timesheetId: string) {
     return this.timesheetService.closeTimesheet(timesheetId);
+  }
+
+  @Put(':id/reopen')
+  async reopenTimesheet(@Param('id') timesheetId: string) {
+    return this.timesheetService.reopenTimesheet(timesheetId);
   }
 }

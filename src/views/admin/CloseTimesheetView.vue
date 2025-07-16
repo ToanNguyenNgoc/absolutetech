@@ -1,19 +1,16 @@
-<!-- CloseTimesheetView.vue -->
 <template>
-    <div class="page-wrapper">
-        <h1>Close Time Sheets</h1>
-        <!-- Content goes here -->
-    </div>
+  <div class="open-timesheet-view">
+    <h1 style="margin-bottom: 16px">Close Timesheets</h1>
+    <CloseTimesheetTable />
+  </div>
 </template>
 
-<script>
-export default {
-    name: 'CloseTimesheetView',
-};
+<script setup>
+import CloseTimesheetTable from '@/components/timesheet/CloseTimesheetTable.vue';
 </script>
 
 <style scoped>
-.page-wrapper {
-    padding: 20px;
+.open-timesheet-view {
+  padding: 32px 24px;
 }
 </style>
