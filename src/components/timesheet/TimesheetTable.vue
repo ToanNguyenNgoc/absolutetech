@@ -32,8 +32,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
-// API: getTimesheets(page, limit, searchTerm)
-import { getTimesheets } from '@/api/timesheet'; // tự viết hoặc mock
+// API: getOpenTimesheets(page, limit, searchTerm)
+import { getOpenTimesheets } from '@/api/timesheet'; // tự viết hoặc mock
 import debounce from 'lodash/debounce';
 import { useRouter } from 'vue-router';
 
@@ -51,7 +51,7 @@ const fetchData = async () => {
     loading.value = true;
     try {
         // Gọi API get timesheet
-        const res = await getTimesheets(currentPage.value, pageSize.value, searchTerm.value);
+        const res = await getOpenTimesheets(currentPage.value, pageSize.value, searchTerm.value);
         const apiData = res.data.data || res.data;
         tableData.value = apiData.items;
         rawList.value = apiData.items;

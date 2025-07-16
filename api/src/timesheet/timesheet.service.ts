@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Timesheet } from './timesheet.schema';
@@ -17,7 +21,15 @@ export class TimesheetService {
 
   async findAllPaginated({ status, jobnumber, page = 1, limit = 10 }) {
     const filter: any = { deleted_at: null };
-    if (status) filter.status = status;
+
+    if (status) {
+      if (Array.isArray(status)) {
+        filter.status = { $in: status };
+      } else {
+        filter.status = status;
+      }
+    }
+
     if (jobnumber) filter.jobnumber_id = jobnumber;
 
     const options = {
@@ -101,7 +113,7 @@ export class TimesheetService {
       })
       .populate('attendance_id')
       .lean();
-      
+
     const {
       jobnumber_id,
       supervisor_id,
@@ -124,4 +136,84 @@ export class TimesheetService {
       }),
     };
   }
+
+  async updateTimesheetDetails(timesheetId: string, details: any[]) {
+    const timesheet = await this.timesheetModel.findById(timesheetId);
+    if (!timesheet) {
+      throw new NotFoundException('Timesheet not found.');
+    }
+
+    if (timesheet.status === 'approve' || timesheet.status === 'close') {
+      throw new BadRequestException(
+        'Timesheet cannot be edited as it is already closed or signed by the client.',
+      );
+    }
+
+    // Explicitly define the type of updatedDetails
+    const updatedDetails: TimesheetDetail[] = [];
+
+    for (const detailData of details) {
+      const { id, ...updateFields } = detailData;
+
+      const existingDetail = await this.timesheetDetailModel.findOne({
+        _id: id,
+        timesheet_id: timesheetId,
+        deletedAt: null,
+      });
+
+      if (!existingDetail) {
+        console.warn(
+          `TimesheetDetail with ID ${id} not found for Timesheet ${timesheetId}`,
+        );
+        continue;
+      }
+
+      Object.assign(existingDetail, updateFields);
+      await existingDetail.save();
+
+      // Now you can safely push into updatedDetails
+      updatedDetails.push(existingDetail);
+    }
+
+    return this.getDetailWithDetails(timesheetId);
+  }
+
+  async approveTimesheet(timesheetId: string) {
+    const timesheet = await this.timesheetModel.findById(timesheetId);
+
+    if (!timesheet) {
+      throw new NotFoundException('Timesheet not found.');
+    }
+
+    if (timesheet.status === 'closed') {
+      throw new BadRequestException(
+        'Timesheet is already closed and cannot be approve.',
+      );
+    }
+
+    if (timesheet.status === 'approve') {
+      throw new BadRequestException('Timesheet is already approve.');
+    }
+
+    timesheet.status = 'approve';
+    await timesheet.save();
+    return this.getDetailWithDetails(timesheetId);
+  }
+
+  async closeTimesheet(timesheetId: string) {
+    const timesheet = await this.timesheetModel.findById(timesheetId);
+
+    if (!timesheet) {
+      throw new NotFoundException('Timesheet not found.');
+    }
+
+    if (timesheet.status != 'approve') {
+      throw new BadRequestException('Timesheet is not approve yet.');
+    }
+
+    timesheet.status = 'close';
+    await timesheet.save();
+    return this.getDetailWithDetails(timesheetId);
+  }
+  ;
 }
