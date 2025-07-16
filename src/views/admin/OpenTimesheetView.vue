@@ -1,18 +1,16 @@
 <template>
-  <div class="page-wrapper">
-    <h1>Open Time Sheets</h1>
-    <!-- Content goes here -->
+  <div class="open-timesheet-view">
+    <h1 style="margin-bottom: 16px">Open Timesheets</h1>
+    <TimesheetTable />
   </div>
 </template>
 
-<script>
-export default {
-    name: 'OpenTimesheetView',
-};
+<script setup>
+import TimesheetTable from '@/components/timesheet/TimesheetTable.vue';
 </script>
 
 <style scoped>
-.page-wrapper {
-    padding: 20px;
+.open-timesheet-view {
+  padding: 32px 24px;
 }
 </style>
