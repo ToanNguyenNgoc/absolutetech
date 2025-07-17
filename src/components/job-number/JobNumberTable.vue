@@ -270,4 +270,5 @@ export default {
     border: none !important;
     box-shadow: none !important;
 }
+
 </style>
