@@ -26,7 +26,7 @@ export class EntryLogController {
     const pageNumber = Number(page) || 1;
     const limitNumber = Number(limit) || 10;
 
-    let userIds: string[] | undefined = undefined;
+    let userIds: string[] = [];
     if (search !== undefined && search.trim() !== '') {
       const users: any = await this.userService.findByUsernameOrEmail(search);
       userIds = users.map((u) => u._id);

@@ -22,7 +22,6 @@ export class EntryLogService {
 
   async findAllPaginated(page = 1, limit = 10, userIds?: string[]) {
     let query = {};
-
     if (userIds !== undefined) {
       if (userIds.length === 0) {
         query = { _id: { $exists: false } };
