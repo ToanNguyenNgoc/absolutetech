@@ -89,13 +89,10 @@ onMounted(fetchData);
 </script>
 
 <style scoped>
-.open-timesheet-table {
-    padding: 24px;
-}
 
 .table-toolbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 16px;
 }
@@ -129,5 +126,8 @@ onMounted(fetchData);
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
+}
+.search-input {
+    width: 240px;
 }
 </style>
