@@ -184,7 +184,7 @@ async function onClose() {
                     <span>SUPERVISOR</span>
                     <span>{{ supervisorName }}</span>
                     <span>TIME</span>
-                    <span>{{ formatTime(null, null, timesheet.time_end) }}</span>
+                    <span>{{ formatDate(timesheet.time_end) }}</span>
                 </div>
             </div>
 

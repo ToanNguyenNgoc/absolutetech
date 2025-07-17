@@ -12,6 +12,7 @@ import SocketView from "@/views/socket/SocketView.vue";
 import OpenTimesheetDetail from "@/components/timesheet/OpenTimesheetDetail.vue";
 import OpenTimesheetEdit from "@/components/timesheet/OpenTimesheetEdit.vue";
 import CloseTimesheetDetail from "@/components/timesheet/CloseTimesheetDetail.vue";
+import PrintTimeSheetDetail from "@/components/timesheet/PrintTimeSheetDetail.vue";
 
 const routes = [
   {
@@ -80,6 +81,13 @@ const routes = [
         component: CloseTimesheetDetail,
         props: true,
       },
+      {
+        path: "open-timesheets/:id/print",
+        name: "admin-open-timesheet-print",
+        component: PrintTimeSheetDetail,
+        props: true,
+      },
+
     ],
   },
   { path: "/", redirect: "/login" },

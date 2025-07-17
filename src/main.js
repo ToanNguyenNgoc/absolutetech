@@ -5,11 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import '@/assets/css/global.css';
+import print from 'vue3-print-nb'
 
 const app = createApp(App);
 
 app.use(router);
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.use(ElementPlus);
-
+app.use(print)
 app.mount('#app');
