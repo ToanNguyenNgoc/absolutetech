@@ -9,6 +9,7 @@ node_modules
 .env.*.local
 .env
 api/.env
+api/uploads
 
 # Log files
 npm-debug.log*
