@@ -69,7 +69,7 @@ export class TimesheetController {
   }
 
   @Put(':id/reopen')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.SUPER_ADMIN)
   async reopenTimesheet(@Param('id') timesheetId: string) {
     return this.timesheetService.reopenTimesheet(timesheetId);
   }
