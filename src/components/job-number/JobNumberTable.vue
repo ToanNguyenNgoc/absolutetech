@@ -263,4 +263,11 @@ export default {
     font-size: 14px;
     color: #6d6e71;
 }
+.no-bg-pagination :deep(.btn-prev),
+.no-bg-pagination :deep(.btn-next),
+.no-bg-pagination :deep(.el-pager li) {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
 </style>
