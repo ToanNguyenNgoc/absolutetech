@@ -220,7 +220,7 @@ async function onReopen() {
 }
 
 .logo {
-    height: 60px;
+    height: 45px;
 }
 
 .company-title {

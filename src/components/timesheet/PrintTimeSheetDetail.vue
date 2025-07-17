@@ -12,7 +12,7 @@
             <div class="sheet-paper" v-if="timesheet">
                 <!-- Header -->
                 <div class="sheet-header">
-                    <img src="@/assets/logo.png" class="logo" />
+                    <img src="@/assets/logo.png" class="logo"  />
                     <div class="company-title">
                         ABSOLUTE ROPE ACCESS PTE LTD
                     </div>
@@ -194,7 +194,7 @@ function formatTime(_, __, cellValue) {
 }
 
 .logo {
-    height: 60px;
+    height: 45px;
 }
 
 .company-title {

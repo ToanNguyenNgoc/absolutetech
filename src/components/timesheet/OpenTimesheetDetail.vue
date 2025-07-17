@@ -305,7 +305,7 @@ async function onClose() {
 }
 
 .logo {
-    height: 60px;
+    height: 45px;
 }
 
 .company-title {
