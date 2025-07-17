@@ -1,10 +1,15 @@
-import { Controller, Get, Query, Param, Put, Body } from '@nestjs/common';
+import { Controller, Get, Query, Param, Put, Body, UseGuards } from '@nestjs/common';
 import { TimesheetService } from './timesheet.service';
 import { UpdateTimesheetDetailsDto } from './dto/update-timesheet-details.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/user/user.enums';
 
 @Controller('api/timesheets')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class TimesheetController {
-  constructor(private readonly timesheetService: TimesheetService) {}
+  constructor(private readonly timesheetService: TimesheetService) { }
 
   @Get('open')
   async findOpenTimesheets(
@@ -40,6 +45,7 @@ export class TimesheetController {
   }
 
   @Put(':id')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async updateTimesheetDetails(
     @Param('id') timesheetId: string,
     @Body() updateDto: UpdateTimesheetDetailsDto,
@@ -51,16 +57,19 @@ export class TimesheetController {
   }
 
   @Put(':id/approve')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async approveTimesheet(@Param('id') timesheetId: string) {
     return this.timesheetService.approveTimesheet(timesheetId);
   }
 
   @Put(':id/close')
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async closeTimesheet(@Param('id') timesheetId: string) {
     return this.timesheetService.closeTimesheet(timesheetId);
   }
 
   @Put(':id/reopen')
+  @Roles(Role.ADMINISTRATOR)
   async reopenTimesheet(@Param('id') timesheetId: string) {
     return this.timesheetService.reopenTimesheet(timesheetId);
   }
