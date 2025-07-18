@@ -116,6 +116,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getTimesheetDetail, reopenTimesheet } from '@/api/timesheet' // Chỉ import những gì cần thiết
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { formatTime } from '@/utils/common';
 
 const route = useRoute()
 const router = useRouter()
@@ -151,11 +152,7 @@ function formatDate(dt) {
     if (!dt) return ''
     return new Date(dt).toLocaleDateString('en-GB')
 }
-function formatTime(_, __, cellValue) {
-    if (!cellValue) return ''
-    const date = new Date(`2000-01-01T${cellValue}:00`);
-    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
+
 
 async function onReopen() {
     try {
@@ -207,7 +204,7 @@ async function onReopen() {
 }
 
 .logo {
-    height: 60px;
+    height: 45px;
 }
 
 .company-title {

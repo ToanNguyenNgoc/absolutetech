@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getTimesheetDetail, updateTimesheet, approveTimesheet, closeTimesheet } from '@/api/timesheet'
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { formatTime } from '@/utils/common';
 
 const route = useRoute()
 const router = useRouter()
@@ -51,11 +52,6 @@ const fetchData = async () => {
 function formatDate(dt) {
     if (!dt) return ''
     return new Date(dt).toLocaleDateString('en-GB')
-}
-function formatTime(_, __, cellValue) {
-    if (!cellValue) return ''
-    const date = new Date(`2000-01-01T${cellValue}:00`);
-    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 function onEdit() {
@@ -305,7 +301,7 @@ async function onClose() {
 }
 
 .logo {
-    height: 60px;
+    height: 45px;
 }
 
 .company-title {

@@ -572,7 +572,7 @@ export default {
 
 /* =========== SIDEBAR =========== */
 .admin-menu {
-    width: 240px;
+    width: 220px;
     background-color: #1A1A1A;
     color: #fff;
     position: relative;
@@ -597,6 +597,7 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-width: 220px;
 }
 
 .menu-nav ul {
@@ -646,6 +647,7 @@ export default {
     list-style: none;
     margin: 0;
     padding: 0;
+    max-width: 220px;
 }
 
 .bottom-link {

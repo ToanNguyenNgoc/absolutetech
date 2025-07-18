@@ -9,12 +9,17 @@
             <el-table-column prop="jobnumber.code" label="JN" />
             <el-table-column prop="jobnumber.client" label="Client" />
             <el-table-column prop="jobnumber.project" label="Project" />
+            <el-table-column label="Date">
+                <template #default="{ row }">
+                    {{ formatDate(row.date_time) }}
+                </template>
+            </el-table-column>
             <el-table-column label="Action" width="150">
                 <template #default="{ row }">
                     <div class="action-buttons">
                         <img src="@/assets/icon-edit.svg" alt="edit" @click="handleView(row)" />
                         <img src="@/assets/icon-print.svg" alt="print" @click="handlePrint(row)" />
-                        <img src="@/assets/icon-download.svg" alt="download" @click="handleApprove(row)" />
+                        <!-- <img src="@/assets/icon-download.svg" alt="download" @click="handleApprove(row)" /> -->
                     </div>
                 </template>
             </el-table-column>
@@ -35,6 +40,7 @@ import { ElMessage } from 'element-plus';
 import { getCloseTimesheets } from '@/api/timesheet'; // tự viết hoặc mock
 import debounce from 'lodash/debounce';
 import { useRouter } from 'vue-router';
+import { formatDate } from '@/utils/common';
 
 const router = useRouter();
 const loading = ref(false);
@@ -67,14 +73,9 @@ const handleView = (row) => {
     router.push(`/admin/close-timesheets/${row.id}`);
 };
 const handlePrint = (row) => {
-    // TODO: trigger print (in PDF, hoặc chuyển sang trang print)
-    ElMessage.info(`Print timesheet ${row.jobnumber.code}`);
+    window.open(`/admin/open-timesheets/${row.id}/print`, "_blank")
 };
-const handleApprove = (row) => {
-    // TODO: trigger approve API, nếu row.status == 'open'
-    ElMessage.success(`Approved timesheet ${row.jobnumber.code}`);
-    // Xong gọi lại fetchData();
-};
+
 const handleCurrentChange = (page) => {
     currentPage.value = page;
     fetchData();
@@ -88,13 +89,10 @@ onMounted(fetchData);
 </script>
 
 <style scoped>
-.open-timesheet-table {
-    padding: 24px;
-}
 
 .table-toolbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 16px;
 }
@@ -120,5 +118,16 @@ onMounted(fetchData);
     left: 24px;
     font-size: 14px;
     color: #6d6e71;
+}
+
+.no-bg-pagination :deep(.btn-prev),
+.no-bg-pagination :deep(.btn-next),
+.no-bg-pagination :deep(.el-pager li) {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.search-input {
+    width: 240px;
 }
 </style>
