@@ -15,8 +15,8 @@ import * as bodyParser from 'body-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(bodyParser.json({ limit: '20mb' }));
-  app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  // app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
@@ -59,5 +59,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document, customOptions);
 
   await app.listen(process.env.PORT ?? 3000);
+  console.log('App run port: ', process.env.PORT ?? 3000);
 }
 void bootstrap();

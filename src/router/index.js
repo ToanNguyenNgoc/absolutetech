@@ -12,6 +12,7 @@ import SocketView from "@/views/socket/SocketView.vue";
 import OpenTimesheetDetail from "@/components/timesheet/OpenTimesheetDetail.vue";
 import OpenTimesheetEdit from "@/components/timesheet/OpenTimesheetEdit.vue";
 import CloseTimesheetDetail from "@/components/timesheet/CloseTimesheetDetail.vue";
+import WarehouseView from "@/views/admin/WarehouseView.vue";
 
 const routes = [
   {
@@ -80,6 +81,11 @@ const routes = [
         component: CloseTimesheetDetail,
         props: true,
       },
+      {
+        path:'warehouse',
+        name:'warehouse',
+        component: WarehouseView
+      }
     ],
   },
   { path: "/", redirect: "/login" },

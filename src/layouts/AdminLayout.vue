@@ -100,6 +100,15 @@
                             </router-link>
                         </li>
                         <li>
+                            <router-link class="menu-link" to="/admin/warehouse">
+                                <img src="@/assets/img/warehouse.svg" alt="warehouse"
+                                    v-if="!isRouteActive('warehouse')" />
+                                <img src="@/assets/img/warehouse-active.svg" alt="warehouse"
+                                    v-if="isRouteActive('warehouse')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
+                            </router-link>
+                        </li>
+                        <!-- <li>
                             <a class="menu-link" @click="redirectToSourceB">
                                 <img src="@/assets/img/warehouse.svg" alt="warehouse"
                                     v-if="!isRouteActive('admin-warehouse')" />
@@ -107,7 +116,7 @@
                                     v-if="isRouteActive('admin-warehouse')" />
                                 <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                     <ul>
                         <li class="bottom-link">

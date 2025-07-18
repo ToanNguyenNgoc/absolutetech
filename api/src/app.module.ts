@@ -19,6 +19,7 @@ import { UserModule } from './user/user.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { BullModule } from '@nestjs/bull';
 import { bullConfig } from './configs';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -50,6 +51,8 @@ import { bullConfig } from './configs';
     SyncDataModule,
     TimesheetModule,
     TimesheetDetailModule,
+
+    ApiModule,
 
     //Socket gateway
     GatewayModule,

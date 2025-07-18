@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   EntryLogRaw,
@@ -16,6 +16,7 @@ import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 
+@Global()
 @Module({
   imports: [
     MongooseModule.forFeature([

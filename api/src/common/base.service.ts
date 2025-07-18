@@ -12,6 +12,7 @@ interface SearchParams {
   limit?: number;
   populate?: string | string[];
   includeDeleted?: boolean;
+  isVirtuals?: boolean;
 }
 //
 
@@ -22,13 +23,29 @@ export class BaseService<T> {
     return this.model.create(data);
   }
 
-  async findById(id: string, includeDeleted = false): Promise<T | null> {
+  async findById(
+    id: string,
+    populate?: string | string[],
+    includeDeleted = false,
+  ): Promise<T | null> {
     const query: FilterQuery<T> = { _id: id } as any;
     if (!includeDeleted) {
       //@ts-ignore
-      query.deletedAt = null;
+      query.deleted_at = null;
     }
-    return this.model.findOne(query).exec();
+    let mongooseQuery = this.model.findOne(query);
+    if (populate) {
+      if (Array.isArray(populate)) {
+        populate.forEach((field) => {
+          mongooseQuery = mongooseQuery.populate(field);
+        });
+      } else {
+        mongooseQuery = mongooseQuery.populate(populate);
+      }
+    }
+
+    //@ts-ignore
+    return mongooseQuery.lean({ virtuals: true }).exec();
   }
 
   async update(id: string, data: Partial<T>): Promise<T | null> {
@@ -41,7 +58,7 @@ export class BaseService<T> {
 
   async softDelete(id: string): Promise<T | null> {
     return this.model
-      .findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true })
+      .findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true })
       .exec();
   }
 
@@ -61,11 +78,12 @@ export class BaseService<T> {
       limit = 10,
       populate,
       includeDeleted = false,
+      isVirtuals = true,
     } = params;
 
     const finalFilters = {
       ...filters,
-      ...(includeDeleted ? {} : { deletedAt: null }),
+      ...(includeDeleted ? {} : { deleted_at: null }),
     };
 
     const {
@@ -97,6 +115,11 @@ export class BaseService<T> {
       }
     }
 
+    if (isVirtuals) {
+      //@ts-ignore
+      mongooseQuery = mongooseQuery.lean({ virtuals: true });
+    }
+
     const [data, total] = await Promise.all([
       mongooseQuery.exec(),
       this.model.countDocuments(query as FilterQuery<T>).exec(),
@@ -105,8 +128,8 @@ export class BaseService<T> {
     return {
       list: data,
       total,
-      page,
-      limit,
+      page: Number(page),
+      limit: Number(limit),
       totalPages: Math.ceil(total / limit),
     };
   }

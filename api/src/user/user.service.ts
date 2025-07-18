@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
 import {
   Injectable,
   NotFoundException,
@@ -414,5 +416,16 @@ export class UserService {
         { full_name: 1 },
       )
       .exec();
+  }
+
+  async findOneById(id?: string): Promise<any> {
+    try {
+      if (!id) return null;
+    const user = await this.userModel.findById(id);
+    if (!user) return null;
+    return user;
+    } catch (_error) {
+      return null
+    }
   }
 }
