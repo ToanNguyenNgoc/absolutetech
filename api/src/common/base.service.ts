@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Model, FilterQuery } from 'mongoose';
@@ -10,7 +11,7 @@ interface SearchParams {
   sort?: string;
   page?: number;
   limit?: number;
-  populate?: string | string[];
+  populate?: string | string[] | any;
   includeDeleted?: boolean;
   isVirtuals?: boolean;
 }
@@ -25,7 +26,7 @@ export class BaseService<T> {
 
   async findById(
     id: string,
-    populate?: string | string[],
+    populate?: string | string[] | any,
     includeDeleted = false,
   ): Promise<T | null> {
     const query: FilterQuery<T> = { _id: id } as any;

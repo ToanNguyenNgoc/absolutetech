@@ -105,3 +105,4 @@ VehicleSchema.plugin(mongooseLeanVirtuals);
 VehicleSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+

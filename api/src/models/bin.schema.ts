@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
@@ -32,13 +32,6 @@ export class BinModel {
 
   @Prop({ required: false })
   status: string;
-
-  @Prop({
-    required: false,
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'SpareModel',
-  })
-  spare: mongoose.Types.ObjectId;
 
   @Prop({ required: false })
   quantity: number;
@@ -88,14 +81,14 @@ export class BinModel {
 }
 
 export const BinSchema = SchemaFactory.createForClass(BinModel);
-export type BinDocument = BinModel & Document;
+export type BinDocument = BinModel & Document & { _id: Types.ObjectId };
 
 BinSchema.plugin(mongooseLeanVirtuals);
 BinSchema.virtual('id').get(function () {
   return this._id.toString();
 });
-BinSchema.virtual('bin_configs', {
-  ref: 'BinConfigModel',
+BinSchema.virtual('bin_configures', {
+  ref: 'BinConfigureModel',
   localField: '_id',
   foreignField: 'bin',
 });

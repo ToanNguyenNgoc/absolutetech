@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'bin_configures',
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
-export class BinConfigModel {
+export class BinConfigureModel {
   @Prop({
     required: false,
     type: mongoose.Schema.Types.ObjectId,
@@ -20,6 +20,13 @@ export class BinConfigModel {
     ref: 'BinModel',
   })
   bin: mongoose.Types.ObjectId;
+
+  @Prop({
+    required: false,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SpareModel',
+  })
+  spare: mongoose.Types.ObjectId;
 
   @Prop({ required: false })
   critical: number;
@@ -48,26 +55,29 @@ export class BinConfigModel {
   @Prop({ required: false })
   serial_no: string;
 
+  @Prop({ required: false })
+  rfid: string;
+
   @Prop({ required: false, default: false })
   has_verification: boolean;
 
   @Prop({ required: false })
   bar_code_qr_code: string;
 
-  // @Prop({ required: false, default: false })
-  // has_charge_time: boolean;
+  @Prop({ required: false, default: false })
+  has_charge_time: boolean;
 
   @Prop({ required: false })
   charge_time: Date;
 
-  // @Prop({ required: false, default: false })
-  // has_calibration_due: boolean;
+  @Prop({ required: false, default: false })
+  has_calibration_due: boolean;
 
   @Prop({ required: false })
   calibration_due: Date;
 
-  // @Prop({ required: false, default: false })
-  // has_expiry_date: boolean;
+  @Prop({ required: false, default: false })
+  has_expiry_date: boolean;
 
   @Prop({ required: false, default: false })
   expiry_date: Date;
@@ -79,10 +89,12 @@ export class BinConfigModel {
   deleted_at?: Date;
 }
 
-export const BinConfigSchema = SchemaFactory.createForClass(BinConfigModel);
-export type BinConfigDocument = BinConfigModel & Document;
+export const BinConfigureSchema =
+  SchemaFactory.createForClass(BinConfigureModel);
+export type BinConfigureDocument = BinConfigureModel &
+  Document & { _id: Types.ObjectId };
 
-BinConfigSchema.plugin(mongooseLeanVirtuals);
-BinConfigSchema.virtual('id').get(function () {
+BinConfigureSchema.plugin(mongooseLeanVirtuals);
+BinConfigureSchema.virtual('id').get(function () {
   return this._id.toString();
 });

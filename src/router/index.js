@@ -13,7 +13,9 @@ import OpenTimesheetDetail from "@/components/timesheet/OpenTimesheetDetail.vue"
 import OpenTimesheetEdit from "@/components/timesheet/OpenTimesheetEdit.vue";
 import CloseTimesheetDetail from "@/components/timesheet/CloseTimesheetDetail.vue";
 import PrintTimeSheetDetail from "@/components/timesheet/PrintTimeSheetDetail.vue";
-import WarehouseView from "@/views/admin/WarehouseView.vue";
+import WarehouseView from "@/views/admin/WarehouseView/WarehouseView.vue";
+import ProjectRequestView from "@/views/admin/WarehouseView/project-request/ProjectRequestView.vue";
+import ProjectRequestDetail from "@/views/admin/WarehouseView/project-request/ProjectRequestDetail.vue";
 
 const routes = [
   {
@@ -91,9 +93,18 @@ const routes = [
       {
         path:'warehouse',
         name:'warehouse',
-        component: WarehouseView
+        component: WarehouseView,
+      },
+      {
+        path:'project-request',
+        name:'project-request',
+        component: ProjectRequestView
+      },
+      {
+        path:'project-request/:id',
+        name:'project-request-detail',
+        component: ProjectRequestDetail
       }
-
     ],
   },
   { path: "/", redirect: "/login" },

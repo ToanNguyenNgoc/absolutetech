@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const formatDate = (dateStr) => {
   if (!dateStr) return '';
   const d = new Date(dateStr);
@@ -21,3 +23,5 @@ export const formatTime = (_, __, cellValue) => {
 
   return '';
 }
+
+export const formatDateEn = (dateStr) => !dateStr ? '': moment(dateStr).format('DD-MMM-YY')
