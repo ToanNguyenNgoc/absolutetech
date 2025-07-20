@@ -13,7 +13,14 @@ import OpenTimesheetDetail from "@/components/timesheet/OpenTimesheetDetail.vue"
 import OpenTimesheetEdit from "@/components/timesheet/OpenTimesheetEdit.vue";
 import CloseTimesheetDetail from "@/components/timesheet/CloseTimesheetDetail.vue";
 import PrintTimeSheetDetail from "@/components/timesheet/PrintTimeSheetDetail.vue";
-import WarehouseView from "@/views/admin/WarehouseView.vue";
+import WarehouseView from "@/views/admin/WarehouseView/WarehouseView.vue";
+import ProjectRequestView from "@/views/admin/WarehouseView/project-request/ProjectRequestView.vue";
+import ProjectRequestDetail from "@/views/admin/WarehouseView/project-request/ProjectRequestDetail.vue";
+import MaintenanceView from "@/views/admin/WarehouseView/maintenance/MaintenanceView.vue";
+import ClusterView from "@/views/admin/WarehouseView/maintenance/clusters/ClusterView.vue";
+import CabinetView from "@/views/admin/WarehouseView/maintenance/cabinets/CabinetView.vue";
+import BinView from "@/views/admin/WarehouseView/maintenance/bins/BinView.vue";
+import ItemConfigureView from "@/views/admin/WarehouseView/maintenance/items-configure/ItemConfigureView.vue";
 
 const routes = [
   {
@@ -91,9 +98,29 @@ const routes = [
       {
         path:'warehouse',
         name:'warehouse',
-        component: WarehouseView
-      }
-
+        component: WarehouseView,
+      },
+      {
+        path:'project-request',
+        name:'project-request',
+        component: ProjectRequestView
+      },
+      {
+        path:'project-request/:id',
+        name:'project-request-detail',
+        component: ProjectRequestDetail
+      },
+      {
+        path:'maintenance',
+        name:'maintenance',
+        component: MaintenanceView,
+        children:[
+          {path:'clusters', name:'clusters', component: ClusterView},
+          {path:'cabinets', name:'cabinets', component: CabinetView},
+          {path:'bins', name:'bins', component: BinView},
+          {path:'items-configure', name:'items-configure', component: ItemConfigureView},
+        ]
+      },
     ],
   },
   { path: "/", redirect: "/login" },

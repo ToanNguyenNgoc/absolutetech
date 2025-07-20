@@ -30,6 +30,9 @@ export class ShelfModel {
     ref: 'ClusterModel',
   })
   cluster: mongoose.Types.ObjectId;
+
+  @Prop({ type: Date, default: null })
+  deleted_at?: Date;
 }
 
 export const ShelfSchema = SchemaFactory.createForClass(ShelfModel);

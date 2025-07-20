@@ -35,7 +35,7 @@ export class SpareModel {
   @Prop()
   item_acct?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   type: string;
 
   @Prop({ required: false, default: false })

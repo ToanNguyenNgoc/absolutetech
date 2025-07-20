@@ -96,3 +96,11 @@ JobNumberSchema.statics.getSyncColumns = function () {
  * End
  *Thêm đoạn này cho tablet
  */
+
+//virtuals relation ship
+JobNumberSchema.virtual('project_request', {
+  ref: 'ProjectRequestModel',
+  localField: '_id',
+  foreignField: 'job_number',
+  justOne: true,
+});

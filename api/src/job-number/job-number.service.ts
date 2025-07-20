@@ -98,6 +98,7 @@ export class JobNumberService {
           'created_by',
           'est_start_date',
           'est_end_date',
+          'project_request',
           {
             path: 'documents',
             populate: {

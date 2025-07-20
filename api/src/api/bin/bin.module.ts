@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
+  BinConfigureModel,
+  BinConfigureSchema,
   BinModel,
   BinSchema,
   ClusterModel,
@@ -18,9 +20,10 @@ import { User, UserSchema } from 'src/user/user.schema';
     MongooseModule.forFeature([
       { name: ClusterModel.name, schema: ClusterSchema },
       { name: ShelfModel.name, schema: ShelfSchema },
+      { name: SpareModel.name, schema: SpareSchema },
       { name: User.name, schema: UserSchema },
       { name: BinModel.name, schema: BinSchema },
-      { name: SpareModel.name, schema: SpareSchema },
+      { name: BinConfigureModel.name, schema: BinConfigureSchema },
     ]),
   ],
   controllers: [BinController],

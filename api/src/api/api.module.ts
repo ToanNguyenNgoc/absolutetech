@@ -6,14 +6,18 @@ import { BinModule } from './bin/bin.module';
 import { VehicleTypeModule } from './vehicle-type/vehicle-type.module';
 import { VehicleModule } from './vehicel/vehicle.module';
 import { JobCardModule } from './job-card/job-card.module';
+import { ProjectRequestModule } from './project-request/project-request.module';
+import { BinConfigureModule } from './bin-configure/bin-configure.module';
 
 @Module({
   imports: [
     BinModule,
+    BinConfigureModule,
     ClusterModule,
     JobCardModule,
     ShelfModule,
     SpareModule,
+    ProjectRequestModule,
     VehicleTypeModule,
     VehicleModule,
   ],
