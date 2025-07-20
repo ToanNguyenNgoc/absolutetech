@@ -26,7 +26,7 @@ export class ClusterController extends BaseService<ClusterDocument> {
   }
 
   @Get()
-  get(@Query() qr: ClusterQr) {
+  async get(@Query() qr: ClusterQr) {
     return this.findAll({
       page: qr.page,
       limit: qr.limit,

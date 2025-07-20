@@ -15,6 +15,9 @@ export class ClusterModel {
   @Prop({ required: false })
   code?: string;
 
+  @Prop({ required: false, default: true })
+  status: boolean;
+
   @Prop({ type: Boolean, default: false })
   is_rfid: boolean;
 
