@@ -50,13 +50,16 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
       filters: Utils.removeNullUn({
         bin: qr.bin,
       }),
-      populate: ['spare', 'bin'],
+      populate: ['spare', { path: 'bin', populate: ['cluster', 'shelf'] }],
     });
   }
 
   @Get(':id')
   getOne(@Param('id') id: string) {
-    return this.findById(id, ['spare']);
+    return this.findById(id, [
+      'spare',
+      { path: 'bin', populate: ['cluster', 'shelf'] },
+    ]);
   }
 
   @Post()

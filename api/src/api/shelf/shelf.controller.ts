@@ -34,7 +34,7 @@ export class ShelfController extends BaseService<ShelfDocument> {
   }
 
   @Get()
-  get(@Query() qr: ShelfQr) {
+  async get(@Query() qr: ShelfQr) {
     return this.findAll({
       page: qr.page,
       limit: qr.limit,

@@ -16,7 +16,7 @@ defineProps({
 
 <style scoped>
 .container {
-  padding: 32px 24px;
+  padding: 12px;
   border-radius: 4px;
   height: calc(100vh - 218px);
   overflow: hidden;

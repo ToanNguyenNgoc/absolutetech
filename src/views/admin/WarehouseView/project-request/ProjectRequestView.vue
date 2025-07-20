@@ -4,7 +4,7 @@
       <el-table v-loading="isLoading" v-if="!response"></el-table>
       <el-table v-if="response" :data="response.list" class="custom-table" border style="margin-top: 16px;">
         <el-table-column type="index" label="No." width="57" />
-        <el-table-column prop="client" label="Client" />
+        <el-table-column prop="job_number.client" label="Client" />
         <el-table-column prop="job_number.code" label="JN" />
         <el-table-column prop="project_name" label="Project Name" />
         <el-table-column prop="job_number.assigned_to.full_name" label="Site Supervisor" />

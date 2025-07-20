@@ -10,7 +10,7 @@
             <MenuCard title="Physical" icon="📝" />
             <MenuCard title="Transactions" icon="📄" />
             <MenuCard title="Notifications" icon="🔔" /> -->
-                <MenuCard title="Configure Items / Locations" icon="📦" to="/admin/maintenance" />
+                <MenuCard title="Configure Items / Locations" icon="📦" to="/admin/maintenance/clusters" />
                 <MenuCard title="Project Request" icon="🔃" to="/admin/project-request" />
             </div>
         </div>
