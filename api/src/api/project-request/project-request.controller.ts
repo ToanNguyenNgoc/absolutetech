@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
   Body,
@@ -54,7 +56,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
     return this.findAll({
       page: qr.page,
       limit: qr.limit,
-      populate: ['job_number'],
+      populate: [{ path: 'job_number', populate: 'assigned_to' }],
       sort: qr.sort,
     });
   }
@@ -81,13 +83,14 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       if (
         job_number &&
         job_number.project_request &&
-        job_number.project_request?._id !== id
+        String(job_number.project_request?._id) !== id
       ) {
         throw new BadRequestException(
           'JobNumber is used an other ProjectRequest',
         );
       }
     }
+    await this.updateAssignedTo(body);
     return this.update(id, { ...body, job_number: job_number?._id });
   }
 
@@ -110,10 +113,13 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
         project_request: project_request_id,
       })
       .populate([
-        'spare',
+        'bin',
         {
           path: 'bin_configure',
-          populate: { path: 'bin', populate: ['cluster', 'shelf'] },
+          populate: [
+            { path: 'bin', populate: ['cluster', 'shelf'] },
+            { path: 'spare' },
+          ],
         },
         'issue_to',
       ]);
@@ -121,24 +127,28 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
 
   @Get('/issues/:id')
   async getIssueItem(@Param('id') id: string) {
-    const issue = await this.issueModel
-      .findOne({ _id: id })
-      .populate([
-        'spare',
-        { path: 'bin_configure', populate: { path: 'bin' } },
-        'issue_to',
-      ]);
+    const issue = await this.issueModel.findOne({ _id: id }).populate([
+      'bin',
+      {
+        path: 'bin_configure',
+        populate: [
+          { path: 'bin', populate: ['cluster', 'shelf'] },
+          { path: 'spare' },
+        ],
+      },
+      'issue_to',
+    ]);
     return issue;
   }
 
   @Put('/issues/:id')
   async putIssueItem(@Param('id') id: string, @Body() body: IssueCreate) {
-    return this.issueModel.findByIdAndUpdate(id, body);
+    return this.issueModel.findByIdAndUpdate(id, body, { new: true }).exec();
   }
 
-  @Delete('/issue/:id')
+  @Delete('/issues/:id')
   async deleteIssueItem(@Param('id') id: string) {
-    return this.issueModel.deleteOne({ _id: id });
+    return this.issueModel.deleteOne({ _id: id }).exec();
   }
 
   //
@@ -148,5 +158,16 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       .populate('project_request');
     if (!job_number) throw new NotFoundException('JobNumber is not exist');
     return job_number;
+  }
+
+  async updateAssignedTo(data: any) {
+    try {
+      if (!data.site_supervisor) return;
+      await this.jobNumberModel
+        .findByIdAndUpdate(data.job_number, {
+          assigned_to: data.site_supervisor,
+        })
+        .exec();
+    } catch (_err) {}
   }
 }

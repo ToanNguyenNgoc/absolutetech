@@ -33,17 +33,17 @@ export class BinModel {
   @Prop({ required: false })
   status: string;
 
-  @Prop({ required: false })
-  quantity: number;
+  // @Prop({ required: false })
+  // quantity: number;
 
-  @Prop({ required: false })
-  quantity_oh: number;
+  // @Prop({ required: false })
+  // quantity_oh: number;
 
-  @Prop({ required: false })
-  min: number;
+  // @Prop({ required: false })
+  // min: number;
 
-  @Prop({ required: false })
-  max: number;
+  // @Prop({ required: false })
+  // max: number;
 
   @Prop({ required: false })
   critical: number;

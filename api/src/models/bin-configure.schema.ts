@@ -35,6 +35,12 @@ export class BinConfigureModel {
   quantity_org: number;
 
   @Prop({ required: false })
+  quantity_oh: number;
+
+  @Prop({ required: false })
+  quantity_damage: number;
+
+  @Prop({ required: false })
   quantity: number;
 
   @Prop({ required: false })

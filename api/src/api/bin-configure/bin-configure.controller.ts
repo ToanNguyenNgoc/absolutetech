@@ -45,10 +45,12 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
       page: qr.page,
       limit: qr.limit,
       sort: qr.sort,
+      search: qr.search,
+      searchFields: ['description', 'batch_no', 'serial_no', 'rfid'],
       filters: Utils.removeNullUn({
         bin: qr.bin,
       }),
-      populate: ['spare'],
+      populate: ['spare', 'bin'],
     });
   }
 

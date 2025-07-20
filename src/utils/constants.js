@@ -9,3 +9,9 @@ export const ROLES = {
   WORKER: 8,
   FREELANCE: 9,
 }
+
+export const PROJECT_REQUEST_STATUS = {
+  NEW: { value: 'new', name: 'New' },
+  IN_PROGRESS: { value: 'in_process', name: 'Inprogress' },
+  ISSUE: { value: 'issue', name: 'Issue' }
+}

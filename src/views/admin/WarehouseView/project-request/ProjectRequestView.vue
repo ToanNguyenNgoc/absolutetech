@@ -7,10 +7,18 @@
         <el-table-column prop="client" label="Client" />
         <el-table-column prop="job_number.code" label="JN" />
         <el-table-column prop="project_name" label="Project Name" />
-        <el-table-column prop="project_name" label="Site Supervisor" />
+        <el-table-column prop="job_number.assigned_to.full_name" label="Site Supervisor" />
         <el-table-column prop="date_request" label="Date Requested">
           <template #default="{ row }">
             {{ formatDateEn(row.date_request) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Status">
+          <template #default="{ row }">
+            <el-select v-model="row.status" placeholder="Status" size="large" style="width: 100%;"
+              @change="handleStatusChange(row)">
+              <el-option v-for="item in statuses" :key="item.value" :label="item.name" :value="item.value" />
+            </el-select>
           </template>
         </el-table-column>
         <el-table-column label="Action" width="150">
@@ -38,9 +46,9 @@ import { formatDateEn } from '@/utils/common';
 import IconButton from '@/components/common/IconButton.vue';
 import editIcon from '@/assets/icon-edit.svg'
 import { useRouter } from 'vue-router';
+import { PROJECT_REQUEST_STATUS } from '@/utils/constants';
 
 const router = useRouter();
-
 const params = reactive({
   page: 1,
   limit: 15,
@@ -51,12 +59,20 @@ const { data, isLoading } = useQuery({
   queryFn: () => ProjectRequest.get(params)
 })
 
+const statuses = Object.values(PROJECT_REQUEST_STATUS);
+
 const response = computed(() => data.value?.data);
 const handleCurrentChange = () => {
   params.page = params.page + 1
 }
-const handleView = (item)=>{
+const handleView = (item) => {
   router.push(`/admin/project-request/${item._id}`)
+}
+
+const handleStatusChange = (row) => {
+  ProjectRequest.updateDetail(row._id, {
+    status: row.status
+  })
 }
 
 </script>
@@ -90,5 +106,4 @@ const handleView = (item)=>{
 .search-input {
   width: 240px;
 }
-
 </style>

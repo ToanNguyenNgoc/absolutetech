@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <h1 class="title">{{ title || '' }}</h1>
-    <slot></slot>
+    <div class="wrapper">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -16,8 +18,16 @@ defineProps({
 .container {
   padding: 32px 24px;
   border-radius: 4px;
+  height: calc(100vh - 218px);
+  overflow: hidden;
 }
-.title{
+
+.title {
   margin-bottom: 16px;
+}
+
+.wrapper {
+  height: calc(100% - 10px);
+  overflow-y: scroll;
 }
 </style>

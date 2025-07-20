@@ -22,7 +22,7 @@ defineProps({
     default: 'text',
   },
   error: String,
-  modelValue: String,
+  modelValue: [String, Number],
 })
 
 // eslint-disable-next-line no-undef
@@ -33,7 +33,6 @@ defineEmits(['update:modelValue'])
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
 }
 
 .label {

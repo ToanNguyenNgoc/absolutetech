@@ -28,9 +28,9 @@ export class IssueModel {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'SpareModel',
+    ref: 'BinModel',
   })
-  spare: mongoose.Types.ObjectId;
+  bin: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
   deleted_at?: Date;

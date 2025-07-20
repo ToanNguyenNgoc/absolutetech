@@ -134,21 +134,21 @@ export class BinCreate {
   @IsOptional()
   spare: string;
 
-  @ApiProperty()
-  @IsOptional()
-  quantity: number;
+  // @ApiProperty()
+  // @IsOptional()
+  // quantity: number;
 
-  @ApiProperty()
-  @IsOptional()
-  quantity_oh: number;
+  // @ApiProperty()
+  // @IsOptional()
+  // quantity_oh: number;
 
-  @ApiProperty()
-  @IsOptional()
-  min: number;
+  // @ApiProperty()
+  // @IsOptional()
+  // min: number;
 
-  @ApiProperty()
-  @IsOptional()
-  max: number;
+  // @ApiProperty()
+  // @IsOptional()
+  // max: number;
 
   @ApiProperty()
   @IsOptional()

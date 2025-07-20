@@ -20,8 +20,7 @@ export class IssueCreate {
   bin_configure: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  spare: string;
+  bin: string;
 
   @ApiProperty()
   @IsOptional()
@@ -41,7 +40,6 @@ export class ProjectRequestCreate {
   project_name: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   job_number: string;
 
   @ApiProperty()

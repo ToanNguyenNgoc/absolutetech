@@ -8,6 +8,8 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 })
 export class ProjectRequestModel {
   static PJ_STATUS_NEW = 'new';
+  static PJ_STATUS_IN_PROCESS = 'in_process';
+  static PJ_STATUS_ISSUE = 'issue';
 
   @Prop({ required: false })
   client: string;
@@ -26,6 +28,12 @@ export class ProjectRequestModel {
 
   @Prop({ required: false, default: ProjectRequestModel.PJ_STATUS_NEW })
   status: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  created_by: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
   deleted_at?: Date;

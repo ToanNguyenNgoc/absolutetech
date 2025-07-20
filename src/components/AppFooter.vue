@@ -1,6 +1,7 @@
 <template>
     <section class="shadow-container">
         <p>Powered by Absolutech-Auth</p>
+        <slot></slot>
     </section>
 </template>
 
