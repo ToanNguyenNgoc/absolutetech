@@ -190,41 +190,4 @@ export class SyncDataService {
       throw new Error(`Failed to fetch data: ${error.message}`);
     }
   }
-
-  toSqlInsert(doc: SyncableDocument, table: string, columns: string[]): string {
-    if (!columns.length) {
-      throw new Error(`No sync columns defined for table ${table}`);
-    }
-    const fields: string[] = [];
-    const values: string[] = [];
-
-    for (const col of columns) {
-      let column = col;
-      let val = doc[col];
-      if (val instanceof Date) {
-        val = moment(val).format('YYYY-MM-DD HH:mm:ss');
-      }
-      fields.push(`\`${column}\``);
-      values.push(SqlString.escape(val));
-    }
-    return `INSERT OR REPLACE INTO ${table} (${fields.join(', ')}) VALUES (${values.join(', ')})`;
-  }
-
-  toSqlUpdate(doc: SyncableDocument, table: string, columns: string[]): string {
-    if (!columns.length) {
-      throw new Error(`No sync columns defined for table ${table}`);
-    }
-    const pairs: string[] = [];
-
-    for (const col of columns) {
-      let column = col;
-      let val = doc[col];
-      if (val instanceof Date) {
-        val = moment(val).format('YYYY-MM-DD HH:mm:ss');
-      }
-      pairs.push(`\`${column}\`=${SqlString.escape(val)}`);
-    }
-
-    return `UPDATE ${table} SET ${pairs.join(', ')} WHERE id = ${SqlString.escape(doc.id)}`;
-  }
 }
