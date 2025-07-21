@@ -1,10 +1,6 @@
 <template>
-  <el-dialog
-    :model-value="modelValue"
-    @update:modelValue="emit('update:modelValue', $event)"
-    :width="dialogWidth"
-    :before-close="handleClose"
-  >
+  <el-dialog :model-value="modelValue" @update:modelValue="emit('update:modelValue', $event)" :width="dialogWidth"
+    :before-close="handleClose">
     <div v-if="bin">
       <div class="title">
         Edit Bin: {{ bin.cluster?.name }} - {{ bin.shelf?.name }} - {{ bin.row }} - {{ bin.bin }}
@@ -14,6 +10,13 @@
 
       <el-table :data="binConfigures" border>
         <el-table-column type="index" label="No" width="50" />
+        <el-table-column label="Item Name">
+          <template #default="{ row }">
+            <el-select placeholder="Item Name" size="large" style="width: 100%;" @change="onItemNameChange(row)">
+              <el-option v-for="item in spares" :key="item._id" :label="item.name" :value="item._id" />
+            </el-select>
+          </template>
+        </el-table-column>
         <el-table-column prop="spare.name" label="Item Name" />
         <el-table-column prop="spare.type" label="Item Type" />
         <el-table-column prop="spare.part_no" label="Part No" />
@@ -33,6 +36,7 @@
 </template>
 
 <script setup>
+import { useGetSpares } from '@/hooks';
 import { computed, onMounted, ref, onUnmounted } from 'vue';
 // import {Plus} from '@element-plus/icons-vue'
 
@@ -63,7 +67,11 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 //
-const binConfigures = computed(() => props.bin?.bin_configures || []);
+const {spares} = useGetSpares({limit: 1000})
+const binConfigures = computed(() => (props.bin?.bin_configures || []).map(i => ({ ...i, spare: i.spare || {} })));
+const onItemNameChange = (row)=>{
+  console.log(row)
+};
 // const onAddItem = () => {};
 
 </script>

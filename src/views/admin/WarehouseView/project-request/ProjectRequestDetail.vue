@@ -277,6 +277,13 @@ const onAddItem = () => {
   border-radius: 8px;
 }
 
+:deep(.row-item .el-select__wrapper) {
+  background-color: #f5f5f5;
+  min-height: 46px !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
 .error-text {
   color: #f56c6c;
   font-size: 12px;
