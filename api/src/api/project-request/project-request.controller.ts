@@ -166,6 +166,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       await this.jobNumberModel
         .findByIdAndUpdate(data.job_number, {
           assigned_to: data.site_supervisor,
+          client: data.client,
         })
         .exec();
     } catch (_err) {}

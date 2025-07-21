@@ -24,4 +24,33 @@ export const formatTime = (_, __, cellValue) => {
   return '';
 }
 
-export const formatDateEn = (dateStr) => !dateStr ? '': moment(dateStr).format('DD-MMM-YY')
+export const formatDateEn = (dateStr) => !dateStr ? '' : moment(dateStr).format('DD-MMM-YY');
+
+import { ElLoading } from 'element-plus'
+
+export class AppLoading {
+  static instance = null
+
+  static show(options = {}) {
+    if (!AppLoading.instance) {
+      AppLoading.instance = ElLoading.service({
+        fullscreen: true,
+        lock: true,
+        background: '',
+        ...options,
+      })
+    }
+  }
+
+  static hide() {
+    if (AppLoading.instance) {
+      AppLoading.instance.close()
+      AppLoading.instance = null
+    }
+  }
+
+  static isLoading() {
+    return !!AppLoading.instance
+  }
+}
+

@@ -17,7 +17,7 @@ defineProps({
   max-width: 1200px;
   box-shadow: 0 2px 16px #ccc;
   border-radius: 12px;
-  padding: 32px 48px;
+  padding: 28px;
 }
 
 .title {

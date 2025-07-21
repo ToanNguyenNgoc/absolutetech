@@ -40,7 +40,7 @@
       </form>
     </CardContainer>
     <CardContainer style="margin-top: 24px;">
-      <el-table :data="raw_issues" class="custom-table" border style="margin-top: 16px;">
+      <el-table :data="raw_issues" class="custom-table" border style="margin-top: 16px;" v-loading="isLoading">
         <el-table-column type="index" label="No." width="57" />
         <el-table-column label="Description">
           <template #default="{ row }">
@@ -57,13 +57,18 @@
           </template>
         </el-table-column>
         <el-table-column prop="bin_configure.quantity_oh" label="OH Qty" />
-        <el-table-column prop="date_request" label="Location">
+        <el-table-column label="Location">
+          <template #default="{ row }">
+           {{ renderLocation(row.bin_configure?.bin) }}
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="date_request" label="Location">
           <template #default="{ row }">
             <el-select placeholder="Location" size="large" style="width: 100%;" v-model="row.bin._id">
               <el-option v-for="item in bins" :key="item._id" :label="renderLocation(item)" :value="item._id" />
             </el-select>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="issue_to.full_name" label="Issue To" />
         <el-table-column prop="returned" label="Issue/Return/WriteOff" />
         <el-table-column label="Action">
@@ -87,11 +92,12 @@ import PageContainer from '@/components/common/PageContainer.vue'
 import { ProjectRequest } from '@/api'
 import CardContainer from '@/components/common/CardContainer.vue'
 import AppInput from '@/components/common/AppInput.vue'
-import { useGetBinConfigures, useGetBins, useGetJobNumbers, useGetUsers } from '@/hooks'
+import { useGetBinConfigures, useGetJobNumbers, useGetUsers } from '@/hooks'
 import { ref } from 'vue'
 import { Check, Delete, Plus } from '@element-plus/icons-vue'
 import AppFooterForm from '@/components/common/AppFooterForm.vue'
 import * as yup from 'yup'
+import { AppLoading } from '@/utils/common'
 
 const route = useRoute();
 const router = useRouter();
@@ -100,7 +106,7 @@ const users = useGetUsers({
   // roles: [ROLES.SITE_SUPERVISOR]
 });
 const job_numbers = useGetJobNumbers();
-const bins = useGetBins({ limit: 1000 });
+// const bins = useGetBins({ limit: 1000 });
 const bin_configures = useGetBinConfigures({ limit: 1000 });
 
 const { handleSubmit, setFieldValue, useFieldModel, errors } = useForm({
@@ -160,7 +166,7 @@ const renderLocation = (bin) => {
   return `${bin.cluster?.name} - ${bin.shelf?.name} - ${bin.row} - ${bin.bin}`
 }
 const raw_issues = ref([]);
-const { refetch } = useQuery({
+const { refetch, isLoading } = useQuery({
   queryKey: ['issues', id],
   queryFn: () => ProjectRequest.getIssuesByProjectId(id),
   onSuccess: (data) => {
@@ -185,9 +191,10 @@ const onSaveItem = async (row) => {
   if(quantity_request < 0 || quantity_request > row.bin_configure?.quantity_oh){
     return ElMessage.warning('Quantity request must be smaller OH Qty')
   }
+  AppLoading.show();
   try {
     const data = {
-      bin: row.bin._id,
+      // bin: row.bin._id,
       project_request: id,
       bin_configure: row.bin_configure._id,
       quantity_request: Number(row.quantity_request || 0),
@@ -202,6 +209,8 @@ const onSaveItem = async (row) => {
     ElMessage.error('Failed to save item');
     console.log(error);
     refetch();
+  } finally{
+    AppLoading.hide()
   }
 }
 const onDeleteItem = (row, $index) => {
@@ -218,18 +227,21 @@ const onDeleteItem = (row, $index) => {
     .then(async () => {
       raw_issues.value = raw_issues.value.filter((_item, index) => index !== $index);
       if (!row._id) return ElMessage.success('Delete success');
+      AppLoading.show()
       ProjectRequest.deleteIssue(row._id)
         .then(() => ElMessage.success('Delete success'))
         .catch(() => { ElMessage.error('Delete failed'); refetch() })
+        .finally(() => AppLoading.hide())
     })
     .catch(() => {
     })
 }
 const onAddItem = () => {
+  console.log(bin_configures.value[0]);
   raw_issues.value.push({
     bin_configure: structuredClone(bin_configures.value.length > 0 ? bin_configures.value[0] : {}),
     quantity_request: 1,
-    bin: structuredClone(bins.value.length > 0 ? bins.value[0] : {})
+    // bin: structuredClone(bins.value.length > 0 ? bins.value[0] : {})
   });
 }
 //
@@ -263,6 +275,13 @@ const onAddItem = () => {
   border: none !important;
   box-shadow: none !important;
   border-radius: 8px;
+}
+
+:deep(.row-item .el-select__wrapper) {
+  background-color: #f5f5f5;
+  min-height: 46px !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
 }
 
 .error-text {

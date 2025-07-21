@@ -11,7 +11,8 @@
     "serve:frontend": "vue-cli-service serve",
     "serve:backend": "cd api && nest start --watch",
     "serve": "concurrently \"npm run serve:frontend\" \"npm run serve:backend\"",
-    "start:prod": "npm run build && cd api && node dist/main.js"
+    "start:prod": "npm run build && cd api && node dist/main.js",
+    "dev": "vue-cli-service serve"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

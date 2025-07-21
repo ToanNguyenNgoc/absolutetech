@@ -11,10 +11,10 @@ export class SpareModel {
   @Prop()
   name?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   part_no: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   material_no: string;
 
   @Prop()

@@ -1,11 +1,11 @@
 <template>
-  <PageContainer title="Clusters / Cabinets / Bins / Items Configure">
+  <PageContainer title="Clusters / Cabinets / Bins / Items">
     <CardContainer style="margin-bottom: 12px;">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="Clusters" name="clusters" />
         <el-tab-pane label="Cabinets" name="cabinets" />
         <el-tab-pane label="Bins" name="bins" />
-        <el-tab-pane label="Items Configure" name="items-configure" />
+        <el-tab-pane label="Items" name="items-configure" />
       </el-tabs>
       <router-view />
     </CardContainer>

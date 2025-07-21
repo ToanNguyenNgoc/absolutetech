@@ -15,6 +15,9 @@ export class FileUpload {
   @Prop({ required: true })
   url: string;
 
+  @Prop({ required: true })
+  original_url: string;
+
   @Prop()
   size: number;
 
