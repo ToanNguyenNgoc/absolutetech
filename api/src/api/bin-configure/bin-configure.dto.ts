@@ -26,6 +26,10 @@ export class BinConfigureCreate {
 
   @ApiProperty()
   @IsOptional()
+  quantity_oh: number;
+
+  @ApiProperty()
+  @IsOptional()
   quantity: number;
 
   @ApiProperty()

@@ -25,6 +25,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { UpdateJobNumberDto } from './dto/update-job-number.dto';
+import { JobNumberQr } from './dto/job-number-query.dto';
 
 @Controller('/api/job-numbers')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -35,7 +36,7 @@ export class JobNumberController {
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async create(@Body() dto: CreateJobNumberDto, @Request() req) {
     const userId = req.user.userId;
-    return this.jobNumberService.create({ ...dto, created_by: userId });
+    return this.jobNumberService.createOne({ ...dto, created_by: userId });
   }
 
   @Get(':id')
@@ -46,8 +47,8 @@ export class JobNumberController {
 
   @Get()
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
-  async findAllPaginated(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.jobNumberService.findAllPaginated(page, limit);
+  async findAllPaginated(@Query() qr: JobNumberQr) {
+    return this.jobNumberService.findAllPaginated(qr);
   }
 
   @Post('upload')
@@ -84,7 +85,7 @@ export class JobNumberController {
   ) {
     console.log('Updating job number with ID:', id);
     const userId = req.user.userId;
-    return this.jobNumberService.update(id, {
+    return this.jobNumberService.updateOne(id, {
       ...dto,
       id,
       created_by: userId,

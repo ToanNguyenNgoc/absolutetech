@@ -4,8 +4,8 @@
             <h1 class="main-title">Main</h1>
 
             <div class="menu-grid">
-                <!-- <MenuCard title="Issue" icon="🟢" />
-            <MenuCard title="Return" icon="🔙" />
+                <MenuCard title="Issue" icon="🟢" to="/admin/issues" />
+            <!-- <MenuCard title="Return" icon="🔙" />
             <MenuCard title="Replenish" icon="📦" />
             <MenuCard title="Physical" icon="📝" />
             <MenuCard title="Transactions" icon="📄" />

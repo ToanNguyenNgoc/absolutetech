@@ -15,10 +15,12 @@
         </el-table-column>
         <el-table-column label="Status">
           <template #default="{ row }">
-            <el-select v-model="row.status" placeholder="Status" size="large" style="width: 100%;"
-              @change="handleStatusChange(row)">
-              <el-option v-for="item in statuses" :key="item.value" :label="item.name" :value="item.value" />
-            </el-select>
+            <el-tag :type="renderStatus(row).primary">{{renderStatus(row).status}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="Confirmed">
+          <template #default="{ row }">
+            <el-tag v-if="row.confirmed_by" type="success">Confirmed</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="Action" width="150">
@@ -59,7 +61,6 @@ const { data, isLoading } = useQuery({
   queryFn: () => ProjectRequest.get(params)
 })
 
-const statuses = Object.values(PROJECT_REQUEST_STATUS);
 
 const response = computed(() => data.value?.data);
 const handleCurrentChange = () => {
@@ -69,10 +70,17 @@ const handleView = (item) => {
   router.push(`/admin/project-request/${item._id}`)
 }
 
-const handleStatusChange = (row) => {
-  ProjectRequest.updateDetail(row._id, {
-    status: row.status
-  })
+// const handleStatusChange = (row) => {
+//   ProjectRequest.updateDetail(row._id, {
+//     status: row.status
+//   })
+// }
+
+const renderStatus = (row) => {
+  let data = { primary: 'info', status: 'New' }
+  if(row.status === PROJECT_REQUEST_STATUS.IN_PROGRESS.value) {data.primary = 'warning'; data.status = PROJECT_REQUEST_STATUS.IN_PROGRESS.name}
+  if(row.status === PROJECT_REQUEST_STATUS.ISSUE.value) {data.primary = 'success'; data.status = PROJECT_REQUEST_STATUS.ISSUE.name}
+  return data
 }
 
 </script>

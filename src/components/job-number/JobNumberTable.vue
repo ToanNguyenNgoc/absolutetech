@@ -78,7 +78,12 @@ export default {
         const fetchData = async () => {
             loading.value = true;
             try {
-                const res = await getJobNumbers(currentPage.value, pageSize.value);
+                const res = await getJobNumbers({
+                    page:currentPage.value, 
+                    limit: pageSize.value,
+                    sort:'-createdAt',
+                    search: searchTerm.value
+                });
                 const apiData = res.data.data;
                 tableData.value = apiData.list;
                 rawList.value = apiData.list;
@@ -144,18 +149,19 @@ export default {
 
         const handleSearchInput = debounce(() => {
             // Optional: update this to call API if backend supports filtering
-            const term = searchTerm.value.toLowerCase();
-            if (term === '') {
-                tableData.value = rawList.value;
-                return;
-            }
-            tableData.value = rawList.value.filter((item) => {
-                return (
-                    item.code?.toLowerCase().includes(term) ||
-                    item.project?.toLowerCase().includes(term) ||
-                    item.assigned_to?.full_name?.toLowerCase().includes(term)
-                );
-            });
+            searchTerm.value.toLowerCase();
+            // if (term === '') {
+            //     tableData.value = rawList.value;
+            //     return;
+            // }
+            // tableData.value = rawList.value.filter((item) => {
+            //     return (
+            //         item.code?.toLowerCase().includes(term) ||
+            //         item.project?.toLowerCase().includes(term) ||
+            //         item.assigned_to?.full_name?.toLowerCase().includes(term)
+            //     );
+            // });
+            fetchData();
         }, 500);
 
         const handleCurrentChange = (page) => {
