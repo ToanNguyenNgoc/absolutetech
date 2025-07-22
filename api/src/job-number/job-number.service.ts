@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // job-number.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -14,9 +15,11 @@ import {
   DocumentEntityDocument,
 } from './schemas/document.schema';
 import { UpdateJobNumberDto } from './dto/update-job-number.dto';
+import { BaseService } from 'src/common';
+import { JobNumberQr } from './dto/job-number-query.dto';
 
 @Injectable()
-export class JobNumberService {
+export class JobNumberService extends BaseService<JobNumberDocument> {
   constructor(
     @InjectModel(JobNumber.name)
     private jobNumberModel: Model<JobNumberDocument>,
@@ -24,9 +27,11 @@ export class JobNumberService {
     private fileUploadModel: Model<FileUploadDocument>,
     @InjectModel(DocumentEntity.name)
     private documentModel: Model<DocumentEntityDocument>,
-  ) {}
+  ) {
+    super(jobNumberModel);
+  }
 
-  async create(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
+  async createOne(dto: CreateJobNumberDto): Promise<JobNumberDocument> {
     try {
       const { documents, est_start_date, est_end_date, ...jobData } = dto;
 
@@ -85,30 +90,28 @@ export class JobNumberService {
     return jobNumber;
   }
 
-  async findAllPaginated(page = 1, limit = 10) {
-    return paginate(
-      this.jobNumberModel,
-      page,
-      limit,
-      {},
-      {},
-      {
-        populate: [
-          'assigned_to',
-          'created_by',
-          'est_start_date',
-          'est_end_date',
-          'project_request',
-          {
-            path: 'documents',
-            populate: {
-              path: 'files',
-              match: { ref_model: 'DocumentEntity' },
-            },
+  async findAllPaginated(qr: JobNumberQr) {
+    return this.findAll({
+      page: qr.page,
+      limit: qr.limit,
+      search: qr.search,
+      searchFields: ['code', 'client', 'project'],
+      populate: [
+        'assigned_to',
+        'created_by',
+        'est_start_date',
+        'est_end_date',
+        'project_request',
+        {
+          path: 'documents',
+          populate: {
+            path: 'files',
+            match: { ref_model: 'DocumentEntity' },
           },
-        ],
-      },
-    );
+        },
+      ],
+      sort: qr.sort,
+    });
   }
 
   async handleFileUpload(file: Express.Multer.File) {
@@ -161,7 +164,7 @@ export class JobNumberService {
     return { message: 'Job Number deleted successfully' };
   }
 
-  async update(id: string, dto: UpdateJobNumberDto) {
+  async updateOne(id: string, dto: UpdateJobNumberDto) {
     const job = await this.jobNumberModel.findById(id);
     if (!job) throw new NotFoundException('Job Number not found');
 

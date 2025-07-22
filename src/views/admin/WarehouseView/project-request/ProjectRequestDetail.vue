@@ -4,12 +4,13 @@
       <form @submit.prevent="onSubmit">
         <div class="row-container">
           <div class="row-item">
-            <AppInput v-model="client" placeholder="Client" label="Client" :error="errors.client" />
+            <AppInput v-model="client" placeholder="Client" label="Client" :error="errors.client"
+              :disabled="disable_form" />
           </div>
           <div class="row-item">
             <label class="label">Site Supervisor</label>
             <el-select v-model="site_supervisor" placeholder="Select" size="large" style="width: 100%;"
-              class="custom-select">
+              :disabled="disable_form" class="custom-select">
               <el-option v-for="item in users" :key="item._id" :label="item.full_name" :value="item._id" />
             </el-select>
             <div class="error-text" v-if="errors.site_supervisor">{{ errors.site_supervisor }}</div>
@@ -17,25 +18,31 @@
           <div class="row-item">
             <label class="label">Job Number</label>
             <el-select v-model="job_number" placeholder="Select" size="large" style="width: 100%;"
-              class="custom-select">
+              :disabled="disable_form" class="custom-select">
               <el-option v-for="item in job_numbers" :key="item._id" :label="item.code" :value="item._id" />
             </el-select>
-             <div class="error-text" v-if="errors.job_number">{{ errors.job_number }}</div>
+            <div class="error-text" v-if="errors.job_number">{{ errors.job_number }}</div>
           </div>
           <div class="row-item">
             <label class="label">Date request</label>
             <el-form-item>
-              <el-date-picker v-model="date_request" type="date" placeholder="Date request" style="width: 100%;" />
+              <el-date-picker v-model="date_request" type="date" placeholder="Date request" style="width: 100%;"
+                :disabled="disable_form" />
             </el-form-item>
             <div class="error-text" v-if="errors.date_request">{{ errors.date_request }}</div>
           </div>
           <div class="row-item">
-            <AppInput v-model="project_name" placeholder="Project name" label="Project name" :error="errors.project_name" />
+            <AppInput v-model="project_name" placeholder="Project name" label="Project name"
+              :error="errors.project_name" :disabled="disable_form" />
           </div>
         </div>
         <AppFooterForm>
           <el-button type="primary" @click="router.back()" plain>Back</el-button>
-          <el-button type="primary" native-type="submit" :loading="isLoadingSaveProject">Save & Exit</el-button>
+          <el-button v-if="!disable_form" type="primary" native-type="submit" :loading="isLoadingSaveProject">Save &
+            Confirm</el-button>
+          <el-button style="display: none;" v-else type="success" native-type="button" :loading="isLoadingSaveProject"
+            :disabled="data?.data?.status === 'issue'" @click="onIssue">{{ data?.data?.status === 'issue' ?
+              'Issued' :'Issue'}}</el-button>
         </AppFooterForm>
       </form>
     </CardContainer>
@@ -45,7 +52,7 @@
         <el-table-column label="Description">
           <template #default="{ row }">
             <el-select placeholder="Description" size="large" style="width: 100%;" v-model="row.bin_configure._id"
-              @change="onDescriptionChange(row)">
+              :disabled="disable_form" @change="onDescriptionChange(row)">
               <el-option v-for="item in bin_configures" :key="item._id" :label="item.spare.name" :value="item._id" />
             </el-select>
           </template>
@@ -53,13 +60,14 @@
         <el-table-column prop="bin_configure.spare.part_no" label="Part No" />
         <el-table-column label="Quantity Request">
           <template #default="{ row }">
-            <AppInput v-model="row.quantity_request" placeholder="Quantity Request" type="number" />
+            <AppInput v-model="row.quantity_request" placeholder="Quantity Request" type="number"
+              :disabled="disable_form" />
           </template>
         </el-table-column>
         <el-table-column prop="bin_configure.quantity_oh" label="OH Qty" />
         <el-table-column label="Location">
           <template #default="{ row }">
-           {{ renderLocation(row.bin_configure?.bin) }}
+            {{ renderLocation(row.bin_configure?.bin) }}
           </template>
         </el-table-column>
         <!-- <el-table-column prop="date_request" label="Location">
@@ -73,12 +81,15 @@
         <el-table-column prop="returned" label="Issue/Return/WriteOff" />
         <el-table-column label="Action">
           <template #default="{ row, $index }">
-            <el-button type="success" :icon="Check" circle @click="onSaveItem(row)" />
-            <el-button type="danger" :icon="Delete" circle @click="onDeleteItem(row, $index)" />
+            <el-button type="success" :icon="Check" circle @click="onSaveItem(row)" :disabled="disable_form" />
+            <el-button type="danger" :icon="Delete" circle @click="onDeleteItem(row, $index)"
+              :disabled="disable_form" />
           </template>
         </el-table-column>
       </el-table>
-      <el-button @click="onAddItem" :icon="Plus" type="primary" plain style="margin-top: 12px;">Add Item</el-button>
+      <el-button :disabled="disable_form" @click="onAddItem" :icon="Plus" type="primary" plain
+        style="margin-top: 12px;">Add
+        Item</el-button>
     </CardContainer>
   </PageContainer>
 </template>
@@ -97,7 +108,7 @@ import { ref } from 'vue'
 import { Check, Delete, Plus } from '@element-plus/icons-vue'
 import AppFooterForm from '@/components/common/AppFooterForm.vue'
 import * as yup from 'yup'
-import { AppLoading } from '@/utils/common'
+import { AppConfirm, AppLoading } from '@/utils/common'
 
 const route = useRoute();
 const router = useRouter();
@@ -105,7 +116,7 @@ const id = route.params.id;
 const users = useGetUsers({
   // roles: [ROLES.SITE_SUPERVISOR]
 });
-const job_numbers = useGetJobNumbers();
+const {job_numbers} = useGetJobNumbers({limit:1000});
 // const bins = useGetBins({ limit: 1000 });
 const bin_configures = useGetBinConfigures({ limit: 1000 });
 
@@ -127,7 +138,9 @@ const { handleSubmit, setFieldValue, useFieldModel, errors } = useForm({
 })
 const [client, project_name, site_supervisor, job_number, date_request] = useFieldModel(['client', 'project_name', 'site_supervisor', 'job_number', 'date_request'])
 
-const { refetch: refetchDetail } = useQuery({
+const disable_form = ref(false);
+
+const { refetch: refetchDetail, data } = useQuery({
   queryKey: ['project-request-id', id],
   queryFn: () => ProjectRequest.getDetail(id),
   onSuccess: (data) => {
@@ -137,6 +150,7 @@ const { refetch: refetchDetail } = useQuery({
       setFieldValue('site_supervisor', data?.data?.job_number?.assigned_to)
       setFieldValue('job_number', data?.data?.job_number?._id)
       setFieldValue('date_request', data?.data?.date_request)
+      disable_form.value = !!data?.data?.confirmed_by
     }
   },
   onError: () => {
@@ -148,7 +162,8 @@ const { mutate, isLoading: isLoadingSaveProject } = useMutation({
   mutationFn: (body) => ProjectRequest.updateDetail(id, body),
   onSuccess: () => {
     ElMessage.success('Success to save project request.');
-    setTimeout(() => router.back(), 3000)
+    refetchDetail();
+    // setTimeout(() => router.back(), 3000)
   },
   onError: () => {
     ElMessage.error('Failed to save project request.');
@@ -158,8 +173,18 @@ const { mutate, isLoading: isLoadingSaveProject } = useMutation({
 
 
 const onSubmit = handleSubmit(async (values) => {
-  mutate(values);
+  AppConfirm.open({
+    title: 'If you confirm, you cannot modify this',
+    callback: () => mutate({ ...values, status: 'in_process' })
+  })
 });
+
+const onIssue = () => {
+  AppConfirm.open({
+    title: 'Do you want to issue this ?',
+    callback: () => mutate({ status: 'issue' })
+  })
+}
 
 //
 const renderLocation = (bin) => {
@@ -188,7 +213,7 @@ const onDescriptionChange = (row) => {
 }
 const onSaveItem = async (row) => {
   const quantity_request = Number(row.quantity_request || 0);
-  if(quantity_request < 0 || quantity_request > row.bin_configure?.quantity_oh){
+  if (quantity_request < 0 || quantity_request > row.bin_configure?.quantity_oh) {
     return ElMessage.warning('Quantity request must be smaller OH Qty')
   }
   AppLoading.show();
@@ -208,9 +233,9 @@ const onSaveItem = async (row) => {
   } catch (error) {
     ElMessage.error('Failed to save item');
     console.log(error);
+  } finally {
+    AppLoading.hide();
     refetch();
-  } finally{
-    AppLoading.hide()
   }
 }
 const onDeleteItem = (row, $index) => {
@@ -237,11 +262,9 @@ const onDeleteItem = (row, $index) => {
     })
 }
 const onAddItem = () => {
-  console.log(bin_configures.value[0]);
   raw_issues.value.push({
     bin_configure: structuredClone(bin_configures.value.length > 0 ? bin_configures.value[0] : {}),
     quantity_request: 1,
-    // bin: structuredClone(bins.value.length > 0 ? bins.value[0] : {})
   });
 }
 //

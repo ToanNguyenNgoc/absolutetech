@@ -32,4 +32,5 @@ export class WS_EVENT_NAME {
 }
 export class QUEUE_NAME {
   static sync_data = 'sync_data';
+  static log_transaction = 'log_transaction';
 }

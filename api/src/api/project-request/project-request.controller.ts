@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-empty */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -13,11 +14,15 @@ import {
   Post,
   Put,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseService } from 'src/common';
 import {
+  BinConfigureDocument,
+  BinConfigureModel,
   IssueDocument,
   IssueModel,
   ProjectRequestDocument,
@@ -34,9 +39,12 @@ import {
   JobNumber,
   JobNumberDocument,
 } from 'src/job-number/schemas/job-number.schema';
+import { LogTransactionService } from 'src/shared/log-transaction/log-transaction.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('api/project-requests')
 @Injectable()
+@UseGuards(JwtAuthGuard)
 export class ProjectRequestController extends BaseService<ProjectRequestDocument> {
   constructor(
     @InjectModel(ProjectRequestModel.name)
@@ -47,6 +55,9 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
     private readonly issueModel: Model<IssueDocument>,
     @InjectModel(SpareModel.name)
     private readonly spareModel: Model<SpareDocument>,
+    @InjectModel(BinConfigureModel.name)
+    private readonly binConfigureModel: Model<BinConfigureDocument>,
+    private readonly logTransaction: LogTransactionService,
   ) {
     super(projectRequestModel);
   }
@@ -76,7 +87,11 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
   }
 
   @Put(':id')
-  async put(@Param('id') id: string, @Body() body: ProjectRequestCreate) {
+  async put(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() body: ProjectRequestCreate,
+  ) {
     let job_number: any = undefined;
     if (body.project_name) {
       job_number = await this.getJobNumber(body.job_number);
@@ -91,6 +106,8 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       }
     }
     await this.updateAssignedTo(body);
+    await this.onConfirmProjectRequest(id, body, req.user);
+    await this.onIssueProjectRequest(id, body);
     return this.update(id, { ...body, job_number: job_number?._id });
   }
 
@@ -169,6 +186,44 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
           client: data.client,
         })
         .exec();
-    } catch (_err) {}
+    } catch (_err) { }
+  }
+
+  async onConfirmProjectRequest(
+    id: string,
+    body: ProjectRequestCreate,
+    user: any,
+  ) {
+    if (body.status !== ProjectRequestModel.PJ_STATUS_IN_PROCESS) return;
+    const projectRequest = await this.projectRequestModel.findById(id);
+    if (!projectRequest) return;
+    if (projectRequest.confirmed_by) throw new BadRequestException('Project request is confirmed');
+    if ((!projectRequest.status || projectRequest.status === ProjectRequestModel.PJ_STATUS_NEW)) {
+      return this.projectRequestModel.findByIdAndUpdate(id, {
+        confirmed_by: user.userId,
+        status: ProjectRequestModel.PJ_STATUS_IN_PROCESS,
+      });
+    }
+  }
+
+  async onIssueProjectRequest(id: string, body: ProjectRequestCreate) {
+    if (body.status !== ProjectRequestModel.PJ_STATUS_ISSUE) return;
+    const projectRequest = await this.projectRequestModel.findById(id);
+    if (!projectRequest) return;
+    if (!projectRequest.confirmed_by) throw new BadRequestException('Please confirm project request');
+    if (projectRequest.status === ProjectRequestModel.PJ_STATUS_ISSUE) throw new BadRequestException('Project request is issued');
+    const issues = await this.issueModel.find({ project_request: id });
+    await Promise.all(issues.map(async (issue) => {
+      const binConfigure = await this.binConfigureModel.findById(issue.bin_configure);
+      if (!binConfigure) return;
+      return this.binConfigureModel.findByIdAndUpdate(binConfigure._id, {
+        quantity_oh: binConfigure.quantity_oh - issue.quantity_request
+      })
+    }));
+    return this.projectRequestModel
+      .findByIdAndUpdate(id, {
+        status: ProjectRequestModel.PJ_STATUS_ISSUE,
+      })
+      .exec();
   }
 }

@@ -2,12 +2,16 @@ import { getJobNumbers } from "@/api/jobnumber";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 
-export function useGetJobNumbers(){
-  const {data} = useQuery({
-    queryKey:['job-numbers'],
-    queryFn:() => getJobNumbers(1, 1000)
+export function useGetJobNumbers(params) {
+  const queryKey = computed(() => ['job-numbers', { ...params }]);
+  const query = useQuery({
+    queryKey,
+    queryFn: () => getJobNumbers({ ...params }),
   })
 
-  const job_numbers = computed(() => data.value?.data?.data?.list || []);
-  return job_numbers;
+  const response = computed(() => query.data.value?.data?.data);
+  return Object.assign(query, {
+    response,
+    job_numbers: computed(() => response.value?.list || [])
+  })
 }

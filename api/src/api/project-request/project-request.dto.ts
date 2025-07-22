@@ -1,10 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { BaseQuery } from 'src/common';
 import { ProjectRequestModel } from 'src/models';
 
-export class ProjectRequestQr extends BaseQuery {}
-// import { IssueModel } from 'src/models';
+export class ProjectRequestQr extends BaseQuery { }
 
 export class IssueCreate {
   @ApiProperty()
@@ -48,13 +48,7 @@ export class ProjectRequestCreate {
 
   @ApiProperty({ default: ProjectRequestModel.PJ_STATUS_NEW })
   @IsOptional()
+  @IsIn([ProjectRequestModel.PJ_STATUS_IN_PROCESS, ProjectRequestModel.PJ_STATUS_ISSUE])
   status: string;
 
-  // @ApiProperty({
-  //   type: [IssueItemCreate],
-  // })
-  // @IsArray()
-  // @ValidateNested({ each: true })
-  // @Type(() => IssueItemCreate)
-  // issues: IssueItemCreate[];
 }

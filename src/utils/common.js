@@ -26,7 +26,7 @@ export const formatTime = (_, __, cellValue) => {
 
 export const formatDateEn = (dateStr) => !dateStr ? '' : moment(dateStr).format('DD-MMM-YY');
 
-import { ElLoading } from 'element-plus'
+import { ElLoading, ElMessageBox } from 'element-plus'
 
 export class AppLoading {
   static instance = null
@@ -51,6 +51,25 @@ export class AppLoading {
 
   static isLoading() {
     return !!AppLoading.instance
+  }
+}
+
+export class AppConfirm {
+  static open({ title = 'Confirm action', callback = () => null }) {
+    ElMessageBox.confirm(
+      `<p>${title}</p>`,
+      'Confirm',
+      {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        dangerouslyUseHTMLString: true,
+      }
+    )
+      .then(async () => {
+        callback();
+      })
+      .catch(() => {
+      });
   }
 }
 

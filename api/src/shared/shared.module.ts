@@ -15,6 +15,7 @@ import {
 import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
+import { LogTransactionModule } from './log-transaction/log-transaction.module';
 
 @Global()
 @Module({
@@ -27,6 +28,7 @@ import { UserService } from 'src/user/user.service';
     ]),
     MqttModule,
     ExternalModule,
+    LogTransactionModule,
   ],
   providers: [UserService, EntryLogService, UserFingerService],
   exports: [

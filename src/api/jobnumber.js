@@ -1,10 +1,8 @@
 // src/api/jobnumber.js
 import axiosInstance from './axios';
 
-export function getJobNumbers(page, limit) {
-  return axiosInstance.get('/job-numbers', {
-    params: { page, limit },
-  });
+export function getJobNumbers(params) {
+  return axiosInstance.get('/job-numbers', {params});
 }
 
 export function deleteJobNumber(id) {

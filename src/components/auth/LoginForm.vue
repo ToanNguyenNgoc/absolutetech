@@ -28,7 +28,7 @@
                     </div>
                     <div class="form-group">
                         <button type="submit" class="login-button" :disabled="!isFormValid"
-                            :aria-disabled="!isFormValid">
+                            :aria-disabled="!isFormValid" :loading="loading">
                             Login
                         </button>
                     </div>
@@ -53,6 +53,7 @@ export default {
     },
     data() {
         return {
+            loading: false,
             username: "",
             password: "",
             errors: {
@@ -101,6 +102,7 @@ export default {
             }
         },
         async handleLogin(credentials) {
+            this.loading = true;
             try {
                 const response = await login(credentials);
                 const token = response.data.data.access_token;
@@ -121,6 +123,8 @@ export default {
                 } else {
                     console.error('Login error:', error);
                 }
+            }finally{
+                this.loading = false;
             }
         },
         handleSubmit() {

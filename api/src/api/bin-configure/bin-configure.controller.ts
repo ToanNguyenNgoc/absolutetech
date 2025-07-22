@@ -68,6 +68,7 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
       ...body,
       bin: await this.getBin(body.bin),
       spare: await this.getSpare(body.spare),
+      quantity_org: body.quantity_oh,
     });
     return this.getOne(bin_configure._id as any);
   }

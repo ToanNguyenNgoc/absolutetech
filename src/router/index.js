@@ -21,6 +21,7 @@ import ClusterView from "@/views/admin/WarehouseView/maintenance/clusters/Cluste
 import CabinetView from "@/views/admin/WarehouseView/maintenance/cabinets/CabinetView.vue";
 import BinView from "@/views/admin/WarehouseView/maintenance/bins/BinView.vue";
 import ItemConfigureView from "@/views/admin/WarehouseView/maintenance/items-configure/ItemConfigureView.vue";
+import IssueView from "@/views/admin/WarehouseView/issues/IssueView.vue";
 
 const routes = [
   {
@@ -120,6 +121,11 @@ const routes = [
           {path:'bins', name:'bins', component: BinView},
           {path:'items-configure', name:'items-configure', component: ItemConfigureView},
         ]
+      },
+      {
+        path:'issues',
+        name:'issues',
+        component: IssueView
       },
     ],
   },

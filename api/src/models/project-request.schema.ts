@@ -35,6 +35,12 @@ export class ProjectRequestModel {
   })
   created_by: mongoose.Types.ObjectId;
 
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  confirmed_by: mongoose.Types.ObjectId;
+
   @Prop({ type: Date, default: null })
   deleted_at?: Date;
 }
