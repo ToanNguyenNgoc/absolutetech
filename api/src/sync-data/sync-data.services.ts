@@ -31,6 +31,8 @@ import {
   ProjectRequestModel,
   ShelfModel,
   SpareModel,
+  TransactionDetailModel,
+  TransactionModel,
 } from 'src/models';
 
 interface SyncableDocument {
@@ -81,6 +83,10 @@ export class SyncDataService {
     private projectRequestModel: SyncableModel<ProjectRequestModel>,
     @InjectModel(IssueModel.name)
     private issueModel: SyncableModel<IssueModel>,
+    @InjectModel(TransactionModel.name)
+    private transactionModel: SyncableModel<TransactionModel>,
+    @InjectModel(TransactionModel.name)
+    private transactionDetailModel: SyncableModel<TransactionDetailModel>,
     //       { name: IssueModel.name, schema: IssueSchema },
   ) {
     this.tableMap = {
@@ -97,6 +103,8 @@ export class SyncDataService {
       binConfigure: this.binConfigureModel,
       projectRequest: this.projectRequestModel,
       issues: this.issueModel,
+      transaction: this.transactionModel,
+      transactionDetail: this.transactionDetailModel,
     };
   }
 
@@ -117,6 +125,8 @@ export class SyncDataService {
         { model: this.binConfigureModel, table: 'bin_configures' },
         { model: this.projectRequestModel, table: 'project_requests' },
         { model: this.issueModel, table: 'issues' },
+        { model: this.transactionModel, table: 'transactions' },
+        { model: this.transactionDetailModel, table: 'transaction_details' },
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);

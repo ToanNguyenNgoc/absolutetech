@@ -45,6 +45,10 @@ import {
   ShelfSchema,
   SpareModel,
   SpareSchema,
+  TransactionDetailModel,
+  TransactionDetailSchema,
+  TransactionModel,
+  TransactionSchema,
 } from 'src/models';
 
 @Module({
@@ -65,6 +69,8 @@ import {
       { name: BinConfigureModel.name, schema: BinConfigureSchema },
       { name: ProjectRequestModel.name, schema: ProjectRequestSchema },
       { name: IssueModel.name, schema: IssueSchema },
+      { name: TransactionModel.name, schema: TransactionSchema },
+      { name: TransactionDetailModel.name, schema: TransactionDetailSchema },
     ]),
     BullModule.registerQueue({ name: QUEUE_NAME.sync_data }),
   ],
