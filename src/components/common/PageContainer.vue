@@ -18,7 +18,7 @@ defineProps({
 .container {
   padding: 12px;
   border-radius: 4px;
-  height: calc(100vh - 218px);
+  height: calc(100vh - 178px);
   overflow: hidden;
 }
 

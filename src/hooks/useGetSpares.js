@@ -4,7 +4,7 @@ import { computed } from "vue";
 
 export function useGetSpares(params) {
   const query = useQuery({
-    queryKey: computed(() => ['spares', params]),
+    queryKey: computed(() => ['spares', JSON.stringify(params)]),
     queryFn: () => SpareApi.get({ ...params }),
   });
 

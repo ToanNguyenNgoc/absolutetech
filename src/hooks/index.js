@@ -1,4 +1,5 @@
 export * from './useAuth';
+export * from './useDialogFromSize';
 export * from './useGetBins';
 export * from './useGetBinConfigures';
 export * from './useGetJobNumbers';

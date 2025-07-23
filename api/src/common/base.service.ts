@@ -138,7 +138,7 @@ export class BaseService<T> {
         }),
       );
     }
-    const total = data.length;
+    const total = await this.model.countDocuments(query).exec();
     return {
       list: data,
       total,
