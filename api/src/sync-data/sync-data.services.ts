@@ -99,6 +99,7 @@ export class SyncDataService {
       fileUpload: this.fileUpload,
       spare: this.spareModel,
       cluster: this.clusterModel,
+      shelf: this.shelfModel,
       bin: this.binModel,
       binConfigure: this.binConfigureModel,
       projectRequest: this.projectRequestModel,
