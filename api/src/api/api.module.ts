@@ -9,6 +9,7 @@ import { JobCardModule } from './job-card/job-card.module';
 import { ProjectRequestModule } from './project-request/project-request.module';
 import { BinConfigureModule } from './bin-configure/bin-configure.module';
 import { MediaModule } from './media/media.module';
+import { IssuingModule } from './issuing/issuing.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MediaModule } from './media/media.module';
     BinConfigureModule,
     ClusterModule,
     JobCardModule,
+    IssuingModule,
     ShelfModule,
     SpareModule,
     ProjectRequestModule,

@@ -15,3 +15,7 @@ export const PROJECT_REQUEST_STATUS = {
   IN_PROGRESS: { value: 'in_process', name: 'Inprogress' },
   ISSUE: { value: 'issue', name: 'Issue' }
 }
+
+export const TRANSACTION_TYPE = {
+  ISSUE: { value: 'issue', name: 'issue' }
+}

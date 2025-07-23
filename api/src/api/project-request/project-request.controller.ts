@@ -18,7 +18,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, PipelineStage } from 'mongoose';
 import { BaseService } from 'src/common';
 import {
   BinConfigureDocument,
@@ -64,12 +64,19 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
 
   @Get()
   get(@Query() qr: ProjectRequestQr) {
-    return this.findAll({
+    return this.findWithAggregate({
       page: qr.page,
       limit: qr.limit,
-      populate: [{ path: 'job_number', populate: 'assigned_to' }],
-      sort: qr.sort,
-    });
+      search: qr.search,
+      searchFields: ['client', 'job_number.code'],
+      pipeline: [
+        { $lookup: { from: 'jobnumbers', localField: 'job_number', foreignField: '_id', as: 'job_number' } },
+        { $unwind: { path: '$job_number', preserveNullAndEmptyArrays: true } },
+        { $lookup: { from: 'users', localField: 'job_number.assigned_to', foreignField: '_id', as: 'job_number.assigned_to' } },
+        { $unwind: { path: '$job_number.assigned_to', preserveNullAndEmptyArrays: true } }
+      ],
+      sort: qr.sort
+    })
   }
 
   @Post()

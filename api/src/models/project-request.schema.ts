@@ -53,3 +53,8 @@ ProjectRequestSchema.plugin(mongooseLeanVirtuals);
 ProjectRequestSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+ProjectRequestSchema.virtual('issues', {
+  ref: 'IssueModel',
+  localField: '_id',
+  foreignField: 'project_request',
+});

@@ -1,24 +1,27 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Model, FilterQuery } from 'mongoose';
+import { Model, FilterQuery, PipelineStage } from 'mongoose';
 import { buildMongoQuery } from './query-builder.util';
 
 interface SearchParams {
   search?: string;
   searchFields?: string[];
   filters?: Record<string, any>;
+  postFilterFields?: string[];
   sort?: string;
   page?: number;
   limit?: number;
   populate?: string | string[] | any;
   includeDeleted?: boolean;
   isVirtuals?: boolean;
+  pipeline?: PipelineStage[];
 }
 //
 
 export class BaseService<T> {
-  constructor(protected readonly model: Model<T>) {}
+  constructor(protected readonly model: Model<T>) { }
 
   async create(data: Partial<T>): Promise<T> {
     return this.model.create(data);
@@ -91,6 +94,7 @@ export class BaseService<T> {
       query,
       pagination,
       sort: sortOption,
+      postFilterFields,
     } = buildMongoQuery({
       search,
       searchFields,
@@ -117,20 +121,80 @@ export class BaseService<T> {
     }
 
     if (isVirtuals) {
-      //@ts-ignore
+      // @ts-ignore
       mongooseQuery = mongooseQuery.lean({ virtuals: true });
     }
 
-    const [data, total] = await Promise.all([
-      mongooseQuery.exec(),
-      this.model.countDocuments(query as FilterQuery<T>).exec(),
-    ]);
+    let data = await mongooseQuery.exec();
+    if (search && postFilterFields.length > 0) {
+      const keyword = search.toLowerCase();
 
+      data = data.filter((item: any) =>
+        postFilterFields.some((path) => {
+          const value = path.split('.').reduce((obj, key) => obj?.[key], item);
+          return (
+            typeof value === 'string' && value.toLowerCase().includes(keyword)
+          );
+        }),
+      );
+    }
+    const total = data.length;
     return {
       list: data,
       total,
       page: Number(page),
       limit: Number(limit),
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async findWithAggregate(params: SearchParams): Promise<{ list: T[]; total: number; page: number; limit: number; totalPages: number; }> {
+    const {
+      search,
+      searchFields = [],
+      pipeline = [],
+      filters = {},
+      sort = '-createdAt',
+      includeDeleted = false,
+    } = params;
+
+    const matchStage: Record<string, any> = {
+      ...(includeDeleted ? {} : { deleted_at: null }),
+      ...filters,
+    };
+    pipeline.push({ $match: matchStage });
+    if (search && searchFields.length) {
+      const regex = new RegExp(search, 'i');
+      pipeline.push({
+        $match: {
+          $or: searchFields.map((field) => ({
+            [field]: { $regex: regex },
+          })),
+        },
+      });
+    }
+    // $sort
+    const sortField = sort.replace(/^-/, '');
+    const sortOrder = sort.startsWith('-') ? -1 : 1;
+    pipeline.push({ $sort: { [sortField]: sortOrder } });
+    // $facet for pagination
+    const page = Number(params.page || 1);
+    const limit = Number(params.limit || 15);
+    pipeline.push({
+      $facet: {
+        list: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        total: [{ $count: 'count' }],
+      },
+    });
+    //
+    const result = await this.model.aggregate(pipeline).exec();
+    const list = result[0]?.list || [];
+    const total = result[0]?.total[0]?.count || 0;
+    return {
+      list,
+      total,
+      page,
+      limit,
       totalPages: Math.ceil(total / limit),
     };
   }

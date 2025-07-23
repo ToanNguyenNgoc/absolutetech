@@ -2,12 +2,17 @@ interface SearchOptions {
   search?: string;
   searchFields?: string[];
   filters?: Record<string, any>;
-  sort?: string; // Example: 'createdAt' or '-createdAt'
+  sort?: string; // Ex: 'createdAt' or '-createdAt'
   page?: number;
   limit?: number;
 }
 
-export function buildMongoQuery(options: SearchOptions) {
+export function buildMongoQuery(options: SearchOptions): {
+  query: Record<string, any>;
+  pagination: { skip: number; limit: number };
+  sort: Record<string, 1 | -1>;
+  postFilterFields: string[];
+} {
   const {
     search,
     searchFields = [],
@@ -19,19 +24,19 @@ export function buildMongoQuery(options: SearchOptions) {
 
   const query: any = {};
 
-  // Search conditions
-  if (search && searchFields.length > 0) {
-    query.$or = searchFields.map((field) => ({
+  const flatFields = searchFields.filter((f) => !f.includes('.'));
+  const nestedFields = searchFields.filter((f) => f.includes('.'));
+
+  if (search && flatFields.length > 0) {
+    query.$or = flatFields.map((field) => ({
       [field]: { $regex: search, $options: 'i' },
     }));
   }
 
-  // Add additional filters
   Object.assign(query, filters);
 
-  // Pagination and sorting
   const skip = (page - 1) * limit;
-  const sortOption: any = {};
+  const sortOption: Record<string, 1 | -1> = {};
 
   if (sort) {
     const direction = sort.startsWith('-') ? -1 : 1;
@@ -41,10 +46,8 @@ export function buildMongoQuery(options: SearchOptions) {
 
   return {
     query,
-    pagination: {
-      skip,
-      limit,
-    },
+    pagination: { skip, limit },
     sort: sortOption,
+    postFilterFields: nestedFields,
   };
 }
