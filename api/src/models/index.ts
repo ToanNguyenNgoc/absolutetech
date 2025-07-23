@@ -8,3 +8,4 @@ export * from './issues.scheme';
 export * from './vehicle.schema';
 export * from './vehicle-type.schema';
 export * from './transaction.scheme';
+export * from './transaction-detail.schema';

@@ -8,12 +8,14 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 })
 export class TransactionModel {
   static TYPE_ISSUE = 'issue';
+  static TYPE_REPLENISH = 'replenish';
+  static TYPE_RETURN = 'return';
   static TYPE_CREATE_BIN_CONFIGURE = 'create_bin_configure';
 
   static STATUS_DONE = 'done';
 
   @Prop({ required: false })
-  transaction_type: string;
+  type: string;
 
   @Prop({ required: false, default: TransactionModel.STATUS_DONE })
   status: string;
@@ -22,14 +24,29 @@ export class TransactionModel {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
-  request_by: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  taker: mongoose.Types.ObjectId;
+
+  @Prop({ required: false })
+  signature_taker: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'JobNumberModel',
+  })
+  job_number: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
   deletedAt?: Date;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(TransactionModel);
-
+export type TransactionDocument = TransactionModel & Document;
 TransactionSchema.plugin(mongooseLeanVirtuals);
 /**
  * Start

@@ -15,7 +15,7 @@
         </el-table-column>
         <el-table-column label="Status">
           <template #default="{ row }">
-            <el-tag :type="renderStatus(row).primary">{{renderStatus(row).status}}</el-tag>
+             <ProjectRequestStatus :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column label="Confirmed">
@@ -48,7 +48,7 @@ import { formatDateEn } from '@/utils/common';
 import IconButton from '@/components/common/IconButton.vue';
 import editIcon from '@/assets/icon-edit.svg'
 import { useRouter } from 'vue-router';
-import { PROJECT_REQUEST_STATUS } from '@/utils/constants';
+import ProjectRequestStatus from '@/components/common/ProjectRequestStatus.vue';
 
 const router = useRouter();
 const params = reactive({
@@ -76,12 +76,12 @@ const handleView = (item) => {
 //   })
 // }
 
-const renderStatus = (row) => {
-  let data = { primary: 'info', status: 'New' }
-  if(row.status === PROJECT_REQUEST_STATUS.IN_PROGRESS.value) {data.primary = 'warning'; data.status = PROJECT_REQUEST_STATUS.IN_PROGRESS.name}
-  if(row.status === PROJECT_REQUEST_STATUS.ISSUE.value) {data.primary = 'success'; data.status = PROJECT_REQUEST_STATUS.ISSUE.name}
-  return data
-}
+// const renderStatus = (row) => {
+//   let data = { primary: 'info', status: 'New' }
+//   if(row.status === PROJECT_REQUEST_STATUS.IN_PROGRESS.value) {data.primary = 'warning'; data.status = PROJECT_REQUEST_STATUS.IN_PROGRESS.name}
+//   if(row.status === PROJECT_REQUEST_STATUS.ISSUE.value) {data.primary = 'success'; data.status = PROJECT_REQUEST_STATUS.ISSUE.name}
+//   return data
+// }
 
 </script>
 

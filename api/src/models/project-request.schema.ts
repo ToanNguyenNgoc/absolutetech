@@ -89,3 +89,8 @@ ProjectRequestSchema.statics.getSyncColumns = function () {
  * End
  *Thêm đoạn này cho tablet
  */
+ProjectRequestSchema.virtual('issues', {
+  ref: 'IssueModel',
+  localField: '_id',
+  foreignField: 'project_request',
+});
