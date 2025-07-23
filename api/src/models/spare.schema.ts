@@ -5,7 +5,7 @@ export type SpareDocument = SpareModel & Document;
 
 @Schema({
   collection: 'spares',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class SpareModel {
   @Prop()
@@ -75,12 +75,38 @@ export class SpareModel {
   auditor?: string;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const SpareSchema = SchemaFactory.createForClass(SpareModel);
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
 
 SpareSchema.plugin(mongooseLeanVirtuals);
 SpareSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+
+SpareSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'part_no',
+    'material_no',
+    'location',
+    'supplier_email',
+    'mat_grp',
+    'critical',
+    'description',
+    'url',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */

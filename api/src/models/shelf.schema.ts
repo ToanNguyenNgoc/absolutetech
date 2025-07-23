@@ -6,7 +6,7 @@ export type ShelfDocument = ShelfModel & Document;
 
 @Schema({
   collection: 'shelfs',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class ShelfModel {
   @Prop({ required: false })
@@ -32,12 +32,40 @@ export class ShelfModel {
   cluster: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const ShelfSchema = SchemaFactory.createForClass(ShelfModel);
 
 ShelfSchema.plugin(mongooseLeanVirtuals);
+
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
+
+ShelfSchema.virtual('cluster_id').get(function () {
+  return this.cluster._id.toString();
+});
+
 ShelfSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+
+ShelfSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'type',
+    'name',
+    'num_rows',
+    'num_bin',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */

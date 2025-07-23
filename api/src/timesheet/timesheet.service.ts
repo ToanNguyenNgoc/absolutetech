@@ -20,7 +20,7 @@ export class TimesheetService {
   ) {}
 
   async findAllPaginated({ status, jobnumber, page = 1, limit = 10 }) {
-    const filter: any = { deleted_at: null };
+    const filter: any = { deletedAt: null };
 
     if (status) {
       if (Array.isArray(status)) {
@@ -34,7 +34,7 @@ export class TimesheetService {
 
     const options = {
       populate: ['jobnumber_id', 'supervisor_id'],
-      sort: { created_at: -1 },
+      sort: { createdAt: -1 },
       lean: true,
     };
 
@@ -55,7 +55,7 @@ export class TimesheetService {
               { timesheet_id: item._id }, // ObjectId
               { timesheet_id: item._id.toString() }, // string
             ],
-            deleted_at: null,
+            deletedAt: null,
           })
           .populate('attendance_id')
           .lean();
@@ -66,8 +66,8 @@ export class TimesheetService {
           supervisor: item.supervisor_id,
           status: item.status,
           date_time: item.date_time,
-          created_at: item.created_at,
-          updated_at: item.updated_at,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
           details: details.map((d) => ({
             id: d._id.toString(),
             attendance: d.attendance_id, // user info object
@@ -109,7 +109,7 @@ export class TimesheetService {
           { timesheet_id: timesheetId }, // ObjectId
           { timesheet_id: timesheetId.toString() }, // string
         ],
-        deleted_at: null,
+        deletedAt: null,
       })
       .populate('attendance_id')
       .lean();

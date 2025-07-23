@@ -23,6 +23,15 @@ import {
   FileUpload,
   FileUploadDocument,
 } from 'src/job-number/schemas/file-upload.schema';
+import {
+  BinConfigureModel,
+  BinModel,
+  ClusterModel,
+  IssueModel,
+  ProjectRequestModel,
+  ShelfModel,
+  SpareModel,
+} from 'src/models';
 
 interface SyncableDocument {
   _id: string | import('mongoose').Types.ObjectId;
@@ -58,6 +67,21 @@ export class SyncDataService {
     private documentModal: SyncableModel<DocumentEntityDocument>,
     @InjectModel(FileUpload.name)
     private fileUpload: SyncableModel<FileUploadDocument>,
+    @InjectModel(SpareModel.name)
+    private spareModel: SyncableModel<SpareModel>,
+    @InjectModel(ClusterModel.name)
+    private clusterModel: SyncableModel<ClusterModel>,
+    @InjectModel(ShelfModel.name)
+    private shelfModel: SyncableModel<ShelfModel>,
+    @InjectModel(BinModel.name)
+    private binModel: SyncableModel<BinModel>,
+    @InjectModel(BinConfigureModel.name)
+    private binConfigureModel: SyncableModel<BinConfigureModel>,
+    @InjectModel(ProjectRequestModel.name)
+    private projectRequestModel: SyncableModel<ProjectRequestModel>,
+    @InjectModel(IssueModel.name)
+    private issueModel: SyncableModel<IssueModel>,
+    //       { name: IssueModel.name, schema: IssueSchema },
   ) {
     this.tableMap = {
       timesheet: this.timesheetModel,
@@ -67,6 +91,12 @@ export class SyncDataService {
       user: this.userModel,
       document: this.documentModal,
       fileUpload: this.fileUpload,
+      spare: this.spareModel,
+      cluster: this.clusterModel,
+      bin: this.binModel,
+      binConfigure: this.binConfigureModel,
+      projectRequest: this.projectRequestModel,
+      issues: this.issueModel,
     };
   }
 
@@ -79,7 +109,14 @@ export class SyncDataService {
         { model: this.timesheetModel, table: 'timesheets' },
         { model: this.timesheetDetailModel, table: 'timesheet_details' },
         { model: this.documentModal, table: 'documententities' },
-        { model: this.fileUpload, table: 'fileuploads' },
+
+        { model: this.spareModel, table: 'spares' },
+        { model: this.clusterModel, table: 'clusters' },
+        { model: this.shelfModel, table: 'shelfs' },
+        { model: this.binModel, table: 'bins' },
+        { model: this.binConfigureModel, table: 'bin_configures' },
+        { model: this.projectRequestModel, table: 'project_requests' },
+        { model: this.issueModel, table: 'issues' },
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);

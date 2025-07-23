@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'bins',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class BinModel {
   @Prop({
@@ -77,16 +77,51 @@ export class BinModel {
   process_by: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const BinSchema = SchemaFactory.createForClass(BinModel);
 export type BinDocument = BinModel & Document & { _id: Types.ObjectId };
 
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
+
 BinSchema.plugin(mongooseLeanVirtuals);
 BinSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+
+BinSchema.virtual('cluster_id').get(function () {
+  return this.cluster._id.toString();
+});
+
+BinSchema.virtual('shelf_id').get(function () {
+  return this.shelf._id.toString();
+});
+
+BinSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'cluster_id',
+    'shelf_id',
+    'row',
+    'bin',
+    'status',
+    'critical',
+    'description',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */
+
 BinSchema.virtual('bin_configures', {
   ref: 'BinConfigureModel',
   localField: '_id',

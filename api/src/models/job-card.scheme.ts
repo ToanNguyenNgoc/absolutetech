@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'job_cards',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class JobCardModel {
   @Prop({ required: false })
@@ -27,7 +27,7 @@ export class JobCardModel {
   is_active: boolean;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const JobCardSchema = SchemaFactory.createForClass(JobCardModel);

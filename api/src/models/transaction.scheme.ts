@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'transactions',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class TransactionModel {
   static TYPE_ISSUE = 'issue';
@@ -25,12 +25,25 @@ export class TransactionModel {
   request_by: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(TransactionModel);
 
 TransactionSchema.plugin(mongooseLeanVirtuals);
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
 TransactionSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+
+TransactionSchema.statics.getSyncColumns = function () {
+  return ['id', 'createdAt', 'updatedAt', 'deletedAt'];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */

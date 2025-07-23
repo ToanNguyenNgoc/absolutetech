@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'issues',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class IssueModel {
   static RETURNED_ISSUE = 'issue';
@@ -33,7 +33,7 @@ export class IssueModel {
   bin: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +49,52 @@ export const IssueSchema = SchemaFactory.createForClass(IssueModel);
 
 export type IssueDocument = IssueModel & Document;
 
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
+
 IssueSchema.plugin(mongooseLeanVirtuals);
+IssueSchema.virtual('id').get(function () {
+  return this._id.toString();
+});
+
+IssueSchema.virtual('project_request_id').get(function () {
+  return this.project_request._id.toString();
+});
+
+IssueSchema.virtual('bin_configure_id').get(function () {
+  return this.bin_configure._id.toString();
+});
+
+IssueSchema.virtual('bin_id').get(function () {
+  return this.bin._id.toString();
+});
+
+IssueSchema.virtual('issue_to_id').get(function () {
+  return this.issue_to._id.toString();
+});
+
+IssueSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'quantity_request',
+    'project_request_id',
+    'bin_configure_id',
+    'issue_to_id',
+    'bin_id',
+    'returned',
+    'charge_time',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */
 IssueSchema.virtual('id').get(function () {
   return this._id.toString();
 });

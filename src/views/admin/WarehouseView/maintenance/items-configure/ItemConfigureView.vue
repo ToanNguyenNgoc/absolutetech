@@ -19,7 +19,7 @@ import { reactive } from 'vue';
 const params = reactive({
   page: 1,
   limit: 15,
-  sort: '-created_at'
+  sort: '-createdAt'
 });
 
 const { spares } = useGetSpares(params);

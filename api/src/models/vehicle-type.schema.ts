@@ -3,7 +3,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'vehicle_types',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class VehicleTypeModel {
   @Prop({ required: false })
@@ -13,7 +13,7 @@ export class VehicleTypeModel {
   is_active: boolean;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const VehicleTypeSchema = SchemaFactory.createForClass(VehicleTypeModel);

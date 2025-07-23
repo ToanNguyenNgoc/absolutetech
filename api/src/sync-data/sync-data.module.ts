@@ -30,6 +30,22 @@ import {
 import { BullModule } from '@nestjs/bull';
 import { QUEUE_NAME } from 'src/constants';
 import { SyncDataConsumers } from 'src/consumers/sync-data.consumers';
+import {
+  BinConfigureModel,
+  BinConfigureSchema,
+  BinModel,
+  BinSchema,
+  ClusterModel,
+  ClusterSchema,
+  IssueModel,
+  IssueSchema,
+  ProjectRequestModel,
+  ProjectRequestSchema,
+  ShelfModel,
+  ShelfSchema,
+  SpareModel,
+  SpareSchema,
+} from 'src/models';
 
 @Module({
   imports: [
@@ -42,6 +58,13 @@ import { SyncDataConsumers } from 'src/consumers/sync-data.consumers';
       { name: TimesheetDetail.name, schema: TimesheetDetailSchema },
       { name: DocumentEntity.name, schema: DocumentEntitySchema },
       { name: FileUpload.name, schema: FileUploadSchema },
+      { name: SpareModel.name, schema: SpareSchema },
+      { name: ClusterModel.name, schema: ClusterSchema },
+      { name: ShelfModel.name, schema: ShelfSchema },
+      { name: BinModel.name, schema: BinSchema },
+      { name: BinConfigureModel.name, schema: BinConfigureSchema },
+      { name: ProjectRequestModel.name, schema: ProjectRequestSchema },
+      { name: IssueModel.name, schema: IssueSchema },
     ]),
     BullModule.registerQueue({ name: QUEUE_NAME.sync_data }),
   ],

@@ -32,7 +32,7 @@ export class BaseService<T> {
     const query: FilterQuery<T> = { _id: id } as any;
     if (!includeDeleted) {
       //@ts-ignore
-      query.deleted_at = null;
+      query.deletedAt = null;
     }
     let mongooseQuery = this.model.findOne(query);
     if (populate) {
@@ -59,7 +59,7 @@ export class BaseService<T> {
 
   async softDelete(id: string): Promise<T | null> {
     return this.model
-      .findByIdAndUpdate(id, { deleted_at: new Date() }, { new: true })
+      .findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true })
       .exec();
   }
 
@@ -84,7 +84,7 @@ export class BaseService<T> {
 
     const finalFilters = {
       ...filters,
-      ...(includeDeleted ? {} : { deleted_at: null }),
+      ...(includeDeleted ? {} : { deletedAt: null }),
     };
 
     const {

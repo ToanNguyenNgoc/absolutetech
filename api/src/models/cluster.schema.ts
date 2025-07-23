@@ -6,7 +6,7 @@ export type ClusterDocument = ClusterModel & Document;
 
 @Schema({
   collection: 'clusters',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class ClusterModel {
   @Prop({ required: false })
@@ -25,15 +25,40 @@ export class ClusterModel {
   is_virtual: boolean;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const ClusterSchema = SchemaFactory.createForClass(ClusterModel);
 
-ClusterSchema.plugin(mongooseLeanVirtuals);
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
+
 ClusterSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+
+ClusterSchema.plugin(mongooseLeanVirtuals);
+
+ClusterSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'name',
+    'status',
+    'is_rfid',
+    'is_virtual',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */
+
 ClusterSchema.virtual('shelfs', {
   ref: 'ShelfModel',
   localField: '_id',

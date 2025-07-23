@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'project_requests',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class ProjectRequestModel {
   static PJ_STATUS_NEW = 'new';
@@ -42,14 +42,50 @@ export class ProjectRequestModel {
   confirmed_by: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const ProjectRequestSchema =
   SchemaFactory.createForClass(ProjectRequestModel);
 
 export type ProjectRequestDocument = ProjectRequestModel & Document;
+
+/**
+ * Start
+ *Thêm đoạn này cho tablet
+ */
+
 ProjectRequestSchema.plugin(mongooseLeanVirtuals);
 ProjectRequestSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+
+ProjectRequestSchema.virtual('job_number_id').get(function () {
+  return this.job_number._id.toString();
+});
+
+ProjectRequestSchema.virtual('created_by_id').get(function () {
+  return this.created_by._id.toString();
+});
+
+ProjectRequestSchema.virtual('confirmed_by_id').get(function () {
+  return this.confirmed_by._id.toString();
+});
+
+ProjectRequestSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'job_number_id',
+    'created_by_id',
+    'status',
+    'confirmed_by_id',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};
+
+/**
+ * End
+ *Thêm đoạn này cho tablet
+ */

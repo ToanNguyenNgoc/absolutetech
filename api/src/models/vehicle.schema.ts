@@ -4,7 +4,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
   collection: 'vehicles',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: true,
 })
 export class VehicleModel {
   static status_open = 'open';
@@ -95,7 +95,7 @@ export class VehicleModel {
   updated_by: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: null })
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 export const VehicleSchema = SchemaFactory.createForClass(VehicleModel);
@@ -105,4 +105,3 @@ VehicleSchema.plugin(mongooseLeanVirtuals);
 VehicleSchema.virtual('id').get(function () {
   return this._id.toString();
 });
-
