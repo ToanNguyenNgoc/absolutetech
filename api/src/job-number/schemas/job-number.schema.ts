@@ -63,13 +63,15 @@ JobNumberSchema.set('toJSON', { virtuals: true });
  *Thêm đoạn này cho tablet
  */
 JobNumberSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
+
 JobNumberSchema.virtual('assigned_to_id').get(function () {
-  return this.assigned_to._id.toString();
+  return this.assigned_to?._id?.toString?.() ?? null;
 });
+
 JobNumberSchema.virtual('created_by_id').get(function () {
-  return this.created_by._id.toString();
+  return this.created_by?._id?.toString?.() ?? null;
 });
 
 JobNumberSchema.plugin(mongooseLeanVirtuals);

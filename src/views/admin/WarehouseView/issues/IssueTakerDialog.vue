@@ -53,6 +53,7 @@ const handleSubmit = () => {
   if (signature.value?.isCanvasEmpty()) return ElMessage.error('Please sign!');
   const dataUrl = signature.value?.saveSignature();
   emit('on-submit-issue', dataUrl);
+  setTimeout(() => onClear(), 1000)
 }
 </script>
 
@@ -77,7 +78,7 @@ const handleSubmit = () => {
 .taker_pad {
   width: 100%;
   aspect-ratio: 16/9;
- border-radius: 8px;
- border: solid 1px #303133;
+  border-radius: 8px;
+  border: solid 1px #303133;
 }
 </style>

@@ -27,10 +27,11 @@ export const DocumentEntitySchema =
   SchemaFactory.createForClass(DocumentEntity);
 
 DocumentEntitySchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
+
 DocumentEntitySchema.virtual('job_number_id').get(function () {
-  return this.job_number._id.toString();
+  return this.job_number?._id?.toString?.() ?? null;
 });
 
 DocumentEntitySchema.plugin(mongooseLeanVirtuals);

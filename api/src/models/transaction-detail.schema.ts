@@ -52,18 +52,19 @@ TransactionDetailSchema.plugin(mongooseLeanVirtuals);
  *Thêm đoạn này cho tablet
  */
 TransactionDetailSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
+
 TransactionDetailSchema.virtual('issue_id').get(function () {
-  return this.issue._id.toString();
+  return this.issue?._id?.toString?.() ?? null;
 });
 
 TransactionDetailSchema.virtual('transaction_id').get(function () {
-  return this.transaction._id.toString();
+  return this.transaction?._id?.toString?.() ?? null;
 });
 
 TransactionDetailSchema.virtual('bin_configure_id').get(function () {
-  return this.bin_configure._id.toString();
+  return this.bin_configure?._id?.toString?.() ?? null;
 });
 
 TransactionDetailSchema.statics.getSyncColumns = function () {
