@@ -107,19 +107,19 @@ export type BinConfigureDocument = BinConfigureModel &
 
 BinConfigureSchema.plugin(mongooseLeanVirtuals);
 BinConfigureSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 BinConfigureSchema.virtual('bin_origin_id').get(function () {
-  return this.bin_origin._id.toString();
+  return this.bin_origin?._id?.toString?.() ?? null;
 });
 
 BinConfigureSchema.virtual('bin_id').get(function () {
-  return this.bin._id.toString();
+  return this.bin?._id?.toString?.() ?? null;
 });
 
 BinConfigureSchema.virtual('spare_id').get(function () {
-  return this.spare._id.toString();
+  return this.spare?._id?.toString?.() ?? null;
 });
 
 BinConfigureSchema.statics.getSyncColumns = function () {

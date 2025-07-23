@@ -36,7 +36,7 @@ export const ClusterSchema = SchemaFactory.createForClass(ClusterModel);
  */
 
 ClusterSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 ClusterSchema.plugin(mongooseLeanVirtuals);

@@ -90,15 +90,15 @@ export type BinDocument = BinModel & Document & { _id: Types.ObjectId };
 
 BinSchema.plugin(mongooseLeanVirtuals);
 BinSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 BinSchema.virtual('cluster_id').get(function () {
-  return this.cluster._id.toString();
+  return this.cluster?._id?.toString?.() ?? null;
 });
 
 BinSchema.virtual('shelf_id').get(function () {
-  return this.shelf._id.toString();
+  return this.shelf?._id?.toString?.() ?? null;
 });
 
 BinSchema.statics.getSyncColumns = function () {

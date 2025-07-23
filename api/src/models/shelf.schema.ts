@@ -45,11 +45,11 @@ ShelfSchema.plugin(mongooseLeanVirtuals);
  */
 
 ShelfSchema.virtual('cluster_id').get(function () {
-  return this.cluster._id.toString();
+  return this.cluster?._id?.toString?.() ?? null;
 });
 
 ShelfSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 ShelfSchema.statics.getSyncColumns = function () {

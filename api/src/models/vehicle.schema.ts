@@ -103,5 +103,5 @@ export type VehicleDocument = VehicleModel & Document;
 
 VehicleSchema.plugin(mongooseLeanVirtuals);
 VehicleSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });

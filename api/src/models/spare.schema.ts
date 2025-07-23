@@ -86,7 +86,7 @@ export const SpareSchema = SchemaFactory.createForClass(SpareModel);
 
 SpareSchema.plugin(mongooseLeanVirtuals);
 SpareSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 SpareSchema.statics.getSyncColumns = function () {

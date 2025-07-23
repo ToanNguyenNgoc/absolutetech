@@ -53,18 +53,19 @@ TransactionSchema.plugin(mongooseLeanVirtuals);
  *Thêm đoạn này cho tablet
  */
 TransactionSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 TransactionSchema.virtual('job_number_id').get(function () {
-  return this.job_number._id.toString();
+  return this.job_number?._id?.toString?.() ?? null;
 });
 
 TransactionSchema.virtual('user_id').get(function () {
-  return this.user._id.toString();
+  return this.user?._id?.toString?.() ?? null;
 });
+
 TransactionSchema.virtual('taker_id').get(function () {
-  return this.taker._id.toString();
+  return this.taker?._id?.toString?.() ?? null;
 });
 
 TransactionSchema.statics.getSyncColumns = function () {

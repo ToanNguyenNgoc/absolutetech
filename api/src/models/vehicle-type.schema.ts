@@ -21,5 +21,5 @@ export type VehicleTypeDocument = VehicleTypeModel & Document;
 
 VehicleTypeSchema.plugin(mongooseLeanVirtuals);
 VehicleTypeSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });

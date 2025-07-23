@@ -35,5 +35,5 @@ export type JobCardDocument = JobCardModel & Document;
 
 JobCardSchema.plugin(mongooseLeanVirtuals);
 JobCardSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });

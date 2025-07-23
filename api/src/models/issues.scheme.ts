@@ -56,23 +56,23 @@ export type IssueDocument = IssueModel & Document;
 
 IssueSchema.plugin(mongooseLeanVirtuals);
 IssueSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 IssueSchema.virtual('project_request_id').get(function () {
-  return this.project_request._id.toString();
+  return this.project_request?._id?.toString?.() ?? null;
 });
 
 IssueSchema.virtual('bin_configure_id').get(function () {
-  return this.bin_configure._id.toString();
+  return this.bin_configure?._id?.toString?.() ?? null;
 });
 
 IssueSchema.virtual('bin_id').get(function () {
-  return this.bin._id.toString();
+  return this.bin?._id?.toString?.() ?? null;
 });
 
 IssueSchema.virtual('issue_to_id').get(function () {
-  return this.issue_to._id.toString();
+  return this.issue_to?._id?.toString?.() ?? null;
 });
 
 IssueSchema.statics.getSyncColumns = function () {

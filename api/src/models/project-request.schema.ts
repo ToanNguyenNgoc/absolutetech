@@ -57,19 +57,19 @@ export type ProjectRequestDocument = ProjectRequestModel & Document;
 
 ProjectRequestSchema.plugin(mongooseLeanVirtuals);
 ProjectRequestSchema.virtual('id').get(function () {
-  return this._id.toString();
+  return this._id?.toString?.() ?? null;
 });
 
 ProjectRequestSchema.virtual('job_number_id').get(function () {
-  return this.job_number._id.toString();
+  return this.job_number?._id?.toString?.() ?? null;
 });
 
 ProjectRequestSchema.virtual('created_by_id').get(function () {
-  return this.created_by._id.toString();
+  return this.created_by?._id?.toString?.() ?? null;
 });
 
 ProjectRequestSchema.virtual('confirmed_by_id').get(function () {
-  return this.confirmed_by._id.toString();
+  return this.confirmed_by?._id?.toString?.() ?? null;
 });
 
 ProjectRequestSchema.statics.getSyncColumns = function () {
