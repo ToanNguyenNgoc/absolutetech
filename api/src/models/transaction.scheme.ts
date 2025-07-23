@@ -56,8 +56,31 @@ TransactionSchema.virtual('id').get(function () {
   return this._id.toString();
 });
 
+TransactionSchema.virtual('job_number_id').get(function () {
+  return this.job_number._id.toString();
+});
+
+TransactionSchema.virtual('user_id').get(function () {
+  return this.user._id.toString();
+});
+TransactionSchema.virtual('taker_id').get(function () {
+  return this.taker._id.toString();
+});
+
 TransactionSchema.statics.getSyncColumns = function () {
-  return ['id', 'createdAt', 'updatedAt', 'deletedAt'];
+  return [
+    'id',
+    'type',
+    'job_number_id',
+    'user_id',
+    'taker_id',
+    'signature_taker',
+    'status',
+    'status',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
 };
 
 /**
