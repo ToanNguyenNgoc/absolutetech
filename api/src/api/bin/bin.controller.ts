@@ -99,15 +99,17 @@ export class BinController extends BaseService<BinDocument> {
       process_by: await this.getProcess(body.process_by),
     });
     const bin_configures = body.bin_configures || [];
-    await Promise.all(
-      bin_configures.map(async (bin_configure) =>
-        this.binConfigureModel.create({
-          ...bin_configure,
-          bin: bin._id,
-          spare: await this.getSpare(bin_configure.spare),
-        }),
-      ),
-    );
+    if (body.bin_configures.length > 0) {
+      await Promise.all(
+        bin_configures.map(async (bin_configure) =>
+          this.binConfigureModel.create({
+            ...bin_configure,
+            bin: bin._id,
+            spare: await this.getSpare(bin_configure.spare),
+          }),
+        ),
+      );
+    }
     return bin;
   }
 
@@ -121,25 +123,27 @@ export class BinController extends BaseService<BinDocument> {
     });
     if (!bin) return;
     const bin_configures = body.bin_configures || [];
-    const prev_bin_configures = await this.binConfigureModel.find({
-      bin: bin?._id,
-    });
-    const newMap = new Map(bin_configures.map((b) => [b._id?.toString(), b]));
-    for (const oldConfig of prev_bin_configures) {
-      //@ts-ignore
-      const matched = newMap.get(oldConfig._id.toString());
-      if (matched) {
-        await this.binConfigureModel.findByIdAndUpdate(oldConfig._id, {
-          ...matched,
-        });
+    if (bin_configures.length > 0) {
+      const prev_bin_configures = await this.binConfigureModel.find({
+        bin: bin?._id,
+      });
+      const newMap = new Map(bin_configures.map((b) => [b._id?.toString(), b]));
+      for (const oldConfig of prev_bin_configures) {
         //@ts-ignore
-        newMap.delete(oldConfig._id.toString());
-      } else {
-        await this.binConfigureModel.findByIdAndDelete(oldConfig._id);
+        const matched = newMap.get(oldConfig._id.toString());
+        if (matched) {
+          await this.binConfigureModel.findByIdAndUpdate(oldConfig._id, {
+            ...matched,
+          });
+          //@ts-ignore
+          newMap.delete(oldConfig._id.toString());
+        } else {
+          await this.binConfigureModel.findByIdAndDelete(oldConfig._id);
+        }
       }
-    }
-    for (const b of newMap.values()) {
-      await this.binConfigureModel.create({ ...b, bin: bin?._id });
+      for (const b of newMap.values()) {
+        await this.binConfigureModel.create({ ...b, bin: bin?._id });
+      }
     }
     return bin;
   }
