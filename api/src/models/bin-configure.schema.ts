@@ -85,7 +85,7 @@ export class BinConfigureModel {
   @Prop({ required: false, default: false })
   has_expiry_date: boolean;
 
-  @Prop({ required: false, default: false })
+  @Prop({ required: false, default: null })
   expiry_date: Date;
 
   @Prop({ required: false })

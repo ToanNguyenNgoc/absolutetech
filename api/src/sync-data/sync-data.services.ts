@@ -2,7 +2,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import moment from 'moment';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, Mongoose } from 'mongoose';
 import SqlString from 'sqlstring';
 import { UserFinger } from 'src/user-finger/user-finger.schema';
 import { User, UserDocument } from 'src/user/user.schema';
@@ -34,15 +34,6 @@ import {
   TransactionDetailModel,
   TransactionModel,
 } from 'src/models';
-
-interface SyncableDocument {
-  _id: string | import('mongoose').Types.ObjectId;
-  id?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date | null;
-  [key: string]: any;
-}
 
 interface SyncableModel<T> extends Model<T> {
   getSyncColumns: () => string[];
@@ -87,7 +78,6 @@ export class SyncDataService {
     private transactionModel: SyncableModel<TransactionModel>,
     @InjectModel(TransactionModel.name)
     private transactionDetailModel: SyncableModel<TransactionDetailModel>,
-    //       { name: IssueModel.name, schema: IssueSchema },
   ) {
     this.tableMap = {
       timesheet: this.timesheetModel,
@@ -118,6 +108,7 @@ export class SyncDataService {
         { model: this.timesheetModel, table: 'timesheets' },
         { model: this.timesheetDetailModel, table: 'timesheet_details' },
         { model: this.documentModal, table: 'documententities' },
+        { model: this.fileUpload, table: 'fileuploads' },
 
         { model: this.spareModel, table: 'spares' },
         { model: this.clusterModel, table: 'clusters' },
@@ -131,8 +122,6 @@ export class SyncDataService {
       ];
 
       const scriptExecute = await this.fetchData(fetchForTabletDto, models);
-      console.log('scriptExecute', scriptExecute);
-
       const timeFetch = DateUtil.currentDateString();
 
       if (fetchForTabletDto.timestamp_fetch) {
@@ -154,22 +143,38 @@ export class SyncDataService {
 
   async syncFromDevice(data: SyncFromDeviceDto) {
     try {
+      console.log('data.tables', data.tables);
+
       const timeSync = DateUtil.currentDateString();
       for (const [tableName, rows] of Object.entries(data.tables)) {
         const model = this.tableMap[tableName];
-        console.log('tableName', tableName);
-        console.log('rows', rows);
-        console.log('model', model);
+        // console.log('tableName', tableName);
+        // console.log('rows', rows);
+        // console.log('model', model);
         if (model && rows.length) {
-          await model.bulkWrite(
-            rows.map((row) => ({
+          const mapsTrans = rows.map((row) => {
+            const updatedRow: any = {};
+            for (const [key, value] of Object.entries(row)) {
+              if (key.endsWith('_id')) {
+                updatedRow[key.replace(/_id$/, '')] = value;
+              } else {
+                updatedRow[key] = value;
+              }
+            }
+            // Luôn set _id = row.id để làm upsert
+            updatedRow._id = row.id;
+            console.log('updatedRow', updatedRow);
+            console.log('tableName', tableName);
+
+            return {
               updateOne: {
                 filter: { _id: row.id },
-                update: { $set: { ...row, _id: row.id } },
+                update: { $set: updatedRow },
                 upsert: true,
               },
-            })),
-          );
+            };
+          });
+          await model.bulkWrite(mapsTrans);
         }
       }
       console.log({
