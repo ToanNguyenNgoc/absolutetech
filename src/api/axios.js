@@ -1,11 +1,11 @@
 import { getCookie } from "@/utils/cookie";
 import axios from "axios";
 
-export const baseURL = process.env.VUE_APP_API_URL
-  ? `${process.env.VUE_APP_API_URL}/api`
-  : '/api';
+// export const baseURL = process.env.VUE_APP_API_URL
+//   ? `${process.env.VUE_APP_API_URL}/api`
+//   : '/api';
 
-// export const baseURL = "http://localhost:7891/api";
+export const baseURL = "http://localhost:7891/api";
 
 const instance = axios.create({
   baseURL,

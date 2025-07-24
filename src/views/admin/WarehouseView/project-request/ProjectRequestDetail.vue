@@ -188,6 +188,7 @@ const onIssue = () => {
 
 //
 const renderLocation = (bin) => {
+  if(!bin) return;
   return `${bin.cluster?.name} - ${bin.shelf?.name} - ${bin.row} - ${bin.bin}`
 }
 const raw_issues = ref([]);

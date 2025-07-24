@@ -16,7 +16,7 @@ import { SpareService } from './spare.service';
 import { SpareCreate, SpareQr } from './spare.dto';
 
 @Controller('api/spares')
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Injectable()
 export class SpareController {
   constructor(private readonly spareService: SpareService) {}

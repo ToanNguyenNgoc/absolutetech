@@ -8,13 +8,13 @@
     <form @submit.prevent="onSubmit">
       <div class="row-container">
         <div class="row-item">
-          <AppInput label="Item Name" v-model="name" />
+          <AppInput label="Item Name" v-model="name" :error="errors.name" />
         </div>
         <div class="row-item">
-          <AppInput label="Part No" v-model="part_no" />
+          <AppInput label="Part No" v-model="part_no" :error="errors.part_no" />
         </div>
         <div class="row-item">
-          <AppInput label="Material No" v-model="material_no" />
+          <AppInput label="Material No" v-model="material_no" :error="errors.material_no" />
         </div>
         <div class="row-item">
           <AppInput label="Location" v-model="location" />
@@ -47,6 +47,7 @@
           <el-select size="large" style="width: 100%;" v-model="type">
             <el-option v-for="item in types" :key="item" :label="item" :value="item" />
           </el-select>
+          <div class="error-text" v-if="errors.type">{{ errors.type }}</div>
         </div>
         <div class="row-item">
           <label class="label">Has Charge time</label>
@@ -106,6 +107,7 @@ import { SpareApi } from '@/api';
 import { baseURL } from '@/api/axios';
 import { AppLoading } from '@/utils/common';
 import { ElMessage } from 'element-plus';
+import * as yup from 'yup';
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -127,7 +129,8 @@ const {
   useFieldModel,
   resetForm,
   handleSubmit,
-  setFieldValue
+  setFieldValue,
+  errors
 } = useForm({
   initialValues: {
     name: '',
@@ -152,6 +155,12 @@ const {
     field2: '',
     description: ''
   },
+  validationSchema: yup.object({
+    name: yup.string().required('Name is not empty'),
+    part_no: yup.string().required('Part No is not empty'),
+    material_no: yup.string().required('Material No is not empty'),
+    type: yup.string().required('Item type is not empty'),
+  })
 });
 
 watch(
@@ -259,5 +268,11 @@ const handleDialogClose = (done) => {
   min-height: 46px !important;
   box-shadow: none !important;
   border-radius: 8px !important;
+}
+
+.error-text {
+  color: #f56c6c;
+  font-size: 12px;
+  margin-top: 4px;
 }
 </style>

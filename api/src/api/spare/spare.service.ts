@@ -18,6 +18,8 @@ export class SpareService extends BaseService<SpareDocument> {
       page: qr.page,
       limit: qr.limit,
       sort: qr.sort,
+      search: qr.search,
+      searchFields: ['name', 'part_no', 'material_no'],
       includeDeleted: false,
     });
   }

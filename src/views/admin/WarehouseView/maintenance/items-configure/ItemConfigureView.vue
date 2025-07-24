@@ -1,15 +1,19 @@
 <template>
   <div>
-    <div>
+    <div style="display: flex;justify-content: space-between;">
       <div class="left">
         <el-button type="primary" @click="isOpenForm = true">Add Item</el-button>
       </div>
       <div class="right">
-
+        <el-input v-model="search_text" style="width: 240px" placeholder="Search Name, Part No..." :suffix-icon="Search"  @input="onInputSearch" />
       </div>
     </div>
     <el-table :data="spares" class="custom-table" border style="margin-top: 16px;" v-loading="isLoading">
-      <el-table-column type="index" label="No." width="57" />
+      <el-table-column label="No." width="57">
+        <template #default="{ $index }">
+          <span class="item-name">{{ getIndexTable(params.page, params.limit, $index) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="Item Name">
         <template #default="{ row }">
           <span class="item-name">{{ row.name }}</span>
@@ -38,8 +42,12 @@
 <script setup>
 import { useGetSpares } from '@/hooks';
 import { reactive, ref, watch } from 'vue';
-import { Edit, Delete } from '@element-plus/icons-vue'
+import { Edit, Delete, Search } from '@element-plus/icons-vue'
 import ItemConfigureFormDialog from './ItemConfigureFormDialog.vue';
+import { AppConfirm, AppLoading, getIndexTable } from '@/utils/common';
+import { SpareApi } from '@/api';
+import { ElMessage } from 'element-plus';
+import { debounce } from 'lodash';
 
 const params = reactive({
   page: 1,
@@ -49,9 +57,9 @@ const params = reactive({
 
 const isOpenForm = ref(false);
 const selectedSpare = ref(null);
-
+const search_text = ref();
 const { spares, refetch, response, isLoading } = useGetSpares(params);
-
+const onInputSearch = debounce((val) => { params.search = val }, 800);
 
 const onEditItem = (row) => {
   selectedSpare.value = row;
@@ -64,8 +72,16 @@ watch(isOpenForm, (val) => {
   }
 });
 
-const onDeleteItem = (row, $index) => {
-  console.log('delete', row, $index);
+const onDeleteItem = (row) => {
+  AppConfirm.delete({
+    callback: () => {
+      AppLoading.show();
+      SpareApi.delete(row._id)
+        .then(() => { ElMessage.success('Delete success'); refetch() })
+        .catch(() => ElMessage.error('Delete error'))
+        .finally(() => AppLoading.hide())
+    }
+  })
 };
 
 const handleCurrentChange = (newPage) => {
@@ -111,6 +127,7 @@ const handleCurrentChange = (newPage) => {
 .el-form-item {
   margin-bottom: 16px;
 }
+
 .item-name {
   display: inline-block;
   max-width: 100%;

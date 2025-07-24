@@ -113,9 +113,13 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       }
     }
     await this.updateAssignedTo(body);
-    await this.onConfirmProjectRequest(id, body, req.user);
-    await this.onIssueProjectRequest(id, body);
-    return this.update(id, { ...body, job_number: job_number?._id });
+    const response = await this.onConfirmProjectRequest(id, body, req.user);
+    if (response) {
+      await this.onIssueProjectRequest(id, body);
+      return this.update(id, { ...body, job_number: job_number?._id });
+    } else {
+      return
+    }
   }
 
   @Get(':id')

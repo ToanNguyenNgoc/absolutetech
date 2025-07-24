@@ -76,10 +76,10 @@ const props = defineProps({
   modelValue: Boolean,
 })
 // eslint-disable-next-line no-undef
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'refetch-bins'])
 
 const handleClose = () => {
-  emit('update:modelValue', false)
+  emit('update:modelValue', false);
 }
 
 // Mobile responsive width
@@ -137,6 +137,7 @@ const onSaveItem = async (row) => {
       await BinApi.createBinConfigure({ ...row, spare: row.spare?.id, bin: bin.value?._id })
     }
     ElMessage.success('Successes to save item');
+    emit('refetch-bins');
   } catch (error) {
     console.log(error);
     ElMessage.error('Failed to save item');

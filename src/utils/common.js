@@ -71,5 +71,25 @@ export class AppConfirm {
       .catch(() => {
       });
   }
+
+  static delete({ callback = () => null }) {
+    return ElMessageBox.confirm(
+      '<p>Do you want to delete this item?</p> All related data will also be deleted.',
+      'Delete Item',
+      {
+        confirmButtonText: 'Remove',
+        cancelButtonText: 'Cancel',
+        customClass: 'delete-confirm-box',
+        dangerouslyUseHTMLString: true,
+      }
+    )
+      .then(async () => {
+        callback();
+      })
+      .catch(() => {
+      })
+  }
 }
 
+
+export const getIndexTable = (page = 1, limit = 1, $index = 1) => ((page - 1) * limit) + ($index + 1)
