@@ -38,7 +38,7 @@ export class ShelfController extends BaseService<ShelfDocument> {
 
   @Get()
   async get(@Query() qr: ShelfQr) {
-    let queryMatch = Utils.cleanQuery(omit(qr, ['page', 'limit', 'sort'])) as any;
+    let queryMatch = Utils.cleanQuery(qr) as any;
     if (qr.cluster) {
       delete queryMatch.cluster
       queryMatch = { ...queryMatch, 'cluster._id': new ObjectId(qr.cluster) }

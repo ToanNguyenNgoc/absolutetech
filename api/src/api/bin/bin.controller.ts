@@ -55,7 +55,7 @@ export class BinController extends BaseService<BinDocument> {
   }
   @Get()
   get(@Query() qr: BinQr) {
-    let queryMatch = Utils.cleanQuery(omit(qr, ['page', 'limit', 'sort'])) as any;
+    let queryMatch = Utils.cleanQuery(qr) as any;
     if (qr.cluster) {
       queryMatch = { ...queryMatch, 'cluster._id': new ObjectId(qr.cluster) };
       delete queryMatch.cluster;

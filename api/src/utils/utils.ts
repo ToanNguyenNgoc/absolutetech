@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+
+import { omit } from 'lodash';
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class Utils {
   static removeNullUn(obj: any) {
@@ -31,6 +34,7 @@ export class Utils {
   }
 
   static cleanQuery(obj: any) {
-    return Utils.convertBoolean(Utils.removeNullUn(obj));
+    const query = omit(obj, ['page', 'limit', 'sort', 'search']);
+    return Utils.convertBoolean(Utils.removeNullUn(query));
   }
 }

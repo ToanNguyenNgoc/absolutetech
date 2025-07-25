@@ -39,19 +39,19 @@
       </el-table-column>
       <el-table-column label="Is Drawer">
         <template #default="{ row }">
-          <el-button @click="updateItem(row, 'is_drawer')" :type="row.is_drawer ? 'success' : 'danger'"
+          <el-button plain @click="updateItem(row, 'is_drawer')" :type="row.is_drawer ? 'success' : 'danger'"
             :icon="row.is_drawer ? Check : Close" circle />
         </template>
       </el-table-column>
       <el-table-column label="Is Faulty">
         <template #default="{ row }">
-          <el-button @click="updateItem(row, 'is_faulty')" :type="row.is_faulty ? 'success' : 'danger'"
+          <el-button plain @click="updateItem(row, 'is_faulty')" :type="row.is_faulty ? 'success' : 'danger'"
             :icon="row.is_faulty ? Check : Close" circle />
         </template>
       </el-table-column>
       <el-table-column label="Is Failed">
         <template #default="{ row }">
-          <el-button @click="updateItem(row, 'is_failed')" :type="row.is_failed ? 'success' : 'danger'"
+          <el-button plain @click="updateItem(row, 'is_failed')" :type="row.is_failed ? 'success' : 'danger'"
             :icon="row.is_failed ? Check : Close" circle />
         </template>
       </el-table-column>
