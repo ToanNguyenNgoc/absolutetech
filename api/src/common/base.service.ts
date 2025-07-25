@@ -5,6 +5,7 @@
 import { Model, FilterQuery, PipelineStage } from 'mongoose';
 import { buildMongoQuery } from './query-builder.util';
 import { sanitizePopulate } from 'src/helpers';
+import { Utils } from 'src/utils/utils';
 
 interface SearchParams {
   search?: string;
@@ -182,9 +183,8 @@ export class BaseService<T> {
     const parsedPage = Number(page);
     const parsedLimit = Number(limit);
 
-    // Match stage: default filter + deleted
     const matchStage: Record<string, any> = {
-      ...filters,
+      ...Utils.removeNullUn(filters),
       ...(includeDeleted ? {} : { deleted_at: null }),
     };
 
@@ -217,7 +217,7 @@ export class BaseService<T> {
     });
 
     const result = await this.model.aggregate(pipeline).exec();
-    const list = result[0]?.list || [];
+    const list = (result[0]?.list || []).map(i => ({ ...i, id: i._id }));
     const total = result[0]?.total?.[0]?.count || 0;
 
     return {
@@ -230,3 +230,4 @@ export class BaseService<T> {
   }
 
 }
+

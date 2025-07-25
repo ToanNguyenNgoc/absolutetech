@@ -2,6 +2,14 @@
   <div>
     <div style="display: flex;justify-content: space-between;">
       <div class="left">
+        <BinFilter 
+          :status="params.status" @update:status="status => params.status = status"
+          :is_drawer="params.is_drawer" @update:is_drawer="is_drawer => params.is_drawer = is_drawer"
+          :cluster="params.cluster" @update:cluster="cluster => params.cluster = cluster"
+          :shelf="params.shelf" @update:shelf="shelf => params.shelf = shelf"
+          :row="params.row" @update:row="row => params.row = row"
+          :bin="params.bin" @update:bin="bin => params.bin = bin"
+        />
       </div>
       <div class="right">
         <el-input v-model="search_text" style="width: 240px" placeholder="Search Item name..." :suffix-icon="Search"  @input="onInputSearch" />
@@ -78,13 +86,20 @@ import BinConfigureDialog from './BinConfigureDialog.vue';
 import { ElMessage } from 'element-plus';
 import AppPagination from '@/components/common/AppPagination.vue';
 import {debounce} from 'lodash';
+import BinFilter from './BinFilter.vue';
 
 
 const params = reactive({
   page: 1,
   limit: 10,
   sort: '-createdAt',
-  search:null
+  search:null,
+  status:null,
+  is_drawer:null,
+  cluster: null,
+  shelf:null,
+  row: null,
+  bin: null
 });
 
 const search_text = ref();

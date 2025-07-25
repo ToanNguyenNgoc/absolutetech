@@ -17,6 +17,15 @@ export class BinQr extends BaseQuery {
 
   @ApiProperty({ required: false })
   status: string;
+
+  @ApiProperty({ required: false })
+  is_drawer: boolean;
+
+  @ApiProperty({ required: false })
+  row: boolean;
+
+  @ApiProperty({ required: false })
+  bin: number;
 }
 
 class BinConfigureItemCreate {

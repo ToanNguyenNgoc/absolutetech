@@ -2,7 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { BaseQuery } from 'src/common';
 
-export class ShelfQr extends BaseQuery {}
+export class ShelfQr extends BaseQuery {
+  @ApiProperty()
+  cluster: string;
+}
 export class ShelfCreate {
   @ApiProperty()
   @IsOptional()
