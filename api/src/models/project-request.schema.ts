@@ -77,6 +77,8 @@ ProjectRequestSchema.statics.getSyncColumns = function () {
     'id',
     'job_number_id',
     'created_by_id',
+    'project_name',
+    'date_request',
     'status',
     'confirmed_by_id',
     'createdAt',

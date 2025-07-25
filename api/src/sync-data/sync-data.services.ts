@@ -76,7 +76,7 @@ export class SyncDataService {
     private issueModel: SyncableModel<IssueModel>,
     @InjectModel(TransactionModel.name)
     private transactionModel: SyncableModel<TransactionModel>,
-    @InjectModel(TransactionModel.name)
+    @InjectModel(TransactionDetailModel.name)
     private transactionDetailModel: SyncableModel<TransactionDetailModel>,
   ) {
     this.tableMap = {

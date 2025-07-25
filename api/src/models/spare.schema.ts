@@ -92,6 +92,7 @@ SpareSchema.virtual('id').get(function () {
 SpareSchema.statics.getSyncColumns = function () {
   return [
     'id',
+    'name',
     'part_no',
     'material_no',
     'location',

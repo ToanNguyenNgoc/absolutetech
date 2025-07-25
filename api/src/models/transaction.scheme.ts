@@ -76,8 +76,6 @@ TransactionSchema.statics.getSyncColumns = function () {
     'user_id',
     'taker_id',
     'signature_taker',
-    'status',
-    'status',
     'createdAt',
     'updatedAt',
     'deletedAt',

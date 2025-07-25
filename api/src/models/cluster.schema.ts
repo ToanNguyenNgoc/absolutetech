@@ -48,6 +48,7 @@ ClusterSchema.statics.getSyncColumns = function () {
   return [
     'id',
     'name',
+    'code',
     'is_online',
     'is_rfid',
     'is_virtual',
