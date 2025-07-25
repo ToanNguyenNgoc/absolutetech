@@ -84,8 +84,9 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
   }
 
   @Delete(':id')
-  deleteOne(@Param(':id') id: string) {
-    return this.delete(id);
+  deleteOne(@Param('id') id: string) {
+    console.log(id);
+    return this.softDelete(id);
   }
   //
   async getBin(id?: string): Promise<any> {

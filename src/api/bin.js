@@ -7,4 +7,5 @@ export const BinApi = {
   getBinConfigures: (params) => axiosInstance.get('/bin-configures', { params }).then(res => res.data),
   createBinConfigure: (data) => axiosInstance.post('/bin-configures', data).then(res => res.data),
   updateBinConfigure: (id, data) => axiosInstance.put(`/bin-configures/${id}`, data).then(res => res.data),
+  deleteBinConfigure:(id) => axiosInstance.delete(`/bin-configures/${id}`).then(res => res.data),
 }

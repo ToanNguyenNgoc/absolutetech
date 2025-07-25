@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -28,7 +29,6 @@ import {
 } from 'src/models';
 import { BinCreate, BinQr } from './bin.dto';
 import { User, UserDocument } from 'src/user/user.schema';
-import { Utils } from 'src/utils/utils';
 import { BinConfigureModule } from '../bin-configure/bin-configure.module';
 
 @Controller('api/bins')
@@ -52,26 +52,30 @@ export class BinController extends BaseService<BinDocument> {
   }
   @Get()
   get(@Query() qr: BinQr) {
-    return this.findAll({
+    return this.findWithAggregate({
       page: qr.page,
       limit: qr.limit,
-      sort: qr.sort,
-      filters: Utils.removeNullUn({
-        cluster: qr.cluster,
-        shelf: qr.shelf,
-        status: qr.status,
-      }),
-      populate: [
-        'cluster',
-        'shelf',
-        'bin_configures',
+      search:qr.search,
+      searchFields:['bin_configures.spare.name'],
+      pipeline: [
+        { $lookup: { from: 'clusters', localField: 'cluster', foreignField: '_id', as: 'cluster', } },
+        { $unwind: { path: '$cluster', preserveNullAndEmptyArrays: true } },
+        { $lookup: { from: 'shelfs', localField: 'shelf', foreignField: '_id', as: 'shelf' } },
+        { $unwind: { path: '$shelf', preserveNullAndEmptyArrays: true } },
         {
-          path: 'bin_configures',
-          populate: {
-            path: 'spare',
+          $lookup: {
+            from: 'bin_configures',
+            let: { binId: '$_id' },
+            pipeline: [
+              { $match: { $expr: { $eq: ['$bin', '$$binId'] } } },
+              { $lookup: { from: 'spares', localField: 'spare', foreignField: '_id', as: 'spare', } },
+              { $unwind: { path: '$spare', preserveNullAndEmptyArrays: true } },
+            ],
+            as: 'bin_configures',
           },
         },
       ],
+      sort: qr.sort,
     });
   }
 

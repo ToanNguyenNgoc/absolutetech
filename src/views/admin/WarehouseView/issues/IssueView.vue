@@ -36,7 +36,7 @@
       </template>
       <div v-else class="cart_cnt">
         <el-button type="primary" :icon="Back" circle @click="projectSelected = null; onClearAllData()" />
-        <el-table v-loading="isLoadingIssues" :data="issues" class="custom-table" border style="margin-top: 16px;">
+        <el-table v-loading="isLoadingIssues" :data="issues.filter(i => i.bin_configure)" class="custom-table" border style="margin-top: 16px;">
           <el-table-column label="No." width="57">
             <template #default="{ row, $index }">
               <div style="display: flex;align-items: center;">

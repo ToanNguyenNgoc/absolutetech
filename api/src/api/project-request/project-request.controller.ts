@@ -141,9 +141,9 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
         project_request: project_request_id,
       })
       .populate([
-        'bin',
         {
           path: 'bin_configure',
+          match:{deletedAt: null},
           populate: [
             { path: 'bin', populate: ['cluster', 'shelf'] },
             { path: 'spare' },
@@ -156,9 +156,9 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
   @Get('/issues/:id')
   async getIssueItem(@Param('id') id: string) {
     const issue = await this.issueModel.findOne({ _id: id }).populate([
-      'bin',
       {
         path: 'bin_configure',
+        match:{deletedAt: null},
         populate: [
           { path: 'bin', populate: ['cluster', 'shelf'] },
           { path: 'spare' },
