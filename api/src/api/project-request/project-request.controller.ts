@@ -113,9 +113,13 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       }
     }
     await this.updateAssignedTo(body);
-    await this.onConfirmProjectRequest(id, body, req.user);
-    await this.onIssueProjectRequest(id, body);
-    return this.update(id, { ...body, job_number: job_number?._id });
+    const response = await this.onConfirmProjectRequest(id, body, req.user);
+    if (response) {
+      await this.onIssueProjectRequest(id, body);
+      return this.update(id, { ...body, job_number: job_number?._id });
+    } else {
+      return
+    }
   }
 
   @Get(':id')
@@ -137,9 +141,9 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
         project_request: project_request_id,
       })
       .populate([
-        'bin',
         {
           path: 'bin_configure',
+          match:{deletedAt: null},
           populate: [
             { path: 'bin', populate: ['cluster', 'shelf'] },
             { path: 'spare' },
@@ -152,9 +156,9 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
   @Get('/issues/:id')
   async getIssueItem(@Param('id') id: string) {
     const issue = await this.issueModel.findOne({ _id: id }).populate([
-      'bin',
       {
         path: 'bin_configure',
+        match:{deletedAt: null},
         populate: [
           { path: 'bin', populate: ['cluster', 'shelf'] },
           { path: 'spare' },

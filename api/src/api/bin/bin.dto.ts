@@ -190,6 +190,7 @@ export class BinCreate {
     type: [BinConfigureItemCreate],
   })
   @IsArray()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => BinConfigureItemCreate)
   bin_configures: BinConfigureItemCreate[];

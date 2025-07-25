@@ -1,6 +1,13 @@
 <template>
   <div>
-    <el-table :data="bins" class="custom-table" border style="margin-top: 16px;">
+    <div style="display: flex;justify-content: space-between;">
+      <div class="left">
+      </div>
+      <div class="right">
+        <el-input v-model="search_text" style="width: 240px" placeholder="Search Item name..." :suffix-icon="Search"  @input="onInputSearch" />
+      </div>
+    </div>
+    <el-table :data="bins" class="custom-table" border style="margin-top: 16px;" v-loading="isLoading">
       <el-table-column type="index" label="No." width="57" />
       <el-table-column prop="cluster.name" label="Cluster" />
       <el-table-column prop="shelf.name" label="Cabinet" />
@@ -24,26 +31,41 @@
       </el-table-column>
       <el-table-column label="Is Drawer">
         <template #default="{ row }">
-          <el-button :type="row.is_drawer ? 'success' : 'danger'" :icon="row.is_drawer ? Check : Delete" circle />
+          <el-button @click="updateItem(row, 'is_drawer')" :type="row.is_drawer ? 'success' : 'danger'"
+            :icon="row.is_drawer ? Check : Close" circle />
         </template>
       </el-table-column>
       <el-table-column label="Is Faulty">
         <template #default="{ row }">
-          <el-button :type="row.is_faulty ? 'success' : 'danger'" :icon="row.is_faulty ? Check : Delete" circle />
+          <el-button @click="updateItem(row, 'is_faulty')" :type="row.is_faulty ? 'success' : 'danger'"
+            :icon="row.is_faulty ? Check : Close" circle />
         </template>
       </el-table-column>
       <el-table-column label="Is Failed">
         <template #default="{ row }">
-          <el-button :type="row.is_failed ? 'success' : 'danger'" :icon="row.is_failed ? Check : Delete" circle />
+          <el-button @click="updateItem(row, 'is_failed')" :type="row.is_failed ? 'success' : 'danger'"
+            :icon="row.is_failed ? Check : Close" circle />
         </template>
       </el-table-column>
-      <el-table-column label="Action">
+      <el-table-column label="Action" width="100">
         <template #default="{ row }">
-          <el-button :icon="Edit" circle type="primary" @click="onEdit(row)" />
+          <div style="display: flex;">
+            <el-button :icon="Edit" circle type="primary" @click="onEdit(row)" />
+            <!-- <el-button :icon="Delete" circle type="danger" @click="onEdit(row)" /> -->
+          </div>
         </template>
       </el-table-column>
     </el-table>
-    <BinConfigureDialog v-model="showDialog" :bin="selectedBin" />
+    <div v-if="response">
+      <AppPagination
+        :limit="params.limit"
+        :page="params.page"
+        :total-items="response?.total"
+        :total-pages="response?.totalPages"
+        @current-change="(page) => params.page = page"
+      />
+    </div>
+    <BinConfigureDialog v-model="showDialog" :bin="selectedBin" @refetch-bins="refetch" />
   </div>
 </template>
 
@@ -51,23 +73,29 @@
 import { BinApi } from '@/api';
 import { useQuery } from '@tanstack/vue-query';
 import { computed, reactive, ref } from 'vue';
-import { Check, Delete, Edit } from '@element-plus/icons-vue';
+import { Check, Edit, Close, Search } from '@element-plus/icons-vue';
 import BinConfigureDialog from './BinConfigureDialog.vue';
+import { ElMessage } from 'element-plus';
+import AppPagination from '@/components/common/AppPagination.vue';
+import {debounce} from 'lodash';
 
 
 const params = reactive({
   page: 1,
-  limit: 15,
-  sort: '-createdAt'
+  limit: 10,
+  sort: '-createdAt',
+  search:null
 });
 
-const { data } = useQuery({
-  queryKey: ['bins', params],
-  queryFn: () => BinApi.getBins(params)
+const search_text = ref();
+const { data, refetch, isLoading } = useQuery({
+  queryKey: computed(() => ['spares', { ...params }]),
+  queryFn: () => BinApi.getBins({ ...params })
 });
-
 const response = computed(() => data.value?.data);
 const bins = computed(() => response?.value?.list || []);
+const onInputSearch = debounce((val) => { params.search = val }, 800);
+
 
 const renderItemName = (bin_configures = []) => {
   return bin_configures.map(item => item?.spare?.name).filter(Boolean).join(', ');
@@ -85,6 +113,15 @@ const showDialog = ref(false)
 const onEdit = (row) => {
   selectedBin.value = row
   showDialog.value = true
+}
+
+const updateItem = (row, key) => {
+  row[key] = !row[key];
+  BinApi.updateBin(row._id, {
+    [key]: row[key]
+  })
+    .then(() => ElMessage.success('Update success'))
+    .catch(() => { ElMessage.error('Update error'); refetch() })
 }
 
 </script>

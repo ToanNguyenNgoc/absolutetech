@@ -70,13 +70,6 @@
             {{ renderLocation(row.bin_configure?.bin) }}
           </template>
         </el-table-column>
-        <!-- <el-table-column prop="date_request" label="Location">
-          <template #default="{ row }">
-            <el-select placeholder="Location" size="large" style="width: 100%;" v-model="row.bin._id">
-              <el-option v-for="item in bins" :key="item._id" :label="renderLocation(item)" :value="item._id" />
-            </el-select>
-          </template>
-        </el-table-column> -->
         <el-table-column prop="issue_to.full_name" label="Issue To" />
         <el-table-column prop="returned" label="Issue/Return/WriteOff" />
         <el-table-column label="Action">
@@ -188,7 +181,8 @@ const onIssue = () => {
 
 //
 const renderLocation = (bin) => {
-  return `${bin.cluster?.name} - ${bin.shelf?.name} - ${bin.row} - ${bin.bin}`
+  if(!bin) return;
+  return `${bin?.cluster?.name} - ${bin?.shelf?.name} - ${bin?.row} - ${bin?.bin}`
 }
 const raw_issues = ref([]);
 const { refetch, isLoading } = useQuery({
@@ -198,7 +192,6 @@ const { refetch, isLoading } = useQuery({
     raw_issues.value = (data?.data || []).map(item => ({
       ...item,
       bin_configure: item.bin_configure || {},
-      bin: item.bin || {}
     }))
   }
 });

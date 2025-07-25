@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Model, FilterQuery, PipelineStage } from 'mongoose';
 import { buildMongoQuery } from './query-builder.util';
+import { sanitizePopulate } from 'src/helpers';
 
 interface SearchParams {
   search?: string;
@@ -120,6 +121,18 @@ export class BaseService<T> {
       }
     }
 
+    const sanitizedPopulate = populate ? sanitizePopulate(populate) : undefined;
+
+    if (sanitizedPopulate) {
+      if (Array.isArray(sanitizedPopulate)) {
+        sanitizedPopulate.forEach((field) => {
+          mongooseQuery = mongooseQuery.populate(field);
+        });
+      } else {
+        mongooseQuery = mongooseQuery.populate(sanitizedPopulate);
+      }
+    }
+
     if (isVirtuals) {
       // @ts-ignore
       mongooseQuery = mongooseQuery.lean({ virtuals: true });
@@ -138,7 +151,7 @@ export class BaseService<T> {
         }),
       );
     }
-    const total = data.length;
+    const total = await this.model.countDocuments(query).exec();
     return {
       list: data,
       total,
@@ -148,7 +161,13 @@ export class BaseService<T> {
     };
   }
 
-  async findWithAggregate(params: SearchParams): Promise<{ list: T[]; total: number; page: number; limit: number; totalPages: number; }> {
+  async findWithAggregate(params: SearchParams): Promise<{
+    list: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const {
       search,
       searchFields = [],
@@ -156,13 +175,21 @@ export class BaseService<T> {
       filters = {},
       sort = '-createdAt',
       includeDeleted = false,
+      page = 1,
+      limit = 15,
     } = params;
 
+    const parsedPage = Number(page);
+    const parsedLimit = Number(limit);
+
+    // Match stage: default filter + deleted
     const matchStage: Record<string, any> = {
-      ...(includeDeleted ? {} : { deleted_at: null }),
       ...filters,
+      ...(includeDeleted ? {} : { deleted_at: null }),
     };
+
     pipeline.push({ $match: matchStage });
+
     if (search && searchFields.length) {
       const regex = new RegExp(search, 'i');
       pipeline.push({
@@ -173,29 +200,33 @@ export class BaseService<T> {
         },
       });
     }
-    // $sort
+
+
     const sortField = sort.replace(/^-/, '');
     const sortOrder = sort.startsWith('-') ? -1 : 1;
     pipeline.push({ $sort: { [sortField]: sortOrder } });
-    // $facet for pagination
-    const page = Number(params.page || 1);
-    const limit = Number(params.limit || 15);
+
     pipeline.push({
       $facet: {
-        list: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        list: [
+          { $skip: (parsedPage - 1) * parsedLimit },
+          { $limit: parsedLimit },
+        ],
         total: [{ $count: 'count' }],
       },
     });
-    //
+
     const result = await this.model.aggregate(pipeline).exec();
     const list = result[0]?.list || [];
-    const total = result[0]?.total[0]?.count || 0;
+    const total = result[0]?.total?.[0]?.count || 0;
+
     return {
       list,
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      page: parsedPage,
+      limit: parsedLimit,
+      totalPages: Math.ceil(total / parsedLimit),
     };
   }
+
 }
