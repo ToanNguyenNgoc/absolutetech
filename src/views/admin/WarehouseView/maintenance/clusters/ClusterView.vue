@@ -24,24 +24,16 @@
 </template>
 
 <script setup>
-import { ClusterApi } from '@/api';
-import { useQuery } from '@tanstack/vue-query';
-import { computed } from 'vue';
 import { Check, Delete } from '@element-plus/icons-vue'
+import { useGetClusters } from '@/hooks';
+import { reactive } from 'vue';
 
 
-const params = {
+const params = reactive({
   page: 1,
-  limit: 15
-}
-
-const { data } = useQuery({
-  queryKey: ['clusters', params],
-  queryFn: () => ClusterApi.get(params)
-});
-
-const response = computed(() => data.value?.data);
-const clusters = computed(() => response.value?.list || []);
-console.log(response, clusters);
+  limit: 15,
+  sort:'-createdAt'
+})
+const {clusters} = useGetClusters(params)
 
 </script>

@@ -20,6 +20,9 @@ import {
   ShelfModel,
 } from 'src/models';
 import { ShelfCreate, ShelfQr } from './shelf.dto';
+import { Utils } from 'src/utils/utils';
+import { ObjectId } from 'mongodb';
+import { omit } from 'lodash';
 
 @Controller('api/shelfs')
 @Injectable()
@@ -35,13 +38,21 @@ export class ShelfController extends BaseService<ShelfDocument> {
 
   @Get()
   async get(@Query() qr: ShelfQr) {
-    return this.findAll({
+    let queryMatch = Utils.cleanQuery(qr) as any;
+    if (qr.cluster) {
+      delete queryMatch.cluster
+      queryMatch = { ...queryMatch, 'cluster._id': new ObjectId(qr.cluster) }
+    }
+    return this.findWithAggregate({
       page: qr.page,
       limit: qr.limit,
-      includeDeleted: false,
-      sort: qr.sort,
-      populate:['cluster']
-    });
+      pipeline: [
+        { $lookup: { from: 'clusters', localField: 'cluster', foreignField: '_id', as: 'cluster' } },
+        { $unwind: { path: '$cluster', preserveNullAndEmptyArrays: true } },
+        { $match: queryMatch }
+      ],
+      sort: qr.sort
+    })
   }
 
   @Post()
@@ -65,7 +76,7 @@ export class ShelfController extends BaseService<ShelfDocument> {
     return this.softDelete(id);
   }
 
-  async getCluster(id?: string):Promise<any> {
+  async getCluster(id?: string): Promise<any> {
     if (!id) return null;
     const cluster = await this.clusterModel.findById(id);
     if (!cluster) return null;

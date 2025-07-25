@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import moment from 'moment';
 
 export const formatDate = (dateStr) => {
@@ -92,4 +93,16 @@ export class AppConfirm {
 }
 
 
-export const getIndexTable = (page = 1, limit = 1, $index = 1) => ((page - 1) * limit) + ($index + 1)
+export const getIndexTable = (page = 1, limit = 1, $index = 1) => ((page - 1) * limit) + ($index + 1);
+
+export const removeNullUn = (obj) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, value]) =>
+        value !== null &&
+        value !== undefined &&
+        typeof value === 'string' &&
+        value.trim() !== '',
+    ),
+  );
+}

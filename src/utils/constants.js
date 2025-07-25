@@ -19,3 +19,9 @@ export const PROJECT_REQUEST_STATUS = {
 export const TRANSACTION_TYPE = {
   ISSUE: { value: 'issue', name: 'issue' }
 }
+
+export const BIN_STATUSES = {
+  UNASSIGNED: { value: 'unassigned', name: 'Unassigned' },
+  ASSIGNED: { value: 'assigned', name: 'Assigned' },
+  IS_FAILED: { value: 'is_failed', name: 'Is Failed' },
+}

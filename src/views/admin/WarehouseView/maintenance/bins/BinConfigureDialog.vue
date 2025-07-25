@@ -139,7 +139,7 @@
 
 <script setup>
 import { useGetSpares } from '@/hooks';
-import { computed, onMounted, ref, onUnmounted } from 'vue';
+import { computed, onMounted, ref, onUnmounted, watch } from 'vue';
 import { Check, Delete, Plus } from '@element-plus/icons-vue'
 import { AppLoading } from '@/utils/common';
 import { BinApi } from '@/api';
@@ -175,7 +175,14 @@ onUnmounted(() => {
 //
 const bin = computed(() => props.bin);
 const { spares } = useGetSpares({ limit: 1000 });
-const binConfigures = ref(computed(() => props.bin?.bin_configures.map(i => ({ ...i, spare: i.spare || {} })) || []));
+const binConfigures = ref([]);
+watch(
+  () => props.bin?.bin_configures,
+  (newVal) => {
+    binConfigures.value = (newVal || []).map(i => ({ ...i, spare: i.spare || {} }));
+  },
+  { immediate: true, deep: true }
+);
 
 const onItemNameChange = (row) => {
   const selected = spares.value.find(

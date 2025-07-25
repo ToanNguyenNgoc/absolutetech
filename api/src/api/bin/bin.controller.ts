@@ -30,6 +30,9 @@ import {
 import { BinCreate, BinQr } from './bin.dto';
 import { User, UserDocument } from 'src/user/user.schema';
 import { BinConfigureModule } from '../bin-configure/bin-configure.module';
+import { Utils } from 'src/utils/utils';
+import {omit} from 'lodash';
+import { ObjectId } from 'mongodb';
 
 @Controller('api/bins')
 @Injectable()
@@ -52,16 +55,26 @@ export class BinController extends BaseService<BinDocument> {
   }
   @Get()
   get(@Query() qr: BinQr) {
+    let queryMatch = Utils.cleanQuery(qr) as any;
+    if (qr.cluster) {
+      queryMatch = { ...queryMatch, 'cluster._id': new ObjectId(qr.cluster) };
+      delete queryMatch.cluster;
+    }
+    if(qr.shelf){
+      queryMatch = {...queryMatch, 'shelf._id': new ObjectId(qr.shelf)};
+      delete queryMatch.shelf;
+    }
     return this.findWithAggregate({
       page: qr.page,
       limit: qr.limit,
-      search:qr.search,
-      searchFields:['bin_configures.spare.name'],
+      search: qr.search,
+      searchFields: ['bin_configures.spare.name'],
       pipeline: [
         { $lookup: { from: 'clusters', localField: 'cluster', foreignField: '_id', as: 'cluster', } },
         { $unwind: { path: '$cluster', preserveNullAndEmptyArrays: true } },
         { $lookup: { from: 'shelfs', localField: 'shelf', foreignField: '_id', as: 'shelf' } },
         { $unwind: { path: '$shelf', preserveNullAndEmptyArrays: true } },
+        { $match: queryMatch },
         {
           $lookup: {
             from: 'bin_configures',

@@ -1,5 +1,6 @@
 import { getCookie } from "@/utils/cookie";
 import axios from "axios";
+import queryString from "query-string";
 
 // export const baseURL = process.env.VUE_APP_API_URL
 //   ? `${process.env.VUE_APP_API_URL}/api`
@@ -9,6 +10,11 @@ export const baseURL = "http://localhost:7891/api";
 
 const instance = axios.create({
   baseURL,
+  paramsSerializer: {
+    encode: () => { },
+    serialize: (params) => queryString.stringify(params),
+    indexes: false,
+  },
 });
 
 instance.interceptors.request.use(
