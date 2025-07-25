@@ -12,13 +12,6 @@ export class BinConfigureModel {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'BinModel',
   })
-  bin_origin: mongoose.Types.ObjectId;
-
-  @Prop({
-    required: false,
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'BinModel',
-  })
   bin: mongoose.Types.ObjectId;
 
   @Prop({
@@ -88,9 +81,6 @@ export class BinConfigureModel {
   @Prop({ required: false, default: null })
   expiry_date: Date;
 
-  @Prop({ required: false })
-  load_hydrostatic_test_due: Date;
-
   @Prop({ type: Date, default: null })
   deletedAt?: Date;
 }
@@ -110,10 +100,6 @@ BinConfigureSchema.virtual('id').get(function () {
   return this._id?.toString?.() ?? null;
 });
 
-BinConfigureSchema.virtual('bin_origin_id').get(function () {
-  return this.bin_origin?._id?.toString?.() ?? null;
-});
-
 BinConfigureSchema.virtual('bin_id').get(function () {
   return this.bin?._id?.toString?.() ?? null;
 });
@@ -125,7 +111,6 @@ BinConfigureSchema.virtual('spare_id').get(function () {
 BinConfigureSchema.statics.getSyncColumns = function () {
   return [
     'id',
-    'bin_origin_id',
     'bin_id',
     'spare_id',
     'critical',

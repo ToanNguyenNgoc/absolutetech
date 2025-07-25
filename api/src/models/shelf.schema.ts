@@ -57,6 +57,7 @@ ShelfSchema.statics.getSyncColumns = function () {
     'id',
     'type',
     'name',
+    'cluster_id',
     'num_rows',
     'num_bin',
     'createdAt',

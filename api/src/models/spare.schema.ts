@@ -96,6 +96,7 @@ SpareSchema.statics.getSyncColumns = function () {
     'material_no',
     'location',
     'supplier_email',
+    'type',
     'mat_grp',
     'critical',
     'description',

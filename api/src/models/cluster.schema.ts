@@ -18,6 +18,9 @@ export class ClusterModel {
   @Prop({ required: false, default: true })
   status: boolean;
 
+  @Prop({ required: false, default: true })
+  is_online: boolean;
+
   @Prop({ type: Boolean, default: false })
   is_rfid: boolean;
 
@@ -45,7 +48,7 @@ ClusterSchema.statics.getSyncColumns = function () {
   return [
     'id',
     'name',
-    'status',
+    'is_online',
     'is_rfid',
     'is_virtual',
     'createdAt',
