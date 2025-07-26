@@ -20,9 +20,6 @@
     <el-select v-model="modelValueIsDrawer" placeholder="Is Drawer" style="width: 120px; margin-right: 6px;">
       <el-option v-for="item in boolean_list" :key="item" :label="item.name" :value="item.value" />
     </el-select>
-    <el-select v-model="modelValueIsDrawer" placeholder="Is Drawer" style="width: 120px">
-      <el-option v-for="item in boolean_list" :key="item" :label="item.name" :value="item.value" />
-    </el-select>
   </div>
 </template>
 

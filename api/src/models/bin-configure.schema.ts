@@ -145,3 +145,16 @@ BinConfigureSchema.statics.getSyncColumns = function () {
 BinConfigureSchema.virtual('id').get(function () {
   return this._id.toString();
 });
+// Soft delete middleware
+BinConfigureSchema.pre(
+  ['find', 'findOne', 'findOneAndUpdate'],
+  function (next) {
+    this.where({ deletedAt: null }); // Only return non-deleted documents
+    next();
+  },
+);
+
+// Method to soft delete a bin configure
+BinConfigureSchema.statics.softDelete = async function (id: string) {
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
+};
