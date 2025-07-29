@@ -147,7 +147,7 @@ const fetchData = async () => {
     try {
         const res = await getTimesheetDetail(route.params.id)
         timesheet.value = res.data?.data
-        jobnumber.value = res.data?.data.jobnumber
+        jobnumber.value = res.data?.data.jobnumber || {},
         supervisorName.value = res.data?.data.office_supervisor?.full_name
         clientSignature.value = res.data?.data.client_signature
     } catch (e) {

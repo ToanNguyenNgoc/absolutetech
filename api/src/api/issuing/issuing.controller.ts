@@ -66,9 +66,12 @@ export class IssuingController {
       dataTransactionIssues.push({
         issue: dbIssue._id,
         bin_configure: dbIssue.bin_configure,
-        quantity: dbIssue.quantity_request,
-        changed_qty: -quantity_issue,
-        current_qty: dbIssue.quantity_request - quantity_issue
+        // quantity: dbIssue.quantity_request,
+        // changed_qty: -quantity_issue,
+        // current_qty: dbIssue.quantity_request - quantity_issue
+        quantity: quantity_issue,
+        changed_qty: dbIssue.quantity_request - quantity_issue,
+        current_qty: dbIssue.quantity_request
       })
     }
     //[START]: transactions

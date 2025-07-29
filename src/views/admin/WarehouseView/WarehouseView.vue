@@ -5,13 +5,13 @@
 
             <div class="menu-grid">
                 <MenuCard title="Issue" icon="🟢" to="/admin/issues" />
-            <!-- <MenuCard title="Return" icon="🔙" />
+                <!-- <MenuCard title="Return" icon="🔙" />
             <MenuCard title="Replenish" icon="📦" />
             <MenuCard title="Physical" icon="📝" />
-            <MenuCard title="Transactions" icon="📄" />
             <MenuCard title="Notifications" icon="🔔" /> -->
                 <MenuCard title="Configure Items / Locations" icon="📦" to="/admin/maintenance/clusters" />
                 <MenuCard title="Project Request" icon="🔃" to="/admin/project-request" />
+                <MenuCard title="Transactions" icon="📄" to="/admin/transactions" />
             </div>
         </div>
     </PageContainer>

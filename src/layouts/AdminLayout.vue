@@ -108,6 +108,15 @@
                                 <span class="icon-menu-expand" v-show="isExpanded">Warehouse</span>
                             </router-link>
                         </li>
+                        <li>
+                            <router-link class="menu-link" to="/admin/log/sync-data-logs">
+                                <img src="@/assets/entry-log.svg" alt="warehouse"
+                                    v-if="!isRouteActive('log')" />
+                                <img src="@/assets/entry-log-active.svg" alt="warehouse"
+                                    v-if="isRouteActive('log')" />
+                                <span class="icon-menu-expand" v-show="isExpanded">Logs</span>
+                            </router-link>
+                        </li>
                         <!-- <li>
                             <a class="menu-link" @click="redirectToSourceB">
                                 <img src="@/assets/img/warehouse.svg" alt="warehouse"

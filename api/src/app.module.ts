@@ -7,7 +7,6 @@ import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { EntryLogModule } from './entry-log/entry-log.module';
-import { FrontendMiddleware } from './frontend.middleware';
 import { JobNumberModule } from './job-number/job-number.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { SyncDataModule } from './sync-data/sync-data.module';
@@ -20,6 +19,11 @@ import { GatewayModule } from './gateway/gateway.module';
 import { BullModule } from '@nestjs/bull';
 import { bullConfig } from './configs';
 import { ApiModule } from './api/api.module';
+import { FrontendMiddleware, LogRequestMiddleware } from './middlewares';
+import { QUEUE_NAME } from './constants';
+import { LogRequestConsumers } from './consumers/log-request.consumer';
+import { RequestLogModel, RequestLogSchema } from './models';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -51,18 +55,20 @@ import { ApiModule } from './api/api.module';
     SyncDataModule,
     TimesheetModule,
     TimesheetDetailModule,
-
     ApiModule,
-
     //Socket gateway
     GatewayModule,
+    BullModule.registerQueue({ name: QUEUE_NAME.log_request }),
+    MongooseModule.forFeature([
+      { name: RequestLogModel.name, schema: RequestLogSchema },
+    ]),
   ],
 
   controllers: [UploadController],
-  providers: [],
+  providers: [LogRequestConsumers, JwtService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(FrontendMiddleware).forRoutes('*');
+    consumer.apply(FrontendMiddleware, LogRequestMiddleware).forRoutes('*');
   }
 }

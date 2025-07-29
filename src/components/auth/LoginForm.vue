@@ -27,10 +27,14 @@
                         </p>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="login-button" :disabled="!isFormValid"
-                            :aria-disabled="!isFormValid" :loading="loading">
+                        <el-button 
+                            :loading="loading"
+                            :disabled="!isFormValid" size="large" 
+                            native-type="submit" type="primary"
+                            style="width: 100%;"
+                        >
                             Login
-                        </button>
+                        </el-button>
                     </div>
                 </div>
             </form>
@@ -107,7 +111,7 @@ export default {
                 const response = await login(credentials);
                 const token = response.data.data.access_token;
                 setCookie('access_token', token, 86400);
-                this.$router.push('/admin/users');
+                this.$router.push('/admin/dashboard');
             } catch (error) {
                 if (error.response && error.response.data) {
                     const serverErrors = error.response.data.errors || [];

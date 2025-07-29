@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable no-empty */
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-base-to-string */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// job-number.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JobNumber, JobNumberDocument } from './schemas/job-number.schema';
 import { CreateJobNumberDto } from './dto/create-job-number.dto';
-import { paginate } from 'src/common/pagination.util';
 import { FileUpload, FileUploadDocument } from './schemas/file-upload.schema';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -49,17 +50,14 @@ export class JobNumberService extends BaseService<JobNumberDocument> {
             name: doc.name,
             job_number: jobNumber._id,
           });
-
-          if (doc.fileIds?.length) {
-            await this.fileUploadModel.updateMany(
-              { _id: { $in: doc.fileIds } },
-              {
-                ref_id: newDocument._id,
-                ref_model: 'DocumentEntity',
-                is_temp: false,
-              },
-            );
-          }
+          await this.fileUploadModel.updateMany(
+            { _id: { $in: doc.fileIds } },
+            {
+              ref_id: newDocument._id,
+              ref_model: 'DocumentEntity',
+              is_temp: false,
+            },
+          );
         }
       }
 
@@ -70,7 +68,7 @@ export class JobNumberService extends BaseService<JobNumberDocument> {
     }
   }
 
-  async getDetailById(id: string) {
+  async getDetailById(id: string, query: any) {
     const jobNumber = await this.jobNumberModel
       .findById(id)
       .populate('assigned_to')
@@ -83,11 +81,17 @@ export class JobNumberService extends BaseService<JobNumberDocument> {
         },
       })
       .exec();
-
     if (!jobNumber) {
       throw new NotFoundException('Job Number not found');
     }
-    return jobNumber;
+    let duplicate;
+    if (query?.gen_duplicate) {
+      duplicate = await this.genDuplicateData(jobNumber);
+    }
+    return {
+      ...jobNumber.toObject?.({ virtuals: true }) ?? jobNumber,
+      duplicate,
+    };
   }
 
   async findAllPaginated(qr: JobNumberQr) {
@@ -115,6 +119,7 @@ export class JobNumberService extends BaseService<JobNumberDocument> {
   }
 
   async handleFileUpload(file: Express.Multer.File) {
+    console.log('RUN', file);
     const newFile = new this.fileUploadModel({
       name: file.originalname,
       url: `uploads/job-files/${file.filename}`,
@@ -272,4 +277,51 @@ export class JobNumberService extends BaseService<JobNumberDocument> {
 
     return { message: 'Job Number updated successfully' };
   }
+
+  async genDuplicateData(jobNumber) {
+    const prefixCode = (jobNumber.code || 'JNCODE').split('-')[0];
+    let duplicate_code = `${prefixCode}-${new Date().getTime()}`
+    try {
+      const jobNumbers = await (this.jobNumberModel.find({ code: { $regex: `${prefixCode}-` } }).select(['code']));
+      const codes = jobNumbers.map(i => ({ code: i.code, index: Number(i.code.split('-')[1] || 0) })).sort((a, b) => b.index - a.index);
+      const lastIndex = codes[0]?.index || 0;
+      duplicate_code = `${prefixCode}-${lastIndex + 1}`
+    } catch (_error) { }
+    const duplicate_documents: any[] = [];
+    const documents = jobNumber?.documents || [];
+    for (let i = 0; i < documents.length; i++) {
+      const files = [] as any;
+      const origin_files = documents[i].files || [];
+      for (let iFile = 0; iFile < origin_files.length; iFile++) {
+        try {
+          const file = await this.copyFileRecordAndStorage(origin_files[iFile]);
+          files.push(file);
+        } catch (error) { }
+      }
+      duplicate_documents.push({
+        name: documents[i].name,
+        files,
+      })
+    }
+    return {
+      duplicate_code,
+      duplicate_documents
+    }
+  }
+
+  async copyFileRecordAndStorage(originalFile: any) {
+    const newFileRecord = await this.fileUploadModel.create({
+      name: originalFile.name,
+      url: originalFile.url,
+      original_url: originalFile.original_url,
+      size: originalFile.size,
+      extension: originalFile.extension,
+      mime_type: originalFile.mime_type,
+      type: originalFile.type,
+      is_deleted: false,
+      is_temp: false,
+    });
+    return newFileRecord;
+  }
+
 }

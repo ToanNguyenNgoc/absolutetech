@@ -81,7 +81,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
 
   @Post()
   async post(@Body() body: ProjectRequestCreate) {
-    const job_number = await this.getJobNumber(body.job_number);
+    const job_number = await this.getJobNumber(body.job_number, body.client);
     //@ts-ignore
     if (job_number.project_request)
       throw new BadRequestException(
@@ -101,7 +101,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
   ) {
     let job_number: any = undefined;
     if (body.project_name) {
-      job_number = await this.getJobNumber(body.job_number);
+      job_number = await this.getJobNumber(body.job_number, body.client);
       if (
         job_number &&
         job_number.project_request &&
@@ -180,10 +180,9 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
   }
 
   //
-  async getJobNumber(id): Promise<JobNumberDocument> {
+  async getJobNumber(id, client): Promise<JobNumberDocument> {
     const job_number = await this.jobNumberModel
-      .findOne({ _id: id })
-      .populate('project_request');
+      .findByIdAndUpdate(id, { client }, { new: true }).populate('project_request')
     if (!job_number) throw new NotFoundException('JobNumber is not exist');
     return job_number;
   }
@@ -205,16 +204,20 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
     body: ProjectRequestCreate,
     user: any,
   ) {
-    if (body.status !== ProjectRequestModel.PJ_STATUS_IN_PROCESS) return;
+    if (body.status !== ProjectRequestModel.PJ_STATUS_IN_PROGRESS) return;
     const projectRequest = await this.projectRequestModel.findById(id);
     if (!projectRequest) return;
     if (projectRequest.confirmed_by) throw new BadRequestException('Project request is confirmed');
-    if ((!projectRequest.status || projectRequest.status === ProjectRequestModel.PJ_STATUS_NEW)) {
-      return this.projectRequestModel.findByIdAndUpdate(id, {
-        confirmed_by: user.userId,
-        status: ProjectRequestModel.PJ_STATUS_IN_PROCESS,
-      });
-    }
+    // if ((!projectRequest.status || projectRequest.status === ProjectRequestModel.PJ_STATUS_NEW)) {
+    //   return this.projectRequestModel.findByIdAndUpdate(id, {
+    //     confirmed_by: user.userId,
+    //     status: ProjectRequestModel.PJ_STATUS_IN_PROGRESS,
+    //   });
+    // }
+    return this.projectRequestModel.findByIdAndUpdate(id, {
+      confirmed_by: user.userId,
+      status: ProjectRequestModel.PJ_STATUS_IN_PROGRESS,
+    });
   }
 
   async onIssueProjectRequest(id: string, body: ProjectRequestCreate) {

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   BadRequestException,
   Injectable,
@@ -8,7 +9,7 @@ import { Model } from 'mongoose';
 import { Timesheet } from './timesheet.schema';
 import { TimesheetDetail } from '../timesheet-detail/timesheet-detail.schema';
 import { paginate } from 'src/common/pagination.util';
-import { Types } from 'mongoose';
+import { UpdateTimesheetDetailsDto } from './dto/update-timesheet-details.dto';
 
 @Injectable()
 export class TimesheetService {
@@ -137,8 +138,15 @@ export class TimesheetService {
     };
   }
 
-  async updateTimesheetDetails(timesheetId: string, details: any[]) {
-    const timesheet = await this.timesheetModel.findById(timesheetId);
+  async updateTimesheetDetails(
+    timesheetId: string,
+    body: UpdateTimesheetDetailsDto,
+  ) {
+    const details = body.details || [];
+    const timesheet = await this.timesheetModel.findByIdAndUpdate(timesheetId, {
+      office_supervisor_id: body.office_supervisor_id ? body.office_supervisor_id : undefined,
+      date_time: body.date_time ? body.date_time : undefined,
+    })
     if (!timesheet) {
       throw new NotFoundException('Timesheet not found.');
     }
@@ -191,11 +199,11 @@ export class TimesheetService {
       );
     }
 
-    if (timesheet.status === 'approve') {
+    if (timesheet.status === Timesheet.STATUS.APPROVE) {
       throw new BadRequestException('Timesheet is already approve.');
     }
 
-    timesheet.status = 'approve';
+    timesheet.status = Timesheet.STATUS.APPROVE;
     await timesheet.save();
     return this.getDetailWithDetails(timesheetId);
   }
@@ -207,11 +215,11 @@ export class TimesheetService {
       throw new NotFoundException('Timesheet not found.');
     }
 
-    if (timesheet.status != 'approve') {
+    if (timesheet.status != Timesheet.STATUS.APPROVE) {
       throw new BadRequestException('Timesheet is not approve yet.');
     }
 
-    timesheet.status = 'close';
+    timesheet.status = Timesheet.STATUS.CLOSED;
     await timesheet.save();
     return this.getDetailWithDetails(timesheetId);
   }
@@ -223,8 +231,8 @@ export class TimesheetService {
       throw new NotFoundException('Timesheet not found.');
     }
 
-    if (timesheet.status == 'close') {
-      timesheet.status = 'reopen';
+    if (timesheet.status == Timesheet.STATUS.CLOSED) {
+      timesheet.status = Timesheet.STATUS.REOPEN;
       await timesheet.save();
       return this.getDetailWithDetails(timesheetId);
     }

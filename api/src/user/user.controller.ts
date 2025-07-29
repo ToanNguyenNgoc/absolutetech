@@ -73,8 +73,9 @@ export class UserController {
   async findAllPaginated(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('roles') roles: string,
   ) {
-    return this.userService.findAllPaginated(page, limit);
+    return this.userService.findAllPaginated(page, limit, roles);
   }
 
   @Put(':id')
@@ -119,7 +120,7 @@ export class UserController {
   @Get('export')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async exportUsers(@Res() res: Response) {
-    const users = await this.userService.findAll();
+    const users = await this.userService.findAllUser();
 
     const exportUsers = users.map((user: any) => {
       const obj = typeof user.toObject === 'function' ? user.toObject() : user;

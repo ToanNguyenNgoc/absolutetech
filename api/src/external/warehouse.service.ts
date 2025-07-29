@@ -79,7 +79,7 @@ export class WarehouseService {
         'Laravel Sync User Error:',
         error.response?.data || error.message,
       );
-      throw new InternalServerErrorException('Failed to sync user to Laravel');
+      // throw new InternalServerErrorException('Failed to sync user to Laravel');
     }
   }
 }

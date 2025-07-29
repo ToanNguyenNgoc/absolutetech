@@ -15,7 +15,7 @@ export class FileUpload {
   @Prop({ required: true })
   url: string;
 
-  @Prop({ required: true })
+  @Prop()
   original_url: string;
 
   @Prop()

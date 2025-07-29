@@ -8,4 +8,6 @@ export * from './useGetShelfs';
 export * from './useGetSpares';
 export * from './useGetUsers';
 export * from './useGetProjectRequests';
+export * from './useGetSyncDataLogs';
+export * from './useGetTransactions';
 export * from './useWindowResize';

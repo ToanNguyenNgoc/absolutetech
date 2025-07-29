@@ -1,9 +1,7 @@
 import axiosInstance from "./axios";
 
-export function getUsers(page, limit) {
-  return axiosInstance.get("/users", {
-    params: { page, limit },
-  });
+export function getUsers(params) {
+  return axiosInstance.get("/users", {params});
 }
 
 export function createUser(payload) {

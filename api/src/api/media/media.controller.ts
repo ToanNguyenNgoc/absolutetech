@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Injectable,
@@ -29,6 +30,7 @@ import {
 } from 'src/job-number/schemas/file-upload.schema';
 import { Model } from 'mongoose';
 import { Response } from 'express';
+import { PostMediaFromUrl } from './media.dto';
 
 const validatorsFile = new ParseFilePipe({
   validators: [
@@ -88,6 +90,11 @@ export class MediaController {
       is_temp: false,
     });
     return response;
+  }
+
+  @Post('from_url')
+  async postFromUrl(@Body() { from_url }: PostMediaFromUrl) {
+    return from_url;
   }
 }
 

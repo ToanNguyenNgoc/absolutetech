@@ -48,7 +48,7 @@ export class ProjectRequestCreate {
 
   @ApiProperty({ default: ProjectRequestModel.PJ_STATUS_NEW })
   @IsOptional()
-  @IsIn([ProjectRequestModel.PJ_STATUS_IN_PROCESS, ProjectRequestModel.PJ_STATUS_ISSUE])
+  @IsIn([ProjectRequestModel.PJ_STATUS_IN_PROGRESS, ProjectRequestModel.PJ_STATUS_ISSUE])
   status: string;
 
 }

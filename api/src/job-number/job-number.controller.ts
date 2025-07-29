@@ -41,8 +41,8 @@ export class JobNumberController {
 
   @Get(':id')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
-  async getDetail(@Param('id') id: string) {
-    return this.jobNumberService.getDetailById(id);
+  async getDetail(@Param('id') id: string, @Query() query: any) {
+    return this.jobNumberService.getDetailById(id, query);
   }
 
   @Get()

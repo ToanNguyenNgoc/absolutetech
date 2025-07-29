@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsUniqueJobNumber } from '../validator/is-unique-job-number.decorator';
+import { ApiProperty } from '@nestjs/swagger';
 
 class CreateDocumentDto {
   @IsString()
@@ -63,4 +64,8 @@ export class CreateJobNumberDto {
   @ValidateNested({ each: true })
   @Type(() => CreateDocumentDto)
   documents: CreateDocumentDto[];
+
+  @ApiProperty()
+  @IsOptional()
+  duplicate_from_id: string;
 }

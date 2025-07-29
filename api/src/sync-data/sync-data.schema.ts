@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Schema({ collection: 'sync_data', timestamps: true })
 export class SyncData {
@@ -16,3 +17,4 @@ export class SyncData {
 }
 
 export const SyncDataSchema = SchemaFactory.createForClass(SyncData);
+export type SyncDataDocument = SyncData & Document & { _id: Types.ObjectId };

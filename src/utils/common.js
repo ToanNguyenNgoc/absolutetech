@@ -75,7 +75,7 @@ export class AppConfirm {
 
   static delete({ callback = () => null }) {
     return ElMessageBox.confirm(
-      '<p>Do you want to delete this item?</p> All related data will also be deleted.',
+      '<p>Do you want to delete this item?',
       'Delete Item',
       {
         confirmButtonText: 'Remove',
