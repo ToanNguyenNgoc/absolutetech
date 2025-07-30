@@ -320,6 +320,17 @@ export class UserService extends BaseService<UserDocument> {
       .exec();
   }
 
+  async findOneByUsernameOrEmail(search: string): Promise<User | null> {
+    return this.userModel
+      .findOne({
+        $or: [
+          { username: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+        ],
+      })
+      .exec();
+  }
+
   async updatePassword(userId: string, hashedPassword: string): Promise<User> {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       userId,

@@ -5,4 +5,5 @@ export * from './log';
 export * from './project-request';
 export * from './shelf';
 export * from './spare';
+export * from './statistic';
 export * from './transaction';

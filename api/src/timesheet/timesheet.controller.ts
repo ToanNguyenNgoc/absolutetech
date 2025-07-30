@@ -19,9 +19,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Timesheet, TimesheetDocument } from './timesheet.schema';
 import { BaseService } from 'src/common';
+import { NAME } from 'src/constants';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('api/timesheets')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth(NAME.JWT)
 @Injectable()
 export class TimesheetController extends BaseService<TimesheetDocument> {
   constructor(

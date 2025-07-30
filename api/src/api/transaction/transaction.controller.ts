@@ -7,10 +7,13 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { BaseService } from 'src/common';
 import { TransactionDocument, TransactionModel } from 'src/models';
 import { TransactionQr } from './transaction.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/transactions')
 @Injectable()
 @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth(NAME.JWT)
 export class TransactionController extends BaseService<TransactionDocument> {
   constructor(
     @InjectModel(TransactionModel.name)

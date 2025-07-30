@@ -13,6 +13,7 @@ import { IssuingModule } from './issuing/issuing.module';
 import { RequestLogModule } from './request-log/request-log.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { SyncDataLogModule } from './sync-data-log/sync-data-log.module';
+import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SyncDataLogModule } from './sync-data-log/sync-data-log.module';
     VehicleModule,
     MediaModule,
     RequestLogModule,
+    StatisticModule,
     SyncDataLogModule,
     TransactionModule,
   ],

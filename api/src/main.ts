@@ -56,7 +56,10 @@ async function bootstrap() {
   });
   //ADD: swagger
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs', app, document, customOptions);
+  SwaggerModule.setup('docs', app, document, {
+    ...customOptions,
+    swaggerOptions: { persistAuthorization: true },
+  });
 
   await app.listen(process.env.PORT ?? 3000);
   console.log('App run port: ', process.env.PORT ?? 3000);

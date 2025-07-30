@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -22,9 +23,13 @@ import {
 import { ShelfCreate, ShelfQr } from './shelf.dto';
 import { Utils } from 'src/utils/utils';
 import { ObjectId } from 'mongodb';
-import { omit } from 'lodash';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { NAME } from 'src/constants';
 
 @Controller('api/shelfs')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 @Injectable()
 export class ShelfController extends BaseService<ShelfDocument> {
   constructor(

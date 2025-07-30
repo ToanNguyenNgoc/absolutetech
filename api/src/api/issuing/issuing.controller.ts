@@ -21,10 +21,13 @@ import {
   JobNumberDocument,
 } from 'src/job-number/schemas/job-number.schema';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/issuing')
 @Injectable()
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 export class IssuingController {
   constructor(
     @InjectModel(BinConfigureModel.name)

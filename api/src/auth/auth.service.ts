@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { LoginDTO } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +28,10 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
+  async login(body: LoginDTO) {
+    const user = await this.userService.findOneByUsernameOrEmail(body.username);
+    if (!user) throw new UnauthorizedException();
+    //@ts-ignore
     const payload = { sub: user._id, username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),

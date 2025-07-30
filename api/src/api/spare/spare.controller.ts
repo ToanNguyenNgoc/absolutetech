@@ -14,8 +14,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { SpareService } from './spare.service';
 import { SpareCreate, SpareQr } from './spare.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/spares')
+@ApiBearerAuth(NAME.JWT)
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Injectable()
 export class SpareController {

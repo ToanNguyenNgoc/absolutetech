@@ -22,6 +22,11 @@ export const RoleName: { [key in Role]: string } = {
   [Role.FREELANCE]: 'Freelance',
 };
 
+export const RoleList = Object.entries(RoleName).map(([key, value]) => ({
+  id: Number(key),
+  name: value,
+}));
+
 export enum Gender {
   MALE = 'Male',
   FEMALE = 'Female',

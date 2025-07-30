@@ -41,10 +41,13 @@ import {
 } from 'src/job-number/schemas/job-number.schema';
 import { LogTransactionService } from 'src/shared/log-transaction/log-transaction.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/project-requests')
 @Injectable()
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 export class ProjectRequestController extends BaseService<ProjectRequestDocument> {
   constructor(
     @InjectModel(ProjectRequestModel.name)

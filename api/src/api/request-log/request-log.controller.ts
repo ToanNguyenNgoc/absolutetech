@@ -2,13 +2,15 @@ import { Controller, Get, Injectable, Query, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { BaseService } from 'src/common';
 import { RequestLogDocument, RequestLogModel } from 'src/models';
 import { RequestLogQr } from './request-log.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/logs')
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 @Injectable()
 export class RequestLogController extends BaseService<RequestLogDocument> {
   constructor(

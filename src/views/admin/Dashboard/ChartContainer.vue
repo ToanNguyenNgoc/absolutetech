@@ -42,4 +42,9 @@ defineProps({
   font-size: 14px;
   font-weight: 400;
 }
+@media (max-width: 768px) {
+  .wrapper{
+    height: 100%;
+  }
+}
 </style>

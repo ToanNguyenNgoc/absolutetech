@@ -19,8 +19,12 @@ import { UserService } from 'src/user/user.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
 import { WarehouseService } from 'src/external/warehouse.service';
+import { LoginDTO } from './dto/login.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('/api/auth')
+@ApiBearerAuth(NAME.JWT)
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -30,8 +34,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Body() body: LoginDTO) {
+    return this.authService.login(body);
   }
 
   @UseGuards(JwtAuthGuard)

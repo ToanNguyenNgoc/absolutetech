@@ -26,9 +26,12 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { UpdateJobNumberDto } from './dto/update-job-number.dto';
 import { JobNumberQr } from './dto/job-number-query.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('/api/job-numbers')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth(NAME.JWT)
 export class JobNumberController {
   constructor(private readonly jobNumberService: JobNumberService) {}
 
