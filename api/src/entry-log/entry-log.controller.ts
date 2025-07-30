@@ -7,9 +7,12 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/user/user.enums';
 import { convertToCSV } from 'src/common/csv.util';
 import { Response } from 'express';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/entry-logs')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth(NAME.JWT)
 export class EntryLogController {
   constructor(
     private readonly entryLogService: EntryLogService,

@@ -22,19 +22,14 @@ import PageContainer from '@/components/common/PageContainer.vue'
 const router = useRouter()
 const route = useRoute()
 
-// Sync tab with route
 const activeName = ref('')
 
-// Handle tab click → push route
 const handleClick = (tab) => {
   router.push(`/admin/maintenance/${tab.props.name}`)
 }
-
-// Watch route to update active tab
 watch(
   () => route.path,
   () => {
-    // parse last segment
     const segment = route.path.split('/').pop()
     activeName.value = segment
   },

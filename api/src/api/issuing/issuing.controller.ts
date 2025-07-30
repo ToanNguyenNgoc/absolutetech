@@ -21,10 +21,13 @@ import {
   JobNumberDocument,
 } from 'src/job-number/schemas/job-number.schema';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/issuing')
 @Injectable()
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 export class IssuingController {
   constructor(
     @InjectModel(BinConfigureModel.name)
@@ -66,9 +69,12 @@ export class IssuingController {
       dataTransactionIssues.push({
         issue: dbIssue._id,
         bin_configure: dbIssue.bin_configure,
-        quantity: dbIssue.quantity_request,
-        changed_qty: -quantity_issue,
-        current_qty: dbIssue.quantity_request - quantity_issue
+        // quantity: dbIssue.quantity_request,
+        // changed_qty: -quantity_issue,
+        // current_qty: dbIssue.quantity_request - quantity_issue
+        quantity: quantity_issue,
+        changed_qty: dbIssue.quantity_request - quantity_issue,
+        current_qty: dbIssue.quantity_request
       })
     }
     //[START]: transactions

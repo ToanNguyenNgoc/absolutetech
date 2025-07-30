@@ -18,8 +18,8 @@
           <div class="row-item">
             <label class="label">Job Number</label>
             <el-select v-model="job_number" placeholder="Select" size="large" style="width: 100%;"
-              :disabled="disable_form" class="custom-select">
-              <el-option v-for="item in job_numbers" :key="item._id" :label="item.code" :value="item._id" />
+              :disabled="disable_form" class="custom-select" @change="onChangeJobNumber">
+              <el-option v-for="item in job_numbers.filter(i => (!i.project_request || i.project_request?._id == id))" :key="item._id" :label="item.code" :value="item._id" />
             </el-select>
             <div class="error-text" v-if="errors.job_number">{{ errors.job_number }}</div>
           </div>
@@ -106,9 +106,7 @@ import { AppConfirm, AppLoading } from '@/utils/common'
 const route = useRoute();
 const router = useRouter();
 const id = route.params.id;
-const users = useGetUsers({
-  // roles: [ROLES.SITE_SUPERVISOR]
-});
+const users = useGetUsers({limit:1000});
 const {job_numbers} = useGetJobNumbers({limit:1000});
 // const bins = useGetBins({ limit: 1000 });
 const bin_configures = useGetBinConfigures({ limit: 1000 });
@@ -138,7 +136,7 @@ const { refetch: refetchDetail, data } = useQuery({
   queryFn: () => ProjectRequest.getDetail(id),
   onSuccess: (data) => {
     if (data?.data) {
-      setFieldValue('client', data.data.client)
+      setFieldValue('client', data.data?.job_number?.client || data.data.client)
       setFieldValue('project_name', data.data.project_name)
       setFieldValue('site_supervisor', data?.data?.job_number?.assigned_to)
       setFieldValue('job_number', data?.data?.job_number?._id)
@@ -151,12 +149,19 @@ const { refetch: refetchDetail, data } = useQuery({
   }
 })
 
+const onChangeJobNumber = (val)=>{
+  const jobNumberSelected = job_numbers.value.find(i => i._id == val);
+  if(jobNumberSelected){
+    setFieldValue('client', jobNumberSelected.client);
+  }
+}
+
 const { mutate, isLoading: isLoadingSaveProject } = useMutation({
   mutationFn: (body) => ProjectRequest.updateDetail(id, body),
   onSuccess: () => {
     ElMessage.success('Success to save project request.');
     refetchDetail();
-    // setTimeout(() => router.back(), 3000)
+    setTimeout(() => router.back(), 3000)
   },
   onError: () => {
     ElMessage.error('Failed to save project request.');
@@ -168,7 +173,7 @@ const { mutate, isLoading: isLoadingSaveProject } = useMutation({
 const onSubmit = handleSubmit(async (values) => {
   AppConfirm.open({
     title: 'If you confirm, you cannot modify this',
-    callback: () => mutate({ ...values, status: 'in_process' })
+    callback: () => mutate({ ...values, status: 'in_progress' })
   })
 });
 

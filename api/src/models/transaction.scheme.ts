@@ -7,10 +7,13 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
   timestamps: true,
 })
 export class TransactionModel {
-  static TYPE_ISSUE = 'issue';
-  static TYPE_REPLENISH = 'replenish';
-  static TYPE_RETURN = 'return';
-  static TYPE_CREATE_BIN_CONFIGURE = 'create_bin_configure';
+  static TYPE_ISSUE = 'ISSUE';
+  static TYPE_REPLENISH = 'REPLENISH';
+  static TYPE_RETURN = 'RETURN';
+  static TYPE_ISSUE_IMAGE = 'ISSUE_IMAGE';
+  static TYPE_CREATE_BIN_CONFIGURE = 'CREATE_BIN_CONFIGURE';
+  static TYPE_UPDATE_BIN_CONFIGURE = 'UPDATE_BIN_CONFIGURE';
+  static TYPE_REMOVE_BIN_CONFIGURE = 'REMOVE_BIN_CONFIGURE';
 
   static STATUS_DONE = 'done';
 

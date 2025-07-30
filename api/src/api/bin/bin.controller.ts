@@ -12,6 +12,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -33,8 +34,13 @@ import { BinConfigureModule } from '../bin-configure/bin-configure.module';
 import { Utils } from 'src/utils/utils';
 import {omit} from 'lodash';
 import { ObjectId } from 'mongodb';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { NAME } from 'src/constants';
 
 @Controller('api/bins')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 @Injectable()
 export class BinController extends BaseService<BinDocument> {
   constructor(

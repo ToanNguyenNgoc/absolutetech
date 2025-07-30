@@ -1,6 +1,8 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,6 +12,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -24,8 +27,13 @@ import {
 } from 'src/models';
 import { BinConfigureCreate, BinConfigureQr } from './bin-configure.dto';
 import { Utils } from 'src/utils/utils';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { NAME } from 'src/constants';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('api/bin-configures')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 @Injectable()
 export class BinConfigureController extends BaseService<BinConfigureDocument> {
   constructor(
@@ -64,6 +72,7 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
 
   @Post()
   async post(@Body() body: BinConfigureCreate) {
+    await this.validateBarCodeIsExits(body);
     const bin_configure = await this.create({
       ...body,
       bin: await this.getBin(body.bin),
@@ -75,6 +84,7 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
 
   @Put(':id')
   async put(@Param('id') id: string, @Body() body: BinConfigureCreate) {
+    await this.validateBarCodeIsExits(body, id);
     await this.update(id, {
       ...body,
       bin: await this.getBin(body.bin),
@@ -85,7 +95,6 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
 
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
-    console.log(id);
     return this.softDelete(id);
   }
   //
@@ -108,4 +117,19 @@ export class BinConfigureController extends BaseService<BinConfigureDocument> {
       return undefined;
     }
   }
+
+  async validateBarCodeIsExits(body: BinConfigureCreate, id?: string) {
+    if (!body.bar_code_qr_code) return;
+    const binConfigure = await this.binConfigureModel.findOne({ bar_code_qr_code: body.bar_code_qr_code });
+    if (binConfigure) {
+      if (!id) {
+        throw new BadRequestException('BarCode/QrCode already exists!');
+      }
+      if (binConfigure._id.toString() !== id.toString()) {
+        throw new BadRequestException('BarCode/QrCode already exists!');
+      }
+    }
+    return;
+  }
 }
+

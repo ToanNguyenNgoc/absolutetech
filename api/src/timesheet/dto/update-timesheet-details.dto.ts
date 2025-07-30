@@ -6,6 +6,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 class TimesheetDetailUpdateItemDto {
   @IsString()
@@ -41,6 +42,14 @@ class TimesheetDetailUpdateItemDto {
 }
 
 export class UpdateTimesheetDetailsDto {
+  @ApiProperty()
+  @IsOptional()
+  office_supervisor_id: string;
+
+  @ApiProperty()
+  @IsOptional()
+  date_time: Date;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TimesheetDetailUpdateItemDto)

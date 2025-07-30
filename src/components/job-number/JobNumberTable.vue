@@ -34,9 +34,9 @@
             <el-table-column label="Action" width="160">
                 <template #default="{ row, $index }">
                     <div class="action-buttons">
-                        <img src="@/assets/icon-edit.svg" alt="edit" @click="handleEdit(row)" />
-                        <img src="@/assets/icon-delete.svg" alt="delete" @click="handleDelete(row)" />
-                        <img src="@/assets/icon-copy.svg" alt="duplicate" @click="handleDuplicate(row)" />
+                        <el-button type="success" :icon="Edit" circle  @click="handleEdit(row)"/>
+                        <el-button type="danger" :icon="Delete" circle  @click="handleDelete(row)"/>
+                        <el-button type="primary" :icon="DocumentCopy" circle  @click="handleDuplicate(row)"/>
                         <template v-if="row._isNew">
                             <button class="btn-save" @click="handleSaveNewRow(row, $index)">Save</button>
                         </template>
@@ -60,6 +60,7 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import debounce from 'lodash/debounce';
 import { useRouter } from 'vue-router';
 import { formatDate } from '@/utils/common';
+import {Edit, Delete, DocumentCopy} from '@element-plus/icons-vue'
 
 export default {
     name: 'JobNumberTable',
@@ -188,6 +189,8 @@ export default {
             handleSearchInput,
             handleCurrentChange,
             formatDate,
+            Edit,
+            Delete, DocumentCopy
         };
     },
 };
@@ -250,7 +253,6 @@ export default {
 
 .action-buttons {
     display: flex;
-    gap: 16px;
     align-items: center;
 }
 

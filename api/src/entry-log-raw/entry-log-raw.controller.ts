@@ -5,9 +5,12 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/user/user.enums';
 import { InfoList } from './entry-log-raw.enums';
 import { EntryLogRawService } from './entry-log-raw.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/entry-logs-raw')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth(NAME.JWT)
 export class EntryLogRawController {
   constructor(private readonly entryLogRawRawService: EntryLogRawService) {}
   @Get('latest-entry')

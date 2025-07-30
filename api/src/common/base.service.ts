@@ -6,6 +6,7 @@ import { Model, FilterQuery, PipelineStage } from 'mongoose';
 import { buildMongoQuery } from './query-builder.util';
 import { sanitizePopulate } from 'src/helpers';
 import { Utils } from 'src/utils/utils';
+import { NotFoundException } from '@nestjs/common';
 
 interface SearchParams {
   search?: string;
@@ -50,8 +51,10 @@ export class BaseService<T> {
       }
     }
 
+    const detail = await mongooseQuery.lean({ virtuals: true }).exec();
+    if(!detail) throw new NotFoundException('Resource not found');
     //@ts-ignore
-    return mongooseQuery.lean({ virtuals: true }).exec();
+    return detail;
   }
 
   async update(id: string, data: Partial<T>): Promise<T | null> {

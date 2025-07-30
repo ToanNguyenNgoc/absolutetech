@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -21,8 +22,13 @@ import {
 } from 'src/models';
 import { VehicleCreate, VehicleQr } from './vehicle.dto';
 import { UserService } from 'src/user/user.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { NAME } from 'src/constants';
 
 @Controller('api/vehicles')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 @Injectable()
 export class VehicleController extends BaseService<VehicleDocument> {
   constructor(

@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { parse } from 'csv-parse';
 import * as fs from 'fs';
-import { Model, Types } from 'mongoose';
+import { Model, PipelineStage, Types } from 'mongoose';
 import * as path from 'path';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
 import { MqttService } from 'src/mqtt/mqtt.service';
@@ -20,16 +20,19 @@ import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
 import { WarehouseService } from 'src/external/warehouse.service';
 import { paginate } from 'src/common/pagination.util';
+import { BaseService } from 'src/common';
 
 @Injectable()
-export class UserService {
+export class UserService extends BaseService<UserDocument> {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
     private readonly mqttService: MqttService,
     private warehouseService: WarehouseService,
-  ) {}
+  ) {
+    super(userModel)
+  }
 
   async userExists(employee_hik: string) {
     const user = await this.userModel
@@ -68,15 +71,38 @@ export class UserService {
     return res;
   }
 
-  async findAllPaginated(page = 1, limit = 10) {
-    return paginate(
-      this.userModel,
+  async findAllPaginated(page = 1, limit = 10, roles: string) {
+    // return paginate(
+    //   this.userModel,
+    //   page,
+    //   limit,
+    //   {},
+    //   { password: 0 },
+    //   { populate: 'userFingers' },
+    // );
+    const pipeline: PipelineStage[] = [
+      { $project: { password: 0 } },
+      {
+        $lookup: {
+          from: 'user_finger',
+          let: { userId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$user', { $toString: '$$userId' }] } } },
+          ],
+          as: 'userFingers',
+        },
+      }
+    ];
+    const roleIds = roles?.split('|').filter(i => !isNaN(Number(i))).map(i => Number(i));
+    if (roleIds?.length > 0) {
+      pipeline.push({ $match: { role: { $in: roleIds } } })
+    }
+    return this.findWithAggregate({
       page,
       limit,
-      {},
-      { password: 0 },
-      { populate: 'userFingers' },
-    );
+      pipeline,
+      sort: '-createdAt'
+    })
   }
 
   async findByUsername(username: string): Promise<UserDocument | null> {
@@ -279,13 +305,24 @@ export class UserService {
     };
   }
 
-  async findAll(): Promise<User[]> {
+  async findAllUser(): Promise<User[]> {
     return this.userModel.find().exec();
   }
 
   async findByUsernameOrEmail(search: string): Promise<User[]> {
     return this.userModel
       .find({
+        $or: [
+          { username: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+        ],
+      })
+      .exec();
+  }
+
+  async findOneByUsernameOrEmail(search: string): Promise<User | null> {
+    return this.userModel
+      .findOne({
         $or: [
           { username: { $regex: search, $options: 'i' } },
           { email: { $regex: search, $options: 'i' } },

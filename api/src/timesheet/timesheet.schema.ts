@@ -7,6 +7,14 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
   timestamps: true,
 })
 export class Timesheet {
+  static STATUS = {
+    OPEN: 'open',
+    REOPEN: 'reopen',
+    DONE: 'done',
+    APPROVE: 'approve',
+    CLOSED: 'closed',
+  };
+
   @Prop({ type: Types.ObjectId, ref: 'JobNumber', required: false })
   jobnumber_id?: string;
 
@@ -33,6 +41,7 @@ export class Timesheet {
 }
 
 export const TimesheetSchema = SchemaFactory.createForClass(Timesheet);
+export type TimesheetDocument = Timesheet & Document & { _id: Types.ObjectId };
 
 TimesheetSchema.statics.getSyncColumns = function () {
   return [

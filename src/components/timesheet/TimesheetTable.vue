@@ -14,11 +14,16 @@
                     {{ formatDate(row.date_time) }}
                 </template>
             </el-table-column>
+            <el-table-column label="Status">
+                <template #default="{ row }">
+                  <TimeSheetStatus :status="row.status"/>
+                </template>
+            </el-table-column>
             <el-table-column label="Action" width="150">
                 <template #default="{ row }">
                     <div class="action-buttons">
-                        <img src="@/assets/icon-edit.svg" alt="edit" @click="handleView(row)" />
-                        <img src="@/assets/icon-print.svg" alt="print" @click="handlePrint(row)" />
+                         <el-button type="success" :icon="View" circle  @click="handleView(row)"/>
+                         <el-button type="primary" :icon="Printer" circle  @click="handlePrint(row)"/>
                     </div>
                 </template>
             </el-table-column>
@@ -41,6 +46,8 @@ import { getOpenTimesheets } from '@/api/timesheet'; // tự viết hoặc mock
 import debounce from 'lodash/debounce';
 import { useRouter } from 'vue-router';
 import { formatDate } from '@/utils/common';
+import {View, Printer} from '@element-plus/icons-vue';
+import TimeSheetStatus from '../common/TimeSheetStatus.vue';
 
 const router = useRouter();
 const loading = ref(false);
@@ -58,8 +65,8 @@ const fetchData = async () => {
         // Gọi API get timesheet
         const res = await getOpenTimesheets(currentPage.value, pageSize.value, searchTerm.value);
         const apiData = res.data.data || res.data;
-        tableData.value = apiData.items;
-        rawList.value = apiData.items;
+        tableData.value = apiData.list;
+        rawList.value = apiData.list;
         totalItems.value = apiData.total;
         totalPages.value = apiData.totalPages;
     } catch (error) {
@@ -99,7 +106,6 @@ onMounted(fetchData);
 
 .action-buttons {
     display: flex;
-    gap: 12px;
     align-items: center;
 }
 

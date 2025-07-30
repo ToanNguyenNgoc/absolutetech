@@ -22,12 +22,22 @@ import CabinetView from "@/views/admin/WarehouseView/maintenance/cabinets/Cabine
 import BinView from "@/views/admin/WarehouseView/maintenance/bins/BinView.vue";
 import ItemConfigureView from "@/views/admin/WarehouseView/maintenance/items-configure/ItemConfigureView.vue";
 import IssueView from "@/views/admin/WarehouseView/issues/IssueView.vue";
+import DashboardView from "@/views/admin/Dashboard/DashboardView.vue";
+import TransactionView from "@/views/admin/WarehouseView/transactions/TransactionView.vue";
+import LogView from "@/views/admin/Log/LogView.vue";
+import SyncDataLogView from "@/views/admin/Log/sync-data-log/SyncDataLogView.vue";
+import RequestLogView from "@/views/admin/Log/request-log/RequestLogView.vue";
 
 const routes = [
   {
     path: "/admin",
     component: AdminLayout,
     children: [
+      {
+        path:'dashboard',
+        name:'dashboard',
+        component: DashboardView
+      },
       {
         path: "job-number",
         name: "admin-job-number",
@@ -127,6 +137,20 @@ const routes = [
         name:'issues',
         component: IssueView
       },
+      {
+        path:'transactions',
+        name:'transactions',
+        component: TransactionView
+      },
+      {
+        path:'log',
+        name:'log',
+        component: LogView,
+        children:[
+          {path:'sync-data-logs', name:'sync-data-logs', component: SyncDataLogView},
+          {path:'request-logs', name:'request-logs', component: RequestLogView},
+        ]
+      },
     ],
   },
   { path: "/", redirect: "/login" },
@@ -151,7 +175,7 @@ router.beforeEach((to, from, next) => {
   const token = getCookie("access_token");
 
   if (token && to.path === "/login") {
-    return next("/admin/users");
+    return next("/admin/dashboard");
   }
 
   if (!token && to.path !== "/login") {

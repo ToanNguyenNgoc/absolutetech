@@ -8,7 +8,7 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 })
 export class ProjectRequestModel {
   static PJ_STATUS_NEW = 'new';
-  static PJ_STATUS_IN_PROCESS = 'in_process';
+  static PJ_STATUS_IN_PROGRESS = 'in_progress';
   static PJ_STATUS_ISSUE = 'issue';
 
   @Prop({ required: false })

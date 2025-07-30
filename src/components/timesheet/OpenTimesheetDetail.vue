@@ -1,157 +1,3 @@
-<script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getTimesheetDetail, updateTimesheet, approveTimesheet, closeTimesheet } from '@/api/timesheet'
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { formatTime } from '@/utils/common';
-
-const route = useRoute()
-const router = useRouter()
-const timesheet = ref(null)
-const jobnumber = ref({})
-const supervisorName = ref('')
-const clientSignature = ref('')
-const isEditing = ref(false)
-const originalTimesheetDetails = ref([]);
-
-const canEdit = computed(() => {
-    return timesheet.value && timesheet.value.status !== 'approve' && timesheet.value.status !== 'closed';
-});
-
-const canApprove = computed(() => {
-    return timesheet.value && timesheet.value.status !== 'approve' && timesheet.value.status !== 'closed';
-});
-
-const canClose = computed(() => {
-    return timesheet.value && timesheet.value.status === 'approve';
-});
-
-
-onMounted(async () => {
-    await fetchData();
-})
-
-const fetchData = async () => {
-    try {
-        console.log('Call API với id:', route.params.id);
-        const res = await getTimesheetDetail(route.params.id)
-        console.log('RES:', res)
-        timesheet.value = res.data?.data
-        jobnumber.value = res.data?.data.jobnumber
-        supervisorName.value = res.data?.data.office_supervisor?.full_name
-        clientSignature.value = res.data?.data.client_signature
-        originalTimesheetDetails.value = JSON.parse(JSON.stringify(timesheet.value?.details || []));
-    } catch (e) {
-        console.error(e)
-        timesheet.value = null
-        ElMessage.error('Failed to load timesheet detail.');
-    }
-}
-
-
-function formatDate(dt) {
-    if (!dt) return ''
-    return new Date(dt).toLocaleDateString('en-GB')
-}
-
-function onEdit() {
-    isEditing.value = true
-}
-
-function onCancelEdit() {
-    isEditing.value = false;
-    timesheet.value.details = JSON.parse(JSON.stringify(originalTimesheetDetails.value));
-}
-
-async function onSave() {
-    try {
-        await ElMessageBox.confirm(
-            'Are you sure you want to save these changes?',
-            'Confirm Save',
-            {
-                confirmButtonText: 'Save',
-                cancelButtonText: 'Cancel',
-                type: 'warning',
-            }
-        );
-
-        const payload = {
-            details: timesheet.value.details.map(detail => ({
-                id: detail.id,
-                attendance_id: detail.attendance_id,
-                time_in: detail.time_in,
-                time_out: detail.time_out,
-                over_time: detail.over_time,
-                on_rope: detail.on_rope,
-                in_charge: detail.in_charge,
-                other: detail.other,
-                remarks: detail.remarks,
-            }))
-        };
-
-        await updateTimesheet(route.params.id, payload);
-        ElMessage.success('Timesheet updated successfully!');
-        isEditing.value = false;
-        await fetchData();
-    } catch (error) {
-        if (error !== 'cancel') {
-            console.error('Failed to save timesheet:', error);
-            ElMessage.error(error.response?.data?.message || 'Failed to save timesheet.');
-        }
-    }
-}
-
-async function onApprove() {
-    try {
-        await ElMessageBox.confirm(
-            'Are you sure you want to approve this timesheet? Once approve, it cannot be edited.',
-            'Confirm Approval',
-            {
-                confirmButtonText: 'Approve',
-                cancelButtonText: 'Cancel',
-                type: 'warning',
-            }
-        );
-
-        await approveTimesheet(route.params.id);
-
-        ElMessage.success('Timesheet approve successfully!');
-        isEditing.value = false;
-        await fetchData();
-    } catch (error) {
-        if (error !== 'cancel') {
-            console.error('Failed to approve timesheet:', error);
-            ElMessage.error(error.response?.data?.message || 'Failed to approve timesheet.');
-        }
-    }
-}
-
-async function onClose() {
-    try {
-        await ElMessageBox.confirm(
-            'Are you sure you want to close this timesheet? Once closed, it cannot be reopened except by Super Admin.',
-            'Confirm Close',
-            {
-                confirmButtonText: 'Close',
-                cancelButtonText: 'Cancel',
-                type: 'warning',
-            }
-        );
-
-        await closeTimesheet(route.params.id);
-
-        ElMessage.success('Timesheet closed successfully!');
-        isEditing.value = false;
-        router.push('/admin/close-timesheets');
-    } catch (error) {
-        if (error !== 'cancel') {
-            console.error('Failed to close timesheet:', error);
-            ElMessage.error(error.response?.data?.message || 'Failed to close timesheet.');
-        }
-    }
-}
-</script>
-
 <template>
     <div class="timesheet-detail-root">
         <div class="sheet-paper" v-if="timesheet">
@@ -172,13 +18,20 @@ async function onClose() {
                 </div>
                 <div class="info-row">
                     <span>DATE</span>
-                    <span>{{ formatDate(timesheet?.date_time) }}</span>
+                    <!-- <span>{{ formatDate(timesheet?.date_time) }}</span> -->
+                    <el-date-picker v-model="detailForm.date_time" type="date" placeholder="Date" style="width: 200px;"
+                        :disabled="!isEditing" />
                     <span>LOCATION</span>
                     <span>{{ jobnumber.location_at }}</span>
                 </div>
                 <div class="info-row">
-                    <span>SUPERVISOR</span>
-                    <span>{{ supervisorName }}</span>
+                    <span style="line-height: 32px;">SUPERVISOR</span>
+                    <!-- <span>{{ supervisorName }}</span> -->
+                    <el-select placeholder="Supervisor" style="width: 200px" v-model="detailForm.supervisor._id"
+                        :disabled="!isEditing">
+                        <el-option v-for="item in supervisors" :key="item._id" :label="item.full_name"
+                            :value="item._id" />
+                    </el-select>
                     <span>TIME</span>
                     <span>{{ formatTime(null, null, timesheet.time_end) }}</span>
                 </div>
@@ -187,7 +40,7 @@ async function onClose() {
             <el-table :data="timesheet?.details || []" border stripe class="sheet-table">
 
                 <el-table-column prop="attendance.full_name" label="ATTENDANCE" />
-                
+
                 <el-table-column label="TIME IN">
                     <template #default="{ row }">
                         <span v-if="!isEditing">{{ formatTime(null, null, row.time_in) }}</span>
@@ -275,6 +128,169 @@ async function onClose() {
         </div>
     </div>
 </template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { getTimesheetDetail, approveTimesheet, closeTimesheet, updateTimesheet } from '@/api/timesheet'
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { AppLoading, formatTime } from '@/utils/common';
+import { useGetUsers } from '@/hooks';
+import { ROLES } from '@/utils/constants';
+
+const route = useRoute()
+const router = useRouter()
+const timesheet = ref(null)
+const jobnumber = ref({})
+const clientSignature = ref('')
+const isEditing = ref(false)
+const originalTimesheetDetails = ref([]);
+const supervisors = useGetUsers({ limit: 1000, roles: `${ROLES.SUPERVISOR}` });
+const detailForm = ref({
+    date_time: null,
+    supervisor: {}
+})
+
+const canEdit = computed(() => {
+    return timesheet.value && timesheet.value.status !== 'approve' && timesheet.value.status !== 'closed';
+});
+
+const canApprove = computed(() => {
+    return timesheet.value && timesheet.value.status !== 'approve' && timesheet.value.status !== 'closed';
+});
+
+const canClose = computed(() => {
+    return timesheet.value && timesheet.value.status === 'approve';
+});
+
+onMounted(async () => {
+    await fetchData();
+})
+
+const fetchData = async () => {
+    AppLoading.show();
+    try {
+        const res = await getTimesheetDetail(route.params.id)
+        detailForm.value.supervisor = res.data?.data.office_supervisor || {},
+            detailForm.value.date_time = res.data?.data?.date_time,
+            timesheet.value = res.data?.data
+        jobnumber.value = res.data?.data.jobnumber || {},
+            // supervisorName.value = res.data?.data.office_supervisor?.full_name
+            clientSignature.value = res.data?.data.client_signature
+        originalTimesheetDetails.value = JSON.parse(JSON.stringify(timesheet.value?.details || []));
+    } catch (e) {
+        console.error(e)
+        timesheet.value = null
+        ElMessage.error('Failed to load timesheet detail.');
+    } finally {
+        AppLoading.hide();
+    }
+}
+
+
+function formatDate(dt) {
+    if (!dt) return ''
+    return new Date(dt).toLocaleDateString('en-GB')
+}
+
+function onEdit() {
+    isEditing.value = true
+}
+
+function onCancelEdit() {
+    isEditing.value = false;
+    timesheet.value.details = JSON.parse(JSON.stringify(originalTimesheetDetails.value));
+}
+
+async function onSave() {
+    try {
+        await ElMessageBox.confirm(
+            'Are you sure you want to save these changes?',
+            'Confirm Save',
+            {
+                confirmButtonText: 'Save',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+            }
+        );
+
+        const payload = {
+            office_supervisor_id: detailForm.value.supervisor?._id,
+            date_time: detailForm.value.date_time,
+            details: timesheet.value.details.map(detail => ({
+                id: detail.id,
+                attendance_id: detail.attendance_id,
+                time_in: detail.time_in,
+                time_out: detail.time_out,
+                over_time: detail.over_time,
+                on_rope: detail.on_rope,
+                in_charge: detail.in_charge,
+                other: detail.other,
+                remarks: detail.remarks,
+            }))
+        };
+        await updateTimesheet(route.params.id, payload);
+        ElMessage.success('Timesheet updated successfully!');
+        isEditing.value = false;
+        await fetchData();
+    } catch (error) {
+        if (error !== 'cancel') {
+            console.error('Failed to save timesheet:', error);
+            ElMessage.error(error.response?.data?.message || 'Failed to save timesheet.');
+        }
+    }
+}
+
+async function onApprove() {
+    try {
+        await ElMessageBox.confirm(
+            'Are you sure you want to approve this timesheet? Once approve, it cannot be edited.',
+            'Confirm Approval',
+            {
+                confirmButtonText: 'Approve',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+            }
+        );
+
+        await approveTimesheet(route.params.id);
+
+        ElMessage.success('Timesheet approve successfully!');
+        isEditing.value = false;
+        await fetchData();
+    } catch (error) {
+        if (error !== 'cancel') {
+            console.error('Failed to approve timesheet:', error);
+            ElMessage.error(error.response?.data?.message || 'Failed to approve timesheet.');
+        }
+    }
+}
+
+async function onClose() {
+    try {
+        await ElMessageBox.confirm(
+            'Are you sure you want to close this timesheet? Once closed, it cannot be reopened except by Super Admin.',
+            'Confirm Close',
+            {
+                confirmButtonText: 'Close',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+            }
+        );
+
+        await closeTimesheet(route.params.id);
+
+        ElMessage.success('Timesheet closed successfully!');
+        isEditing.value = false;
+        router.push('/admin/close-timesheets');
+    } catch (error) {
+        if (error !== 'cancel') {
+            console.error('Failed to close timesheet:', error);
+            ElMessage.error(error.response?.data?.message || 'Failed to close timesheet.');
+        }
+    }
+}
+</script>
 
 <style scoped>
 /* Styles không thay đổi */

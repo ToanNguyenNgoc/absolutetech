@@ -2,12 +2,13 @@ import { getUsers } from "@/api/user";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 
-export function useGetUsers(options) {
+export function useGetUsers(params, options) {
+  const queryKey = computed(() => ['users', { ...params }]);
   const { data } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => getUsers(1, 100)
+    queryKey,
+    queryFn: () => getUsers(params),
+    ...options
   })
-  const roles = options?.roles || [];
-  const users = computed(() => roles.length > 0 ? (data.value?.data?.data?.list || []).filter(i => roles.includes(i.role)) : (data.value?.data?.data?.list || []));
+  const users = computed(() => (data.value?.data?.data?.list || []));
   return users
 }

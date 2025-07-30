@@ -3,7 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Timesheet, TimesheetSchema } from './timesheet.schema';
 import { TimesheetController } from './timesheet.controller';
 
-import { TimesheetDetail, TimesheetDetailSchema } from '../timesheet-detail/timesheet-detail.schema';
+import {
+  TimesheetDetail,
+  TimesheetDetailSchema,
+} from '../timesheet-detail/timesheet-detail.schema';
 import { TimesheetService } from './timesheet.service';
 
 @Module({

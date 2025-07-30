@@ -27,8 +27,11 @@ import { Role, UserItemRequest } from './user.enums';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { NAME } from 'src/constants';
 
 @Controller('api/users')
+@ApiBearerAuth(NAME.JWT)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -73,8 +76,9 @@ export class UserController {
   async findAllPaginated(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('roles') roles: string,
   ) {
-    return this.userService.findAllPaginated(page, limit);
+    return this.userService.findAllPaginated(page, limit, roles);
   }
 
   @Put(':id')
@@ -119,7 +123,7 @@ export class UserController {
   @Get('export')
   @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   async exportUsers(@Res() res: Response) {
-    const users = await this.userService.findAll();
+    const users = await this.userService.findAllUser();
 
     const exportUsers = users.map((user: any) => {
       const obj = typeof user.toObject === 'function' ? user.toObject() : user;

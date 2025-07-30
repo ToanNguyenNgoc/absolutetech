@@ -1,28 +1,59 @@
-import { Controller, Get, Query, Param, Put, Body, UseGuards } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  Put,
+  Body,
+  UseGuards,
+  Injectable,
+} from '@nestjs/common';
 import { TimesheetService } from './timesheet.service';
 import { UpdateTimesheetDetailsDto } from './dto/update-timesheet-details.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/user/user.enums';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Timesheet, TimesheetDocument } from './timesheet.schema';
+import { BaseService } from 'src/common';
+import { NAME } from 'src/constants';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('api/timesheets')
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class TimesheetController {
-  constructor(private readonly timesheetService: TimesheetService) { }
+@ApiBearerAuth(NAME.JWT)
+@Injectable()
+export class TimesheetController extends BaseService<TimesheetDocument> {
+  constructor(
+    @InjectModel(Timesheet.name)
+    private readonly timeSheetModel: Model<TimesheetDocument>,
+    private readonly timesheetService: TimesheetService,
+  ) {
+    super(timeSheetModel);
+  }
 
   @Get('open')
   async findOpenTimesheets(
     @Query('jobnumber') jobnumber: string,
     @Query('page') page = 1,
     @Query('limit') limit = 10,
+    @Query('search') search,
   ) {
-    return this.timesheetService.findAllPaginated({
-      status: ['done', 'reopen', 'approve'],
-      jobnumber,
+    // return this.timesheetService.findAllPaginated({
+    //   status: ['done', 'reopen', 'approve'],
+    //   jobnumber,
+    //   page,
+    //   limit,
+    // });
+    return this.findOpenTimesheetsWithAggregate(
       page,
       limit,
-    });
+      search,
+      [Timesheet.STATUS.APPROVE, Timesheet.STATUS.DONE, Timesheet.STATUS.OPEN, Timesheet.STATUS.REOPEN]
+    )
   }
 
   @Get('close')
@@ -30,13 +61,20 @@ export class TimesheetController {
     @Query('jobnumber') jobnumber: string,
     @Query('page') page = 1,
     @Query('limit') limit = 10,
+    @Query('search') search
   ) {
-    return this.timesheetService.findAllPaginated({
-      status: ['close'],
-      jobnumber,
+    // return this.timesheetService.findAllPaginated({
+    //   status: ['close'],
+    //   jobnumber,
+    //   page,
+    //   limit,
+    // });
+    return this.findOpenTimesheetsWithAggregate(
       page,
       limit,
-    });
+      search,
+      [Timesheet.STATUS.CLOSED]
+    )
   }
 
   @Get(':id')
@@ -52,7 +90,7 @@ export class TimesheetController {
   ) {
     return this.timesheetService.updateTimesheetDetails(
       timesheetId,
-      updateDto.details,
+      updateDto,
     );
   }
 
@@ -72,5 +110,37 @@ export class TimesheetController {
   @Roles(Role.SUPER_ADMIN)
   async reopenTimesheet(@Param('id') timesheetId: string) {
     return this.timesheetService.reopenTimesheet(timesheetId);
+  }
+
+  async findOpenTimesheetsWithAggregate(page = 1, limit = 15, search, status: string[] = []) {
+    return this.findWithAggregate({
+      page: Number(page),
+      limit: Number(limit),
+      search: search,
+      searchFields: ['jobnumber.code', 'jobnumber.client'],
+      pipeline: [
+        { $match: { status: { $in: status } } },
+        { $addFields: { jobnumber_id: { $toObjectId: '$jobnumber_id' } } },
+        { $lookup: { from: 'jobnumbers', localField: 'jobnumber_id', foreignField: '_id', as: 'jobnumber' } },
+        { $unwind: { path: '$jobnumber', preserveNullAndEmptyArrays: true } },
+        // { $match: { jobnumber: { $ne: null } } }, //Get item has job number
+        {
+          $lookup: {
+            from: 'timesheet_details',
+            let: { timesheetId: '$_id' },
+            pipeline: [
+              { $addFields: { attendance_id: { $toObjectId: '$attendance_id' } } },
+              { $match: { $expr: { $eq: ['$timesheet_id', { $toString: '$$timesheetId' }] } } },
+              { $lookup: { from: 'users', localField: 'attendance_id', foreignField: '_id', as: 'attendance', } },
+              { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } },
+              { $project: { signature_tech: 0 } }
+            ],
+            as: 'details',
+          },
+        },
+        { $project: { signature: 0 } }
+      ],
+      sort: '-createdAt'
+    });
   }
 }

@@ -106,3 +106,14 @@ JobNumberSchema.virtual('project_request', {
   foreignField: 'job_number',
   justOne: true,
 });
+
+// Soft delete middleware
+JobNumberSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
+  this.where({ deletedAt: null }); // Only return non-deleted documents
+  next();
+});
+
+// Method to soft delete a user
+JobNumberSchema.statics.softDelete = async function (id: string) {
+  return this.findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true });
+};

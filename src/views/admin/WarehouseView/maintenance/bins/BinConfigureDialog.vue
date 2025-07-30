@@ -185,13 +185,15 @@ watch(
 );
 
 const onItemNameChange = (row) => {
-  const selected = spares.value.find(
-    (item) => item._id === row.spare._id
-  );
+  const selected = spares.value.find((item) => item._id === row.spare._id);
   if (selected) {
-    row.spare = structuredClone(selected);
+    if (!row.spare) row.spare = {};
+    Object.keys(selected).forEach((key) => {
+      row.spare[key] = selected[key];
+    });
   }
 };
+
 const onAddItem = () => {
   binConfigures.value.push({
     spare: structuredClone(spares.value.length > 0 ? spares.value[0] : {}),
@@ -204,7 +206,7 @@ const onAddItem = () => {
 };
 
 const onSaveItem = async (row) => {
-  if(!row.spare?._id) return ElMessage.warning('Item Name is required');
+  if (!row.spare?._id) return ElMessage.warning('Item Name is required');
   if (row.spare?.has_batch_no && !row.batch_no) return;
   if (row.spare?.has_serial_no && !row.serial_no) return;
   if (row.spare?.has_verification && !row.bar_code_qr_code) return;
@@ -214,15 +216,26 @@ const onSaveItem = async (row) => {
   AppLoading.show();
   try {
     if (row._id) {
-      await BinApi.updateBinConfigure(row._id, { ...row })
+      await BinApi.updateBinConfigure(row._id, {
+        ...row,
+        batch_no: row.spare.has_batch_no ? row.batch_no : null,
+        serial_no: row.spare.has_serial_no ? row.serial_no : null,
+        charge_time: row.spare.has_charge_time ? row.charge_time : null,
+        load_hydrostatic_test_due: row.spare.has_load_hydrostatic_test_due ? row.load_hydrostatic_test_due : null,
+        expiry_date: row.spare.has_expiry_date ? row.expiry_date : null,
+        bar_code_qr_code: row.spare.has_verification ? row.bar_code_qr_code : null
+      })
     } else {
-      await BinApi.createBinConfigure({ ...row, spare: row.spare?.id, bin: bin.value?._id })
+      await BinApi.createBinConfigure({
+        ...row,
+        spare: row.spare?.id,
+        bin: bin.value?._id,
+      })
     }
     ElMessage.success('Successes to save item');
     emit('refetch-bins');
   } catch (error) {
-    console.log(error);
-    ElMessage.error('Failed to save item');
+    ElMessage.error(error?.response?.data?.message || 'Failed to save item');
   } finally {
     AppLoading.hide();
   }
