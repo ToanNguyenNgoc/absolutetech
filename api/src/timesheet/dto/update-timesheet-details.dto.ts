@@ -44,7 +44,7 @@ class TimesheetDetailUpdateItemDto {
 export class UpdateTimesheetDetailsDto {
   @ApiProperty()
   @IsOptional()
-  office_supervisor_id: string;
+  office_supervisor: string;
 
   @ApiProperty()
   @IsOptional()

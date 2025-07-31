@@ -53,8 +53,7 @@ export class TimesheetService {
         const details = await this.timesheetDetailModel
           .find({
             $or: [
-              { timesheet_id: item._id }, // ObjectId
-              { timesheet_id: item._id.toString() }, // string
+              { timesheet: item._id }, // ObjectId
             ],
             deletedAt: null,
           })
@@ -71,7 +70,7 @@ export class TimesheetService {
           updatedAt: item.updatedAt,
           details: details.map((d) => ({
             id: d._id.toString(),
-            attendance: d.attendance_id, // user info object
+            attendance: d.attendance, // user info object
             time_in: d.time_in,
             time_out: d.time_out,
             over_time: d.over_time,
@@ -98,41 +97,40 @@ export class TimesheetService {
   async getDetailWithDetails(timesheetId: string) {
     const timesheet = await this.timesheetModel
       .findById(timesheetId)
-      .populate('jobnumber_id')
-      .populate('supervisor_id')
-      .populate('office_supervisor_id')
+      .populate('jobnumber')
+      .populate('supervisor')
+      .populate('office_supervisor')
       .lean();
 
     if (!timesheet) throw new NotFoundException('Timesheet not found');
     const details = await this.timesheetDetailModel
       .find({
         $or: [
-          { timesheet_id: timesheetId }, // ObjectId
-          { timesheet_id: timesheetId.toString() }, // string
+          { timesheet: timesheetId }, // ObjectId
         ],
         deletedAt: null,
       })
-      .populate('attendance_id')
+      .populate('attendance')
       .lean();
 
     const {
-      jobnumber_id,
-      supervisor_id,
-      office_supervisor_id,
+      jobnumber,
+      supervisor,
+      office_supervisor,
       ...restTimesheet
     } = timesheet;
 
     return {
       ...restTimesheet,
-      jobnumber: jobnumber_id,
-      supervisor: supervisor_id,
-      office_supervisor: office_supervisor_id,
+      jobnumber: jobnumber,
+      supervisor: supervisor,
+      office_supervisor: office_supervisor,
       details: details.map((d) => {
-        const { _id, attendance_id, ...restDetail } = d;
+        const { _id, attendance, ...restDetail } = d;
         return {
           ...restDetail,
           id: _id.toString(),
-          attendance: attendance_id,
+          attendance: attendance,
         };
       }),
     };
@@ -144,7 +142,7 @@ export class TimesheetService {
   ) {
     const details = body.details || [];
     const timesheet = await this.timesheetModel.findByIdAndUpdate(timesheetId, {
-      office_supervisor_id: body.office_supervisor_id ? body.office_supervisor_id : undefined,
+      office_supervisor: body.office_supervisor ? body.office_supervisor : undefined,
       date_time: body.date_time ? body.date_time : undefined,
     })
     if (!timesheet) {
@@ -165,7 +163,7 @@ export class TimesheetService {
 
       const existingDetail = await this.timesheetDetailModel.findOne({
         _id: id,
-        timesheet_id: timesheetId,
+        timesheet: timesheetId,
         deletedAt: null,
       });
 
