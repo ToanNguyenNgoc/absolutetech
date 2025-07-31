@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
@@ -15,14 +15,18 @@ export class Timesheet {
     CLOSED: 'closed',
   };
 
-  @Prop({ type: Types.ObjectId, ref: 'JobNumber', required: false })
-  jobnumber_id?: string;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'JobNumber',
+    // required: false,
+  })
+  jobnumber?: mongoose.Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
-  supervisor_id?: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false })
+  supervisor: mongoose.Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
-  office_supervisor_id?: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false })
+  office_supervisor?: mongoose.Types.ObjectId;
 
   @Prop()
   date_time?: Date;
@@ -43,6 +47,23 @@ export class Timesheet {
 export const TimesheetSchema = SchemaFactory.createForClass(Timesheet);
 export type TimesheetDocument = Timesheet & Document & { _id: Types.ObjectId };
 
+TimesheetSchema.virtual('id').get(function () {
+  return this._id?.toString?.();
+});
+
+TimesheetSchema.plugin(mongooseLeanVirtuals);
+
+TimesheetSchema.virtual('jobnumber_id').get(function () {
+  return this.jobnumber?._id?.toString?.() ?? null;
+});
+TimesheetSchema.virtual('supervisor_id').get(function () {
+  return this.supervisor?._id?.toString?.() ?? null;
+});
+
+TimesheetSchema.virtual('office_supervisor_id').get(function () {
+  return this.office_supervisor?._id?.toString?.() ?? null;
+});
+
 TimesheetSchema.statics.getSyncColumns = function () {
   return [
     'id',
@@ -58,12 +79,6 @@ TimesheetSchema.statics.getSyncColumns = function () {
     'deletedAt',
   ];
 };
-
-TimesheetSchema.virtual('id').get(function () {
-  return this._id?.toString?.();
-});
-
-TimesheetSchema.plugin(mongooseLeanVirtuals);
 
 TimesheetSchema.pre(['find', 'findOne', 'findOneAndUpdate'], function (next) {
   this.where({ deletedAt: null });

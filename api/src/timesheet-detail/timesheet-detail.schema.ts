@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 @Schema({
@@ -7,11 +7,15 @@ import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
   timestamps: true,
 })
 export class TimesheetDetail {
-  @Prop({ type: Types.ObjectId, ref: 'Timesheet' })
-  timesheet_id: string;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Timesheet',
+    required: false,
+  })
+  timesheet?: mongoose.Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
-  attendance_id?: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false })
+  attendance?: mongoose.Types.ObjectId;
 
   @Prop()
   time_in?: string;
@@ -47,6 +51,20 @@ export class TimesheetDetail {
 export const TimesheetDetailSchema =
   SchemaFactory.createForClass(TimesheetDetail);
 
+TimesheetDetailSchema.virtual('id').get(function () {
+  return this._id.toString();
+});
+
+TimesheetDetailSchema.plugin(mongooseLeanVirtuals);
+
+TimesheetDetailSchema.virtual('timesheet_id').get(function () {
+  return this.timesheet?._id?.toString?.() ?? null;
+});
+
+TimesheetDetailSchema.virtual('attendance_id').get(function () {
+  return this.attendance?._id?.toString?.() ?? null;
+});
+
 TimesheetDetailSchema.statics.getSyncColumns = function () {
   return [
     'id',
@@ -65,12 +83,6 @@ TimesheetDetailSchema.statics.getSyncColumns = function () {
     'deletedAt',
   ];
 };
-
-TimesheetDetailSchema.virtual('id').get(function () {
-  return this._id.toString();
-});
-
-TimesheetDetailSchema.plugin(mongooseLeanVirtuals);
 
 TimesheetDetailSchema.pre(
   ['find', 'findOne', 'findOneAndUpdate'],
