@@ -27,7 +27,7 @@
                 <div class="info-row">
                     <span style="line-height: 32px;">SUPERVISOR</span>
                     <!-- <span>{{ supervisorName }}</span> -->
-                    <el-select placeholder="Supervisor" style="width: 200px" v-model="detailForm.supervisor._id"
+                    <el-select placeholder="Supervisor" style="width: 200px" v-model="detailForm.office_supervisor._id"
                         :disabled="!isEditing">
                         <el-option v-for="item in supervisors" :key="item._id" :label="item.full_name"
                             :value="item._id" />
@@ -148,7 +148,7 @@ const originalTimesheetDetails = ref([]);
 const supervisors = useGetUsers({ limit: 1000, roles: `${ROLES.SUPERVISOR}` });
 const detailForm = ref({
     date_time: null,
-    supervisor: {}
+    office_supervisor: {}
 })
 
 const canEdit = computed(() => {
@@ -171,11 +171,10 @@ const fetchData = async () => {
     AppLoading.show();
     try {
         const res = await getTimesheetDetail(route.params.id)
-        detailForm.value.supervisor = res.data?.data.office_supervisor || {},
+        detailForm.value.office_supervisor = res.data?.data.office_supervisor || {},
             detailForm.value.date_time = res.data?.data?.date_time,
-            timesheet.value = res.data?.data
-        jobnumber.value = res.data?.data.jobnumber || {},
-            // supervisorName.value = res.data?.data.office_supervisor?.full_name
+            timesheet.value = res.data?.data,
+            jobnumber.value = res.data?.data.jobnumber || {},
             clientSignature.value = res.data?.data.client_signature
         originalTimesheetDetails.value = JSON.parse(JSON.stringify(timesheet.value?.details || []));
     } catch (e) {
@@ -215,7 +214,7 @@ async function onSave() {
         );
 
         const payload = {
-            office_supervisor_id: detailForm.value.supervisor?._id,
+            office_supervisor: detailForm.value.office_supervisor?._id,
             date_time: detailForm.value.date_time,
             details: timesheet.value.details.map(detail => ({
                 id: detail.id,

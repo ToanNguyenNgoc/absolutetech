@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable prettier/prettier */
 import {
   Controller,
@@ -120,18 +121,21 @@ export class TimesheetController extends BaseService<TimesheetDocument> {
       searchFields: ['jobnumber.code', 'jobnumber.client'],
       pipeline: [
         { $match: { status: { $in: status } } },
-        { $addFields: { jobnumber_id: { $toObjectId: '$jobnumber_id' } } },
-        { $lookup: { from: 'jobnumbers', localField: 'jobnumber_id', foreignField: '_id', as: 'jobnumber' } },
+        // { $addFields: { jobnumber_id: { $toObjectId: '$jobnumber_id' } } },
+        { $lookup: { from: 'jobnumbers', localField: 'jobnumber', foreignField: '_id', as: 'jobnumber' } },
         { $unwind: { path: '$jobnumber', preserveNullAndEmptyArrays: true } },
+        { $lookup: { from: 'users', localField: 'office_supervisor', foreignField: '_id', as: 'office_supervisor' } },
+        { $unwind: { path: '$office_supervisor', preserveNullAndEmptyArrays: true } },
+        { $lookup: { from: 'users', localField: 'supervisor', foreignField: '_id', as: 'supervisor' } },
+        { $unwind: { path: '$supervisor', preserveNullAndEmptyArrays: true } },
         // { $match: { jobnumber: { $ne: null } } }, //Get item has job number
         {
           $lookup: {
             from: 'timesheet_details',
             let: { timesheetId: '$_id' },
             pipeline: [
-              { $addFields: { attendance_id: { $toObjectId: '$attendance_id' } } },
-              { $match: { $expr: { $eq: ['$timesheet_id', { $toString: '$$timesheetId' }] } } },
-              { $lookup: { from: 'users', localField: 'attendance_id', foreignField: '_id', as: 'attendance', } },
+              { $match: { $expr: { $eq: ['$timesheet', '$$timesheetId'] } } },
+              { $lookup: { from: 'users', localField: 'attendance', foreignField: '_id', as: 'attendance', } },
               { $unwind: { path: '$attendance', preserveNullAndEmptyArrays: true } },
               { $project: { signature_tech: 0 } }
             ],
