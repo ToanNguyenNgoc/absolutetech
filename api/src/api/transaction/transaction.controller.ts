@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Injectable, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Injectable, Param, Query, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, PipelineStage } from 'mongoose';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -87,5 +88,26 @@ export class TransactionController extends BaseService<TransactionDocument> {
       searchFields: ['job_number.code', 'transaction_details.issue.bin_configure.spare.name'],
       sort: qr.sort,
     });
+  }
+
+  @Get(':id')
+  async getOne(@Param('id') id: string) {
+    const detail = await this.findById(id, [
+      'job_number',
+      'taker',
+      {
+        path: 'transaction_details',
+        populate: {
+          path: 'issue',
+          populate: {
+            path: 'bin_configure',
+            populate: {
+              path: 'spare'
+            }
+          },
+        },
+      },
+    ]);
+    return detail;
   }
 }

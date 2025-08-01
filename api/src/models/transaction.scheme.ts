@@ -40,7 +40,7 @@ export class TransactionModel {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'JobNumberModel',
+    ref: 'JobNumber',
   })
   job_number: mongoose.Types.ObjectId;
 
@@ -89,3 +89,9 @@ TransactionSchema.statics.getSyncColumns = function () {
  * End
  *Thêm đoạn này cho tablet
  */
+
+TransactionSchema.virtual('transaction_details', {
+  ref: 'TransactionDetailModel',
+  localField: '_id',
+  foreignField: 'transaction',
+});

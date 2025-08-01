@@ -32,6 +32,13 @@
       </el-table-column>
       <el-table-column prop="taker.full_name" label="Issue" />
       <el-table-column prop="type" label="Type" />
+      <el-table-column label="Action">
+        <template #default="{ row }">
+          <RouterLink :to="`/admin/transactions/${row._id}`">
+            <el-button type="primary" :icon="View" circle />
+          </RouterLink>
+        </template>
+      </el-table-column>
     </el-table>
     <div v-if="response">
       <AppPagination :limit="params.limit" :page="params.page" :total-items="response?.total"
@@ -47,7 +54,8 @@ import { useGetTransactions } from '@/hooks';
 import { formatDate, getIndexTable } from '@/utils/common';
 import { reactive, ref } from 'vue';
 import { debounce } from 'lodash';
-import { Search } from '@element-plus/icons-vue'
+import { Search } from '@element-plus/icons-vue';
+import { View } from '@element-plus/icons-vue'
 
 const params = reactive({
   page: 1,
