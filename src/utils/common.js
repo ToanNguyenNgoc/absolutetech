@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 import moment from 'moment';
+import imageError from '@/assets/img/image-placeholder.png'
+import { ElLoading, ElMessageBox } from 'element-plus'
+import { baseURL } from '@/api/axios';
 
 export const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -25,9 +28,10 @@ export const formatTime = (_, __, cellValue) => {
   return '';
 }
 
-export const formatDateEn = (dateStr) => !dateStr ? '' : moment(dateStr).format('DD-MMM-YY');
 
-import { ElLoading, ElMessageBox } from 'element-plus'
+export const formatDateEn = (dateStr) => !dateStr ? '' : moment(dateStr).format('DD-MMM-YY');
+export const formatDateTime = (date) => !date ? '' : moment(date).format('YYYY-MM-DD HH:mm');
+
 
 export class AppLoading {
   static instance = null
@@ -105,4 +109,10 @@ export const removeNullUn = (obj) => {
         value.trim() !== '',
     ),
   );
+}
+
+export const getFileUrl = (url) => `${baseURL}/${url}`;
+export const onErrorImage = (e) => {
+  e.target.src = imageError;
+  e.target.style.objectFit = "contain";
 }

@@ -95,3 +95,10 @@ TransactionSchema.virtual('transaction_details', {
   localField: '_id',
   foreignField: 'transaction',
 });
+
+TransactionSchema.virtual('files', {
+  ref: 'FileUpload',
+  localField: '_id',
+  foreignField: 'ref_id',
+  justOne: false,
+});

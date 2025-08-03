@@ -26,17 +26,27 @@
       </div>
     </CardContainer>
     <CardContainer title="Items" style="margin-top: 12px;">
-      <el-table :data="detail?.transaction_details || []" class="custom-table" border style="margin-top: 16px;">
-        <el-table-column label="No." width="57">
-          <template #default="{ $index }">
-            <span class="item-name">{{ $index + `` }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="issue.bin_configure.spare.name" label="Item" />
-        <el-table-column prop="current_qty" label="Current Quantity" />
-        <el-table-column prop="quantity" label="Quantity" />
-        <el-table-column prop="changed_qty" label="Changed Quality" />
-      </el-table>
+      <div>
+        <el-table :data="detail?.transaction_details || []" class="custom-table" border style="margin-top: 16px;">
+          <el-table-column label="No." width="57">
+            <template #default="{ $index }">
+              <span class="item-name">{{ $index + `` }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="issue.bin_configure.spare.name" label="Item" />
+          <el-table-column prop="current_qty" label="Current Quantity" />
+          <el-table-column prop="quantity" label="Quantity" />
+          <el-table-column prop="changed_qty" label="Changed Quality" />
+        </el-table>
+      </div>
+      <template v-if="detail?.files?.length > 0">
+        <p class="image_title">Issue Images</p>
+        <div class="image_cnt">
+          <div class="image_item_cnt" v-for="item in detail?.files" :key="item._id">
+            <img class="item_image" :src="item.original_url" alt="" @error="onErrorImage" >
+          </div>
+        </div>
+      </template>
     </CardContainer>
   </PageContainer>
 </template>
@@ -46,7 +56,7 @@ import { TransactionApi } from '@/api';
 import CardContainer from '@/components/common/CardContainer.vue';
 import LoadingPage from '@/components/common/LoadingPage.vue';
 import PageContainer from '@/components/common/PageContainer.vue';
-import { formatDate } from '@/utils/common';
+import { formatDate, onErrorImage } from '@/utils/common';
 import { useQuery } from '@tanstack/vue-query';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
@@ -90,5 +100,32 @@ const detail = computed(() => data.value?.data);
   background-color: #fafafafa;
   border-radius: 4px;
   object-fit: contain;
+}
+
+.image_title {
+  margin: 22px 0px 16px 0px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.image_cnt {
+  grid-gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.image_item_cnt {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.item_image {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  object-fit: cover;
 }
 </style>

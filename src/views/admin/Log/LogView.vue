@@ -1,8 +1,8 @@
 <template>
-  <PageContainer title="Sync Data Log / Request Log">
+  <PageContainer title="Sync Data Log">
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="Sync Data Log" name="sync-data-logs" />
-      <el-tab-pane label="Request Log" name="request-logs" />
+      <!-- <el-tab-pane label="Request Log" name="request-logs" /> -->
     </el-tabs>
     <router-view />
   </PageContainer>

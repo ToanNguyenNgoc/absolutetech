@@ -107,6 +107,10 @@ export class TransactionController extends BaseService<TransactionDocument> {
           },
         },
       },
+      {
+        path:'files',
+        match: { ref_model: 'TransactionModel' },
+      }
     ]);
     return detail;
   }
