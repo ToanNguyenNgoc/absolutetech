@@ -10,7 +10,7 @@
       <el-table-column prop="timestamp_fetch" label="Timestamp Fetch" />
       <el-table-column label="Created">
         <template #default="{ row }">
-          {{ formatDate(row.createdAt) }}
+          {{ formatDateTime(row.createdAt) }}
         </template>
       </el-table-column>
     </el-table>
@@ -24,7 +24,7 @@
 <script setup>
 import AppPagination from '@/components/common/AppPagination.vue';
 import { useGetSyncDataLogs } from '@/hooks';
-import { formatDate, getIndexTable } from '@/utils/common';
+import { formatDateTime, getIndexTable } from '@/utils/common';
 import { reactive } from 'vue';
 
 const params = reactive({

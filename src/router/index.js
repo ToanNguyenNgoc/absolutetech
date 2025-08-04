@@ -27,6 +27,7 @@ import TransactionView from "@/views/admin/WarehouseView/transactions/Transactio
 import LogView from "@/views/admin/Log/LogView.vue";
 import SyncDataLogView from "@/views/admin/Log/sync-data-log/SyncDataLogView.vue";
 import RequestLogView from "@/views/admin/Log/request-log/RequestLogView.vue";
+import TransactionDetailView from "@/views/admin/WarehouseView/transactions/TransactionDetailView.vue";
 
 const routes = [
   {
@@ -141,6 +142,11 @@ const routes = [
         path:'transactions',
         name:'transactions',
         component: TransactionView
+      },
+      {
+        path:'transactions/:id',
+        name:'transaction-detail',
+        component: TransactionDetailView
       },
       {
         path:'log',

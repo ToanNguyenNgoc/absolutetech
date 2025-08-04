@@ -256,8 +256,8 @@ export default {
         };
 
         const loadDataIfEdit = async () => {
-            AppLoading.show();
             if (props.id) {
+                AppLoading.show();
                 try {
                     const res = await getJobNumberById(props.id,{
                         gen_duplicate: route.path.includes('/duplicate') ? true: null 
