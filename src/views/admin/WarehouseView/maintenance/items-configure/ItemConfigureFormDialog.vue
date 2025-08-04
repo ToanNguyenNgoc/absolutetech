@@ -45,7 +45,7 @@
         <div class="row-item">
           <label class="label">Item Type</label>
           <el-select size="large" style="width: 100%;" v-model="type">
-            <el-option v-for="item in types" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in types" :key="item" :label="item.toUpperCase()" :value="item" />
           </el-select>
           <div class="error-text" v-if="errors.type">{{ errors.type }}</div>
         </div>
@@ -108,6 +108,7 @@ import { baseURL } from '@/api/axios';
 import { AppLoading } from '@/utils/common';
 import { ElMessage } from 'element-plus';
 import * as yup from 'yup';
+import { TYPE_SPARE } from '@/utils/constants';
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -123,7 +124,7 @@ const { dialogWidth } = useDialogFromSize();
 const mediaUploadUrl = `${baseURL}/media`;
 const fileList = ref([]);
 
-const types = ['TTI', 'TTC', 'Perishable', 'CE', 'Torque wrench', 'Others'];
+const types = Object.values(TYPE_SPARE);
 
 const {
   useFieldModel,

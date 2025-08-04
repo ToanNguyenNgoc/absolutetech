@@ -8,6 +8,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   BinConfigureDocument,
   BinConfigureModel,
+  IssueCardDocument,
+  IssueCardModel,
   IssueDocument,
   IssueModel,
   TransactionDetailDocument,
@@ -40,6 +42,8 @@ export class IssuingController {
     private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(TransactionDetailModel.name)
     private readonly transactionDetailModel: Model<TransactionDetailDocument>,
+    @InjectModel(IssueCardModel.name)
+    private readonly issueCardModel: Model<IssueCardDocument>
   ) { }
   @Post('')
   async postIssue(@Req() req, @Body() body: IssuingCreate) {
@@ -65,13 +69,20 @@ export class IssuingController {
       await this.issueModel.findByIdAndUpdate(item.id, { quantity_request: dbIssue.quantity_request - quantity_issue }).exec();
       const binConfigure = await this.binConfigureModel.findById(dbIssue.bin_configure);
       if (!binConfigure) return;
+
+      //[START]: create record to issue_cards
+      await this.issueCardModel.create({
+        project_request: project_request_id,
+        issue: item.id,
+        taker: body.taker_id,
+        bin_configure: binConfigure._id,
+        quantity: quantity_issue
+      })
+      //
       await this.binConfigureModel.findByIdAndUpdate(binConfigure._id, { quantity_oh: binConfigure.quantity_oh - quantity_issue });
       dataTransactionIssues.push({
         issue: dbIssue._id,
         bin_configure: dbIssue.bin_configure,
-        // quantity: dbIssue.quantity_request,
-        // changed_qty: -quantity_issue,
-        // current_qty: dbIssue.quantity_request - quantity_issue
         quantity: quantity_issue,
         changed_qty: dbIssue.quantity_request - quantity_issue,
         current_qty: dbIssue.quantity_request

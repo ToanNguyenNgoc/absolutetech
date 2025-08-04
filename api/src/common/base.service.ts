@@ -8,7 +8,7 @@ import { sanitizePopulate } from 'src/helpers';
 import { Utils } from 'src/utils/utils';
 import { NotFoundException } from '@nestjs/common';
 
-interface SearchParams {
+export interface SearchParams {
   search?: string;
   searchFields?: string[];
   filters?: Record<string, any>;

@@ -33,3 +33,12 @@ export const TIME_SHEET_STATUSES = {
   APPROVE: { value: 'approve' },
   CLOSE: { value: 'close' },
 }
+
+export const TYPE_SPARE = {
+  CONSUMABLE: 'consumable',
+  TTC: 'ttc',
+  PERISHABLE: 'perishable',
+  CE: 'ce',
+  TORQUE_WRENCH: 'torque_wrench',
+  OTHERS: 'others',
+}

@@ -5,8 +5,8 @@
 
             <div class="menu-grid">
                 <MenuCard title="Issue" icon="🟢" to="/admin/issues" />
-                <!-- <MenuCard title="Return" icon="🔙" />
-            <MenuCard title="Replenish" icon="📦" />
+                <MenuCard title="Return" icon="🔙" to="/admin/returns" />
+                <!-- <MenuCard title="Replenish" icon="📦" />
             <MenuCard title="Physical" icon="📝" />
             <MenuCard title="Notifications" icon="🔔" /> -->
                 <MenuCard title="Configure Items / Locations" icon="📦" to="/admin/maintenance/clusters" />

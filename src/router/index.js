@@ -28,6 +28,7 @@ import LogView from "@/views/admin/Log/LogView.vue";
 import SyncDataLogView from "@/views/admin/Log/sync-data-log/SyncDataLogView.vue";
 import RequestLogView from "@/views/admin/Log/request-log/RequestLogView.vue";
 import TransactionDetailView from "@/views/admin/WarehouseView/transactions/TransactionDetailView.vue";
+import ReturnView from "@/views/admin/WarehouseView/return/ReturnView.vue";
 
 const routes = [
   {
@@ -157,6 +158,11 @@ const routes = [
           {path:'request-logs', name:'request-logs', component: RequestLogView},
         ]
       },
+      {
+        path:'returns',
+        name:'returns',
+        component: ReturnView
+      }
     ],
   },
   { path: "/", redirect: "/login" },
