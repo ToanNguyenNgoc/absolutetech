@@ -155,7 +155,7 @@ export class SyncDataService {
           const mapsTrans = rows.map((row) => {
             const updatedRow: any = {};
             for (const [key, value] of Object.entries(row)) {
-              if (key.endsWith('_id')) {
+              if (key.endsWith('_id') && key != 'ref_id') {
                 updatedRow[key.replace(/_id$/, '')] = value;
               } else {
                 updatedRow[key] = value;
@@ -163,8 +163,9 @@ export class SyncDataService {
             }
             // Luôn set _id = row.id để làm upsert
             updatedRow._id = row.id;
-            console.log('updatedRow', updatedRow);
-            console.log('tableName', tableName);
+            // console.log('updatedRow', updatedRow);
+            // console.log('tableName', tableName);
+            // console.log('model', model);
 
             return {
               updateOne: {
@@ -174,7 +175,12 @@ export class SyncDataService {
               },
             };
           });
-          await model.bulkWrite(mapsTrans);
+
+          try {
+            await model.bulkWrite(mapsTrans);
+          } catch (error) {
+            console.log('errorerrorerror', error);
+          }
         }
       }
       console.log({
