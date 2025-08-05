@@ -17,7 +17,12 @@ export const PROJECT_REQUEST_STATUS = {
 }
 
 export const TRANSACTION_TYPE = {
-  ISSUE: { value: 'ISSUE', name: 'ISSUE' }
+  ISSUE: { value: 'ISSUE', name: 'ISSUE' },
+  REPLENISH: { value: 'REPLENISH', name: 'REPLENISH' },
+  ISSUE_IMAGE: { value: 'ISSUE_IMAGE', name: 'ISSUE_IMAGE' },
+  CREATE_BIN_CONFIGURE: { value: 'CREATE_BIN_CONFIGURE', name: 'CREATE_BIN_CONFIGURE' },
+  UPDATE_BIN_CONFIGURE: { value: 'UPDATE_BIN_CONFIGURE', name: 'UPDATE_BIN_CONFIGURE' },
+  TYPE_REMOVE_BIN_CONFIGURE: { value: 'TYPE_REMOVE_BIN_CONFIGURE', name: 'TYPE_REMOVE_BIN_CONFIGURE' },
 }
 
 export const BIN_STATUSES = {

@@ -116,3 +116,7 @@ export const onErrorImage = (e) => {
   e.target.src = imageError;
   e.target.style.objectFit = "contain";
 }
+export const renderBinLocation = (bin) => {
+  if (!bin) return;
+  return `${bin?.cluster?.name} - ${bin?.shelf?.name} - ${bin?.row} - ${bin?.bin}`
+}

@@ -33,7 +33,11 @@
               <span class="item-name">{{ $index + `` }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="issue.bin_configure.spare.name" label="Item" />
+          <el-table-column label="Item">
+            <template #default="{ row }">
+              {{ row?.issue?.bin_configure?.spare?.name || row?.bin_configure?.spare?.name }}
+            </template>
+          </el-table-column>
           <el-table-column prop="current_qty" label="Current Quantity" />
           <el-table-column prop="quantity" label="Quantity" />
           <el-table-column prop="changed_qty" label="Changed Quality" />
@@ -43,7 +47,7 @@
         <p class="image_title">Issue Images</p>
         <div class="image_cnt">
           <div class="image_item_cnt" v-for="item in detail?.files" :key="item._id">
-            <img class="item_image" :src="item.original_url" alt="" @error="onErrorImage" >
+            <img class="item_image" :src="item.original_url" alt="" @error="onErrorImage">
           </div>
         </div>
       </template>

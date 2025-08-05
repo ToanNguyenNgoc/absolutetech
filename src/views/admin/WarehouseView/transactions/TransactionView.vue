@@ -16,13 +16,13 @@
       </el-table-column>
       <el-table-column label="Trans Date">
         <template #default="{ row }">
-          {{ formatDate(row.createdAt) }}
+          {{ formatDateTime(row.createdAt) }}
         </template>
       </el-table-column>
       <el-table-column prop="job_number.code" label="Job Number" />
       <el-table-column label="Item Details">
         <template #default="{ row }">
-          {{ genItemDetails(row.transaction_details) }}
+          {{ genItemDetails(row.transaction_details, row.type) }}
         </template>
       </el-table-column>
       <el-table-column label="Quantity">
@@ -51,11 +51,12 @@
 import AppPagination from '@/components/common/AppPagination.vue';
 import PageContainer from '@/components/common/PageContainer.vue';
 import { useGetTransactions } from '@/hooks';
-import { formatDate, getIndexTable } from '@/utils/common';
+import { formatDateTime, getIndexTable } from '@/utils/common';
 import { reactive, ref } from 'vue';
 import { debounce } from 'lodash';
 import { Search } from '@element-plus/icons-vue';
 import { View } from '@element-plus/icons-vue'
+import { TRANSACTION_TYPE } from '@/utils/constants';
 
 const params = reactive({
   page: 1,
@@ -68,8 +69,12 @@ const params = reactive({
 const search_text = ref();
 const onInputSearch = debounce((val) => { params.search = val }, 800);
 const { transactions, isLoading, response } = useGetTransactions(params);
-const genItemDetails = (details = []) => {
-  return details.map(i => i.issue?.bin_configure?.spare?.name).filter(Boolean).join(', ')
+const genItemDetails = (details = [], type = 'ISSUE') => {
+  let names = details.map(i => i.issue?.bin_configure?.spare?.name).filter(Boolean).join(', ');
+  if (type == TRANSACTION_TYPE.REPLENISH.value) {
+    names = details.map(i => i.bin_configure?.spare?.name).filter(Boolean).join(', ');
+  }
+  return names
 }
 const genQuantity = (details = []) => {
   if (details.length == 0) return 'N/A';

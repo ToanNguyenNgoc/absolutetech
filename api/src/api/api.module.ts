@@ -15,6 +15,7 @@ import { TransactionModule } from './transaction/transaction.module';
 import { SyncDataLogModule } from './sync-data-log/sync-data-log.module';
 import { StatisticModule } from './statistic/statistic.module';
 import { ReturnModule } from './return/return.module';
+import { ReplenishModule } from './replenish/replenish.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ReturnModule } from './return/return.module';
     StatisticModule,
     SyncDataLogModule,
     ReturnModule,
+    ReplenishModule,
     TransactionModule,
   ],
 })

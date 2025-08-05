@@ -3,6 +3,7 @@ export * from './bin';
 export * from './cluster';
 export * from './log';
 export * from './project-request';
+export * from './replenish';
 export * from './return';
 export * from './shelf';
 export * from './spare';

@@ -29,6 +29,7 @@ import SyncDataLogView from "@/views/admin/Log/sync-data-log/SyncDataLogView.vue
 import RequestLogView from "@/views/admin/Log/request-log/RequestLogView.vue";
 import TransactionDetailView from "@/views/admin/WarehouseView/transactions/TransactionDetailView.vue";
 import ReturnView from "@/views/admin/WarehouseView/return/ReturnView.vue";
+import ReplenishView from "@/views/admin/WarehouseView/replenish/ReplenishView.vue";
 
 const routes = [
   {
@@ -162,6 +163,11 @@ const routes = [
         path:'returns',
         name:'returns',
         component: ReturnView
+      },
+      {
+        path:'replenishes',
+        name:'replenishes',
+        component: ReplenishView
       }
     ],
   },

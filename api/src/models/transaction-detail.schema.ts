@@ -11,6 +11,7 @@ export class TransactionDetailModel {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'TransactionModel',
     required: false,
+    index: true,
   })
   transaction: mongoose.Types.ObjectId;
 
@@ -18,6 +19,7 @@ export class TransactionDetailModel {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'IssueModel',
     required: false,
+    index: true,
   })
   issue: mongoose.Types.ObjectId;
 
@@ -25,6 +27,7 @@ export class TransactionDetailModel {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'BinConfigureModel',
     required: false,
+    index: true,
   })
   bin_configure: mongoose.Types.ObjectId;
 
