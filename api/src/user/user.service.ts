@@ -41,6 +41,20 @@ export class UserService extends BaseService<UserDocument> {
     return user;
   }
 
+  async updateOrCreate(dto: Partial<User>) {
+    let user = await this.userModel.findOne({ username: dto.username });
+    if (user) {
+      await this.userModel.findOneAndUpdate({ username: dto.username }, {
+        ...dto
+      });
+      console.log('Update user: ', user?.username);
+    } else {
+      user = await this.createUser(dto);
+      console.log('Update user: ', user?.username);
+    }
+    return user
+  }
+
   async createUser(dto: Partial<User>) {
     const shortId = uuidv4().slice(0, 4);
     const hashed = await bcrypt.hash(dto.password ?? '', 10);
