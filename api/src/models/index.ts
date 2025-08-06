@@ -5,6 +5,7 @@ export * from './shelf.schema';
 export * from './spare.schema';
 export * from './project-request.schema';
 export * from './issues.scheme';
+export * from './issue-card.schema';
 export * from './vehicle.schema';
 export * from './vehicle-type.schema';
 export * from './transaction.scheme';

@@ -8,6 +8,15 @@ export type SpareDocument = SpareModel & Document;
   timestamps: true,
 })
 export class SpareModel {
+  static TYPE = {
+    CONSUMABLE: 'consumable',
+    TTC: 'ttc',
+    PERISHABLE: 'perishable',
+    CE: 'ce',
+    TORQUE_WRENCH: 'torque_wrench',
+    OTHERS: 'others',
+  };
+
   @Prop()
   name?: string;
 

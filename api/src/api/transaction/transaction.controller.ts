@@ -38,6 +38,15 @@ export class TransactionController extends BaseService<TransactionDocument> {
             { $match: { $expr: { $eq: ['$transaction', '$$transactionId'] } } },
             {
               $lookup: {
+                from: 'bin_configures', localField: 'bin_configure', foreignField: '_id', as: 'bin_configure', pipeline: [
+                  { $lookup: { from: 'spares', localField: 'spare', foreignField: '_id', as: 'spare' } },
+                  { $unwind: { path: '$spare', preserveNullAndEmptyArrays: true } },
+                ]
+              }
+            },
+            { $unwind: { path: '$bin_configure', preserveNullAndEmptyArrays: true } },
+            {
+              $lookup: {
                 from: 'issues',
                 localField: 'issue',
                 foreignField: '_id',
@@ -85,7 +94,7 @@ export class TransactionController extends BaseService<TransactionDocument> {
       limit: qr.limit,
       pipeline,
       search: qr.search,
-      searchFields: ['job_number.code', 'transaction_details.issue.bin_configure.spare.name'],
+      searchFields: ['job_number.code', 'transaction_details.issue.bin_configure.spare.name', 'transaction_details.bin_configure.spare.name'],
       sort: qr.sort,
     });
   }
@@ -97,18 +106,21 @@ export class TransactionController extends BaseService<TransactionDocument> {
       'taker',
       {
         path: 'transaction_details',
-        populate: {
-          path: 'issue',
-          populate: {
-            path: 'bin_configure',
+        populate: [
+          { path: 'bin_configure', populate: ['spare'] },
+          {
+            path: 'issue',
             populate: {
-              path: 'spare'
-            }
-          },
-        },
+              path: 'bin_configure',
+              populate: {
+                path: 'spare'
+              }
+            },
+          }
+        ],
       },
       {
-        path:'files',
+        path: 'files',
         match: { ref_model: 'TransactionModel' },
       }
     ]);

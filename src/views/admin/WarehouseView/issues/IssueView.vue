@@ -7,11 +7,12 @@
             Scan or Manual Input
           </span>
           <div class="input_search_form">
-            <el-input v-model="search_text" size="large" placeholder="Enter job number, project name..." @input="onInputSearch"
-              :suffix-icon="Search" />
+            <el-input v-model="search_text" size="large" placeholder="Enter job number, project name..."
+              @input="onInputSearch" :suffix-icon="Search" />
           </div>
         </div>
-        <el-table v-if="search_text?.trim().length > 0" v-loading="isLoading" :data="project_requests" class="custom-table" border style="margin-top: 16px;">
+        <el-table v-if="search_text?.trim().length > 0" v-loading="isLoading" :data="project_requests"
+          class="custom-table" border style="margin-top: 16px;">
           <el-table-column type="index" label="No." width="57" />
           <el-table-column prop="job_number.code" label="Job Number" />
           <el-table-column prop="job_number.client" label="Client" />
@@ -36,7 +37,8 @@
       </template>
       <div v-else class="cart_cnt">
         <el-button type="primary" :icon="Back" circle @click="projectSelected = null; onClearAllData()" />
-        <el-table v-loading="isLoadingIssues" :data="issues.filter(i => i.bin_configure)" class="custom-table" border style="margin-top: 16px;">
+        <el-table v-loading="isLoadingIssues" :data="issues.filter(i => i.bin_configure)" class="custom-table" border
+          style="margin-top: 16px;">
           <el-table-column label="No." width="57">
             <template #default="{ row, $index }">
               <div style="display: flex;align-items: center;">
@@ -53,14 +55,15 @@
               {{ renderLocation(row.bin_configure?.bin) }}
             </template>
           </el-table-column>
-          <el-table-column prop="bin_configure.quantity_oh" label="OH Quantity" />
-          <el-table-column prop="quantity_request" label="Quantity Request" />
           <el-table-column label="Qty Issue">
             <template #default="{ row }">
-              <el-input-number v-model="row.quantity_issue" :min="0" :max="row.quantity_request"
+              <el-input-number v-model="row.quantity_issue" :min="0"
+                :max="row.quantity_request <= row?.bin_configure?.quantity_oh ? row.quantity_request : row?.bin_configure?.quantity_oh"
                 :disabled="row.quantity_request === 0" @change="(e) => handleChangeQuantityIssue(e, row)" />
             </template>
           </el-table-column>
+          <el-table-column prop="bin_configure.quantity_oh" label="OH Quantity" />
+          <el-table-column prop="quantity_request" label="Quantity Request" />
         </el-table>
         <div class="cart_cnt_button">
           <el-button type="primary" @click="onCheckOut" :icon="Right"

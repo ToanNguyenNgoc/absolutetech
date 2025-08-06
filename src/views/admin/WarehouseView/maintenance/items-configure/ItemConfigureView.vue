@@ -19,7 +19,11 @@
           <span class="item-name">{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="type" label="Type" />
+       <el-table-column label="Type">
+        <template #default="{ row }">
+          <span class="item-name">{{ row.type.toUpperCase() }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="part_no" label="P/N" />
       <el-table-column prop="material_no" label="Mat’l No" />
       <el-table-column prop="description" label="Description" />

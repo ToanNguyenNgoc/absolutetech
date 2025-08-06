@@ -1,10 +1,5 @@
 import { Module } from '@nestjs/common';
-import { IssuingController } from './issuing.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  JobNumber,
-  JobNumberSchema,
-} from 'src/job-number/schemas/job-number.schema';
 import {
   BinConfigureModel,
   BinConfigureSchema,
@@ -12,23 +7,26 @@ import {
   IssueCardSchema,
   IssueModel,
   IssueSchema,
+  ProjectRequestModel,
+  ProjectRequestSchema,
   TransactionDetailModel,
   TransactionDetailSchema,
   TransactionModel,
   TransactionSchema,
 } from 'src/models';
+import { ReturnController } from './return.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: BinConfigureModel.name, schema: BinConfigureSchema },
-      { name: JobNumber.name, schema: JobNumberSchema },
+      { name: ProjectRequestModel.name, schema: ProjectRequestSchema },
+      { name: IssueCardModel.name, schema: IssueCardSchema },
       { name: IssueModel.name, schema: IssueSchema },
+      { name: BinConfigureModel.name, schema: BinConfigureSchema },
       { name: TransactionModel.name, schema: TransactionSchema },
       { name: TransactionDetailModel.name, schema: TransactionDetailSchema },
-      { name: IssueCardModel.name, schema: IssueCardSchema },
     ]),
   ],
-  controllers: [IssuingController],
+  controllers: [ReturnController],
 })
-export class IssuingModule {}
+export class ReturnModule {}

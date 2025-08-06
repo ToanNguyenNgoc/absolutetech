@@ -32,6 +32,7 @@ export class SyncDataLogController extends BaseService<SyncDataDocument> {
     return this.findWithAggregate({
       page: qr.page,
       limit: qr.limit,
+      pipeline: [{ $project: { data: 0 } }],
       sort: '-createdAt',
     });
   }
