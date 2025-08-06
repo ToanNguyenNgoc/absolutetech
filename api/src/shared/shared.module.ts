@@ -6,7 +6,7 @@ import {
 } from 'src/entry-log-raw/entry-log-raw.schema';
 import { EntryLog, EntryLogSchema } from 'src/entry-log/entry-log.schema';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
-import { MqttModule } from 'src/mqtt/mqtt.module';
+// import { MqttModule } from 'src/mqtt/mqtt.module';
 import { ExternalModule } from 'src/external/external.module';
 import {
   UserFinger,
@@ -26,7 +26,7 @@ import { LogTransactionModule } from './log-transaction/log-transaction.module';
       { name: EntryLogRaw.name, schema: EntryLogRawSchema },
       { name: UserFinger.name, schema: UserFingerSchema },
     ]),
-    MqttModule,
+    // MqttModule,
     ExternalModule,
     LogTransactionModule,
   ],
@@ -36,7 +36,7 @@ import { LogTransactionModule } from './log-transaction/log-transaction.module';
     EntryLogService,
     UserFingerService,
     MongooseModule,
-    MqttModule,
+    // MqttModule,
     ExternalModule,
   ],
 })

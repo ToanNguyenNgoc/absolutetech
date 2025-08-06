@@ -45,7 +45,7 @@ import { JwtService } from '@nestjs/jwt';
     }),
     ScheduleModule.forRoot(),
     BullModule.forRoot(bullConfig),
-    MqttModule,
+    // MqttModule,
     UserModule,
     AuthModule,
     EntryLogModule,

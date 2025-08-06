@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import { Model, PipelineStage, Types } from 'mongoose';
 import * as path from 'path';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
-import { MqttService } from 'src/mqtt/mqtt.service';
+// import { MqttService } from 'src/mqtt/mqtt.service';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,7 +28,7 @@ export class UserService extends BaseService<UserDocument> {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
-    private readonly mqttService: MqttService,
+    // private readonly mqttService: MqttService,
     private warehouseService: WarehouseService,
   ) {
     super(userModel)
@@ -209,10 +209,10 @@ export class UserService extends BaseService<UserDocument> {
         console.error('Error deleting avatar file:', err);
       }
     }
-    this.mqttService.publish(
-      process.env.MQTT_TOPIC_DELETE_USER as string,
-      JSON.stringify(deleted),
-    );
+    // this.mqttService.publish(
+    //   process.env.MQTT_TOPIC_DELETE_USER as string,
+    //   JSON.stringify(deleted),
+    // );
     return deleted;
   }
 
