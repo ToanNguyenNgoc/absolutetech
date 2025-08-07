@@ -8,7 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { EntryLogRawModule } from './entry-log-raw/entry-log-raw.module';
 import { EntryLogModule } from './entry-log/entry-log.module';
 import { JobNumberModule } from './job-number/job-number.module';
-import { MqttModule } from './mqtt/mqtt.module';
+// import { MqttModule } from './mqtt/mqtt.module';
 import { SyncDataModule } from './sync-data/sync-data.module';
 import { TimesheetDetailModule } from './timesheet-detail/timesheet-detail.module';
 import { TimesheetModule } from './timesheet/timesheet.module';
@@ -17,7 +17,7 @@ import { UserFingerModule } from './user-finger/user-finger.module';
 import { UserModule } from './user/user.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { BullModule } from '@nestjs/bull';
-import { bullConfig } from './configs';
+// import { bullConfig } from './configs';
 import { ApiModule } from './api/api.module';
 import { FrontendMiddleware, LogRequestMiddleware } from './middlewares';
 import { QUEUE_NAME } from './constants';
@@ -39,12 +39,22 @@ import { JwtService } from '@nestjs/jwt';
         rootPath: join(__dirname, '..', '..', 'public', 'dist'),
         exclude: ['/api*'],
       },
+      {
+        rootPath: join(__dirname, '..', '..', 'public', 'dist'),
+        exclude: ['/docs*'],
+      },
     ),
     MongooseModule.forRoot(process.env.MONGODB_URI || '', {
       dbName: process.env.MONGODB_DB_NAME,
     }),
     ScheduleModule.forRoot(),
-    BullModule.forRoot(bullConfig),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT || 6379),
+        password: process.env.REDIS_PASSWORD,
+      },
+    }),
     // MqttModule,
     UserModule,
     AuthModule,
