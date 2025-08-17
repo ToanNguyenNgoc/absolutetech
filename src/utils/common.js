@@ -120,3 +120,7 @@ export const renderBinLocation = (bin) => {
   if (!bin) return;
   return `${bin?.cluster?.name} - ${bin?.shelf?.name} - ${bin?.row} - ${bin?.bin}`
 }
+export const toUpperCaseFirstText = (text = '') => {
+  if (text.trim().length == 0) return;
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

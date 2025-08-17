@@ -607,6 +607,7 @@ export default {
     flex-direction: column;
     height: 100%;
     max-width: 220px;
+    padding-top: 5%;
 }
 
 .menu-nav ul {

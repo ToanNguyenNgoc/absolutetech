@@ -12,6 +12,7 @@ import ChartContainer from './ChartContainer.vue';
 import { useQuery } from '@tanstack/vue-query';
 import { StatisticApi } from '@/api';
 import { computed } from 'vue';
+import { toUpperCaseFirstText } from '@/utils/common';
 
 const { data } = useQuery({
   queryKey: ['statistic/timesheets'],
@@ -24,7 +25,7 @@ const chartOptions = computed(() => ({
     type: 'donut',
     height: '100%',
   },
-  labels: (data.value?.data?.list || []).map(i => i.status || ''),
+  labels: (data.value?.data?.list || []).map(i => toUpperCaseFirstText(i.status || '')),
   responsive: [{
     breakpoint: 480,
     options: {
@@ -36,15 +37,16 @@ const chartOptions = computed(() => ({
       }
     }
   }]
-}))
+}));
 
 </script>
 
 <style scoped>
-.chart-wrapper{
+.chart-wrapper {
   height: 100%;
 }
-.chart-wrapper ::deep(.vue-apexcharts){
+
+.chart-wrapper ::deep(.vue-apexcharts) {
   display: flex;
   justify-content: center;
 }
