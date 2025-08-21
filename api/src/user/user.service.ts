@@ -29,7 +29,7 @@ export class UserService extends BaseService<UserDocument> {
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
     // private readonly mqttService: MqttService,
-    private warehouseService: WarehouseService,
+    // private warehouseService: WarehouseService,
   ) {
     super(userModel)
   }
@@ -72,17 +72,17 @@ export class UserService extends BaseService<UserDocument> {
     });
     console.log('Create User', created);
     const res = await created.save();
-    await this.warehouseService.syncUserToLaravel('create', {
-      login_name: dto.username,
-      name: dto.full_name,
-      password: dto.password,
-      email: dto.email ?? null,
-      employee_id: dto.employee_id,
-      card_id: dto.employee_id,
-      role: dto.role,
-      dept: dto.position ?? null,
-      avatar: dto.avatar ?? null,
-    });
+    // await this.warehouseService.syncUserToLaravel('create', {
+    //   login_name: dto.username,
+    //   name: dto.full_name,
+    //   password: dto.password,
+    //   email: dto.email ?? null,
+    //   employee_id: dto.employee_id,
+    //   card_id: dto.employee_id,
+    //   role: dto.role,
+    //   dept: dto.position ?? null,
+    //   avatar: dto.avatar ?? null,
+    // });
 
     return res;
   }
@@ -176,15 +176,15 @@ export class UserService extends BaseService<UserDocument> {
       if (!updated) {
         throw new UnprocessableEntityException('User not found');
       }
-      await this.warehouseService.syncUserToLaravel('update', {
-        login_name: updated.username,
-        name: dto.full_name,
-        email: updated.email ?? null,
-        employee_id: updated.employee_id,
-        card_id: updated.employee_id,
-        role: updated.role,
-        dept: updated.position ?? null,
-      });
+      // await this.warehouseService.syncUserToLaravel('update', {
+      //   login_name: updated.username,
+      //   name: dto.full_name,
+      //   email: updated.email ?? null,
+      //   employee_id: updated.employee_id,
+      //   card_id: updated.employee_id,
+      //   role: updated.role,
+      //   dept: updated.position ?? null,
+      // });
 
       return updated;
     } catch (error) {
@@ -195,9 +195,9 @@ export class UserService extends BaseService<UserDocument> {
 
   async deleteUser(id: string): Promise<UserDocument> {
     const deleted = await this.userModel.findByIdAndDelete(id).exec();
-    await this.warehouseService.syncUserToLaravel('delete', {
-      employee_id: deleted?.employee_id,
-    });
+    // await this.warehouseService.syncUserToLaravel('delete', {
+    //   employee_id: deleted?.employee_id,
+    // });
     if (!deleted) {
       throw new UnprocessableEntityException('User not found');
     }
