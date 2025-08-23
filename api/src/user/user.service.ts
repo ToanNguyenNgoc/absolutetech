@@ -12,14 +12,12 @@ import * as fs from 'fs';
 import { Model, PipelineStage, Types } from 'mongoose';
 import * as path from 'path';
 import { EntryLogService } from 'src/entry-log/entry-log.service';
-import { MqttService } from 'src/mqtt/mqtt.service';
+// import { MqttService } from 'src/mqtt/mqtt.service';
 import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
-import { WarehouseService } from 'src/external/warehouse.service';
-import { paginate } from 'src/common/pagination.util';
 import { BaseService } from 'src/common';
 
 @Injectable()
@@ -28,8 +26,8 @@ export class UserService extends BaseService<UserDocument> {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
-    private readonly mqttService: MqttService,
-    private warehouseService: WarehouseService,
+    // private readonly mqttService: MqttService,
+    // private warehouseService: WarehouseService,
   ) {
     super(userModel)
   }
@@ -39,6 +37,22 @@ export class UserService extends BaseService<UserDocument> {
       .findOne({ employee_hik: employee_hik })
       .exec();
     return user;
+  }
+
+  async updateOrCreate(dto: Partial<User>) {
+    let user = await this.userModel.findOne({ username: dto.username });
+    if (user) {
+       const hashed = await bcrypt.hash(dto.password ?? '', 10);
+      await this.userModel.findOneAndUpdate({ username: dto.username }, {
+        ...dto,
+        password: hashed
+      });
+      console.log('Update user: ', user?.username);
+    } else {
+      user = await this.createUser(dto);
+      console.log('Update user: ', user?.username);
+    }
+    return user
   }
 
   async createUser(dto: Partial<User>) {
@@ -54,20 +68,7 @@ export class UserService extends BaseService<UserDocument> {
         ),
       password: hashed,
     });
-    console.log('Create User', created);
     const res = await created.save();
-    await this.warehouseService.syncUserToLaravel('create', {
-      login_name: dto.username,
-      name: dto.full_name,
-      password: dto.password,
-      email: dto.email ?? null,
-      employee_id: dto.employee_id,
-      card_id: dto.employee_id,
-      role: dto.role,
-      dept: dto.position ?? null,
-      avatar: dto.avatar ?? null,
-    });
-
     return res;
   }
 
@@ -160,15 +161,15 @@ export class UserService extends BaseService<UserDocument> {
       if (!updated) {
         throw new UnprocessableEntityException('User not found');
       }
-      await this.warehouseService.syncUserToLaravel('update', {
-        login_name: updated.username,
-        name: dto.full_name,
-        email: updated.email ?? null,
-        employee_id: updated.employee_id,
-        card_id: updated.employee_id,
-        role: updated.role,
-        dept: updated.position ?? null,
-      });
+      // await this.warehouseService.syncUserToLaravel('update', {
+      //   login_name: updated.username,
+      //   name: dto.full_name,
+      //   email: updated.email ?? null,
+      //   employee_id: updated.employee_id,
+      //   card_id: updated.employee_id,
+      //   role: updated.role,
+      //   dept: updated.position ?? null,
+      // });
 
       return updated;
     } catch (error) {
@@ -179,9 +180,9 @@ export class UserService extends BaseService<UserDocument> {
 
   async deleteUser(id: string): Promise<UserDocument> {
     const deleted = await this.userModel.findByIdAndDelete(id).exec();
-    await this.warehouseService.syncUserToLaravel('delete', {
-      employee_id: deleted?.employee_id,
-    });
+    // await this.warehouseService.syncUserToLaravel('delete', {
+    //   employee_id: deleted?.employee_id,
+    // });
     if (!deleted) {
       throw new UnprocessableEntityException('User not found');
     }
@@ -209,10 +210,10 @@ export class UserService extends BaseService<UserDocument> {
         console.error('Error deleting avatar file:', err);
       }
     }
-    this.mqttService.publish(
-      process.env.MQTT_TOPIC_DELETE_USER as string,
-      JSON.stringify(deleted),
-    );
+    // this.mqttService.publish(
+    //   process.env.MQTT_TOPIC_DELETE_USER as string,
+    //   JSON.stringify(deleted),
+    // );
     return deleted;
   }
 

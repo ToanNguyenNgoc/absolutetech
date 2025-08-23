@@ -29,8 +29,7 @@ async function bootstrap() {
 
   for (const user of users) {
     try {
-      const created = await userService.createUser(user);
-      console.log(`Created user: ${created.username}`);
+      await userService.updateOrCreate(user);
     } catch (error) {
       console.error('Error creating user:', error.message);
     }

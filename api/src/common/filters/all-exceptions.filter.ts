@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   ExceptionFilter,
   Catch,
@@ -5,53 +6,103 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { Response, Request } from 'express';
+import { Model } from 'mongoose';
+import { RequestLogModel } from 'src/models';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  constructor(
+    @InjectModel(RequestLogModel.name)
+    private readonly requestLogModel: Model<RequestLogModel>,
+  ) {}
   catch(exception: any, host: ArgumentsHost) {
-    const ctx      = host.switchToHttp();
+    const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request  = ctx.getRequest<Request>();
+    const request = ctx.getRequest<Request>();
 
-    let status  = HttpStatus.INTERNAL_SERVER_ERROR;
+    const timestamp = new Date().toISOString();
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errors: any[] = [];
 
+    // 1. HttpException (NestJS)
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exResp = exception.getResponse();
 
-      // If the response is an object
       if (typeof exResp === 'object' && exResp !== null) {
-        console.log('exResp', exResp);
         message = (exResp as any).message || message;
         errors = (exResp as any).errors || [];
-      }
-      // If the response is an array of strings (Nest default for validation errors)
-      else if (Array.isArray(exResp)) {
-        // We'll treat this as a validation error
+      } else if (Array.isArray(exResp)) {
         status = HttpStatus.BAD_REQUEST;
         message = 'Validation error';
-        // Convert ["username should not be empty", ...] -> [{ field, message }, ...]
         errors = exResp.map((errStr: string) => parseValidationError(errStr));
-      }
-      // If it's just a string
-      else if (typeof exResp === 'string') {
+      } else if (typeof exResp === 'string') {
         message = exResp;
       }
     }
 
-    response.status(status).json({
+    // 2. Mongoose ValidationError
+    else if (exception?.name === 'ValidationError') {
+      status = HttpStatus.UNPROCESSABLE_ENTITY;
+      message = 'Database validation error';
+      errors = Object.entries(exception.errors || {}).map(
+        ([field, err]: any) => ({
+          field,
+          message: err?.message,
+          kind: err?.kind,
+          value: err?.value,
+        }),
+      );
+    }
+
+    // 3. Mongoose CastError
+    else if (exception?.name === 'CastError') {
+      status = HttpStatus.BAD_REQUEST;
+      message = 'Invalid data type';
+      errors = [
+        {
+          field: exception.path,
+          message: `Expected ${exception.kind}, received ${typeof exception.value}`,
+          value: exception.value,
+        },
+      ];
+    }
+
+    // 4. MongoDB Duplicate Key, etc.
+    else if (exception?.code === 11000) {
+      status = HttpStatus.CONFLICT;
+      message = 'Duplicate key error';
+      errors = [
+        {
+          field: Object.keys(exception.keyPattern || {})[0],
+          message: 'Already exists',
+        },
+      ];
+    }
+
+    // 5. JS Runtime errors (TypeError, ReferenceError, etc.)
+    else if (exception instanceof Error) {
+      message = exception.message;
+      errors = [{ message: exception.stack?.split('\n')[0] || message }];
+    }
+
+    // 6. Unknown error
+    else {
+      errors = [{ message: 'Unknown error', detail: exception }];
+    }
+    const data = {
       status,
       message,
       errors,
-      timestamp: new Date().toISOString(),
+      timestamp,
       path: request.url,
-    });
+    };
+    response.status(status).json(data);
   }
 }
-
 
 function parseValidationError(str: string) {
   const tokens = str.split(' ');
