@@ -124,3 +124,10 @@ export const toUpperCaseFirstText = (text = '') => {
   if (text.trim().length == 0) return;
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+export const calculateDaysBetween = (startDateStr, endDateStr) => {
+  if (!startDateStr || !endDateStr) return 0;
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+  const diffTime = endDate - startDate;
+  return diffTime / (1000 * 60 * 60 * 24);
+}

@@ -24,6 +24,8 @@ import { QUEUE_NAME } from './constants';
 import { LogRequestConsumers } from './consumers/log-request.consumer';
 import { RequestLogModel, RequestLogSchema } from './models';
 import { JwtService } from '@nestjs/jwt';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 @Module({
   imports: [
@@ -75,7 +77,14 @@ import { JwtService } from '@nestjs/jwt';
   ],
 
   controllers: [UploadController],
-  providers: [LogRequestConsumers, JwtService],
+  providers: [
+    LogRequestConsumers,
+    JwtService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

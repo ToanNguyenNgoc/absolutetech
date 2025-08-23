@@ -18,8 +18,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
-import { WarehouseService } from 'src/external/warehouse.service';
-import { paginate } from 'src/common/pagination.util';
 import { BaseService } from 'src/common';
 
 @Injectable()
@@ -70,20 +68,7 @@ export class UserService extends BaseService<UserDocument> {
         ),
       password: hashed,
     });
-    console.log('Create User', created);
     const res = await created.save();
-    // await this.warehouseService.syncUserToLaravel('create', {
-    //   login_name: dto.username,
-    //   name: dto.full_name,
-    //   password: dto.password,
-    //   email: dto.email ?? null,
-    //   employee_id: dto.employee_id,
-    //   card_id: dto.employee_id,
-    //   role: dto.role,
-    //   dept: dto.position ?? null,
-    //   avatar: dto.avatar ?? null,
-    // });
-
     return res;
   }
 

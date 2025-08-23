@@ -30,6 +30,11 @@
                     {{ formatDate(row.est_end_date) }}
                 </template>
             </el-table-column>
+             <el-table-column prop="est_end_date" label="Est. Man Day">
+                <template #default="{ row }">
+                    {{ calculateDaysBetween(row.est_start_date, row.est_end_date) }}
+                </template>
+            </el-table-column>
 
             <el-table-column label="Action" width="160">
                 <template #default="{ row, $index }">
@@ -61,6 +66,7 @@ import debounce from 'lodash/debounce';
 import { useRouter } from 'vue-router';
 import { formatDate } from '@/utils/common';
 import {Edit, Delete, DocumentCopy} from '@element-plus/icons-vue'
+import { calculateDaysBetween } from '@/utils/common';
 
 export default {
     name: 'JobNumberTable',
@@ -190,7 +196,8 @@ export default {
             handleCurrentChange,
             formatDate,
             Edit,
-            Delete, DocumentCopy
+            Delete, DocumentCopy,
+            calculateDaysBetween
         };
     },
 };
