@@ -2,7 +2,12 @@
   <el-dialog :model-value="modelValue" @update:modelValue="emit('update:modelValue', $event)"
     :before-close="handleClose" style="width: 45vw;">
     <div class="taker_cnt">
-      <p class="taker_title">Checkout</p>
+      <p class="taker_title">Replenish</p>
+      <div class="taker_info">
+        <AppInput label="Name" v-model="userInfo.username" :disabled="true" />
+        <AppInput label="Employee ID" v-model="userInfo.employee_id" :disabled="true" style="margin: 8px 0px;" />
+        <p class="label">Signature</p>
+      </div>
       <div class="taker_pad">
         <VueSignaturePad ref="signature" :min-width="2" :max-width="2" :options="{
           penColor: '#000',
@@ -21,14 +26,17 @@
 </template>
 
 <script setup>
+import { useAuth } from "@/hooks";
 import { VueSignaturePad } from "@selemondev/vue3-signature-pad"
 import { ElMessage } from "element-plus";
 import { ref } from 'vue';
+import AppInput from "@/components/common/AppInput.vue";
 
 // eslint-disable-next-line no-unused-vars, no-undef
 const props = defineProps({
   modelValue: Boolean,
 })
+const { userInfo } = useAuth();
 // eslint-disable-next-line no-undef
 const emit = defineEmits(['update:modelValue', 'on-submit']);
 const signature = ref(null);
@@ -70,5 +78,12 @@ const handleSubmit = () => {
   aspect-ratio: 16/9;
   border-radius: 8px;
   border: solid 1px #303133;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  width: 100%;
 }
 </style>
