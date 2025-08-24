@@ -133,7 +133,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
   //project-request/issue
   @Post('/issues')
   async postIssueItem(@Body() body: IssueCreate) {
-    const issue = await this.issueModel.create(body);
+    const issue = await this.issueModel.create({ ...body, quantity_origin: body.quantity_request });
     return issue;
   }
 
@@ -146,7 +146,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
       .populate([
         {
           path: 'bin_configure',
-          match:{deletedAt: null},
+          match: { deletedAt: null },
           populate: [
             { path: 'bin', populate: ['cluster', 'shelf'] },
             { path: 'spare' },
@@ -161,7 +161,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
     const issue = await this.issueModel.findOne({ _id: id }).populate([
       {
         path: 'bin_configure',
-        match:{deletedAt: null},
+        match: { deletedAt: null },
         populate: [
           { path: 'bin', populate: ['cluster', 'shelf'] },
           { path: 'spare' },
@@ -174,7 +174,7 @@ export class ProjectRequestController extends BaseService<ProjectRequestDocument
 
   @Put('/issues/:id')
   async putIssueItem(@Param('id') id: string, @Body() body: IssueCreate) {
-    return this.issueModel.findByIdAndUpdate(id, body, { new: true }).exec();
+    return this.issueModel.findByIdAndUpdate(id, { ...body, quantity_origin: body.quantity_request }, { new: true }).exec();
   }
 
   @Delete('/issues/:id')

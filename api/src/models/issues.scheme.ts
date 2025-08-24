@@ -14,6 +14,9 @@ export class IssueModel {
   @Prop({ required: false, default: 0 })
   quantity_request: number;
 
+  @Prop({ required: false, default: 0 })
+  quantity_origin: number;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProjectRequestModel',
@@ -79,6 +82,7 @@ IssueSchema.statics.getSyncColumns = function () {
   return [
     'id',
     'quantity_request',
+    'quantity_origin',
     'project_request_id',
     'bin_configure_id',
     'issue_to_id',
