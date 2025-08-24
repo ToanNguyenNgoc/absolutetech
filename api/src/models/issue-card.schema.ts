@@ -43,4 +43,37 @@ export class IssueCardModel {
 
 export const IssueCardSchema = SchemaFactory.createForClass(IssueCardModel);
 export type IssueCardDocument = IssueCardModel & Document;
+
 IssueCardSchema.plugin(mongooseLeanVirtuals);
+IssueCardSchema.virtual('id').get(function () {
+  return this._id?.toString?.() ?? null;
+});
+
+IssueCardSchema.virtual('project_request_id').get(function () {
+  return this.project_request?._id?.toString?.() ?? null;
+});
+
+IssueCardSchema.virtual('bin_configure_id').get(function () {
+  return this.bin_configure?._id?.toString?.() ?? null;
+});
+
+IssueCardSchema.virtual('issue_id').get(function () {
+  return this.issue?._id?.toString?.() ?? null;
+});
+IssueCardSchema.virtual('taker_id').get(function () {
+  return this.taker?._id?.toString?.() ?? null;
+});
+
+IssueCardSchema.statics.getSyncColumns = function () {
+  return [
+    'id',
+    'quantity',
+    'project_request_id',
+    'bin_configure_id',
+    'taker_id',
+    'issue_id',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+  ];
+};

@@ -27,6 +27,7 @@ import {
   BinConfigureModel,
   BinModel,
   ClusterModel,
+  IssueCardModel,
   IssueModel,
   ProjectRequestModel,
   ShelfModel,
@@ -74,6 +75,10 @@ export class SyncDataService {
     private projectRequestModel: SyncableModel<ProjectRequestModel>,
     @InjectModel(IssueModel.name)
     private issueModel: SyncableModel<IssueModel>,
+
+    @InjectModel(IssueCardModel.name)
+    private issueCardModel: SyncableModel<IssueCardModel>,
+
     @InjectModel(TransactionModel.name)
     private transactionModel: SyncableModel<TransactionModel>,
     @InjectModel(TransactionDetailModel.name)
@@ -94,6 +99,7 @@ export class SyncDataService {
       binConfigure: this.binConfigureModel,
       projectRequest: this.projectRequestModel,
       issues: this.issueModel,
+      issueCard: this.issueCardModel,
       transaction: this.transactionModel,
       transactionDetail: this.transactionDetailModel,
     };
@@ -117,6 +123,7 @@ export class SyncDataService {
         { model: this.binConfigureModel, table: 'bin_configures' },
         { model: this.projectRequestModel, table: 'project_requests' },
         { model: this.issueModel, table: 'issues' },
+        { model: this.issueCardModel, table: 'issue_cards' },
         { model: this.transactionModel, table: 'transactions' },
         { model: this.transactionDetailModel, table: 'transaction_details' },
       ];
