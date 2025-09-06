@@ -131,3 +131,11 @@ export const calculateDaysBetween = (startDateStr, endDateStr) => {
   const diffTime = endDate - startDate;
   return diffTime / (1000 * 60 * 60 * 24);
 }
+export const formatCurrency = (value) => {
+  if (!value && value !== 0) return ''
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+export const parseCurrency = (value) => {
+  return value.replace(/,/g, '')
+}

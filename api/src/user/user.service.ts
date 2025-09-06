@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import {
@@ -19,11 +21,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, UserItemRequest } from './user.enums';
 import { User, UserDocument } from './user.schema';
 import { BaseService } from 'src/common';
+import { UserSettingSalaryDocument, UserSettingSalaryModel } from 'src/models';
+import { UserSettingSalaryDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService extends BaseService<UserDocument> {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(UserSettingSalaryModel.name) private readonly userSettingSalaryModel: Model<UserSettingSalaryDocument>,
     private readonly entryLogService: EntryLogService,
     private readonly userFingerService: UserFingerService,
     // private readonly mqttService: MqttService,
@@ -69,6 +74,8 @@ export class UserService extends BaseService<UserDocument> {
       password: hashed,
     });
     const res = await created.save();
+    //@ts-ignore
+    await this.saveUseSettingSalary(res._id, dto.user_setting_salary);
     return res;
   }
 
@@ -92,7 +99,9 @@ export class UserService extends BaseService<UserDocument> {
           ],
           as: 'userFingers',
         },
-      }
+      },
+      {$lookup:{from:'user_setting_salaries', localField:'_id', foreignField:'user', as:'user_setting_salary'}},
+      {$unwind: { path: '$user_setting_salary', preserveNullAndEmptyArrays: true } },
     ];
     const roleIds = roles?.split('|').filter(i => !isNaN(Number(i))).map(i => Number(i));
     if (roleIds?.length > 0) {
@@ -170,7 +179,7 @@ export class UserService extends BaseService<UserDocument> {
       //   role: updated.role,
       //   dept: updated.position ?? null,
       // });
-
+      await this.saveUseSettingSalary(updated._id, dto.user_setting_salary)
       return updated;
     } catch (error) {
       console.log(error);
@@ -466,4 +475,13 @@ export class UserService extends BaseService<UserDocument> {
       return null
     }
   }
+
+  async saveUseSettingSalary(user_id: any, body?: UserSettingSalaryDto) {
+  if (!user_id || !body) return;
+  await this.userSettingSalaryModel.updateOne(
+    { user: user_id },
+    { $set: { ...body } },
+    { upsert: true }
+  );
+}
 }

@@ -105,6 +105,7 @@ export default {
         const handleEdit = (row) => {
             console.log('Edit:', toRaw(row)); // row là một reactive proxy
             const plainRow = toRaw(row);
+            console.log(plainRow);
             if (addUserRef.value && addUserRef.value.setUser) {
                 addUserRef.value.setUser(plainRow);
             }

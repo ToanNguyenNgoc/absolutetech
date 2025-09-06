@@ -83,6 +83,56 @@
                     <el-date-picker v-model="userForm.work_permit_expiry" type="date" placeholder="Select expiry date"
                         style="width: 100%;" />
                 </el-form-item>
+            </div>
+            <h2 class="dialog-title" style="margin: 24px 0px;">Setting Salary</h2>
+            <div class="form-modal-add-user">
+                <el-form-item label="Basic salary">
+                    <el-input v-model="userForm.user_setting_salary.basic_salary" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('basic_salary', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Base allowance">
+                    <el-input v-model="userForm.user_setting_salary.base_allowance" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('base_allowance', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"   
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Job allowance">
+                    <el-input v-model="userForm.user_setting_salary.job_allowance" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('job_allowance', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"  
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Overtime">
+                    <el-input v-model="userForm.user_setting_salary.overtime" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('overtime', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
 
             </div>
         </el-form>
@@ -105,6 +155,7 @@ import { computed, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
 import AvatarUploader from '../common/AvatarUploader.vue';
 import MyMessage from '../common/MyMessage.vue';
 import { Roles } from '@/constant/role';
+import { formatCurrency, parseCurrency } from '@/utils/common';
 
 
 export default {
@@ -139,7 +190,37 @@ export default {
             password: '',
             nric_fin: '',
             work_permit_expiry: null,
+            user_setting_salary: {
+                basic_salary: 0,
+                base_allowance: 0,
+                job_allowance: 0,
+                overtime: 0
+            }
         });
+
+        const getDefaultUserForm = () => ({
+            avatar: '',
+            full_name: '',
+            username: '',
+            employee_id: '',
+            position: '',
+            role: '',
+            gender: '',
+            birthday: null,
+            phone: '',
+            address: '',
+            email: '',
+            password: '',
+            nric_fin: '',
+            work_permit_expiry: null,
+            user_setting_salary: {
+                basic_salary: 0,
+                base_allowance: 0,
+                job_allowance: 0,
+                overtime: 0
+            }
+        })
+
         const genders = ['Male', 'Female'];
 
         const dialogWidth = computed(() => {
@@ -160,20 +241,7 @@ export default {
         };
 
         const handleAddUser = () => {
-            userForm.value = {
-                avatar: '',
-                full_name: '',
-                username: '',
-                employee_id: '',
-                position: '',
-                role: '',
-                gender: '',
-                birthday: null,
-                phone: '',
-                address: '',
-                email: '',
-                password: '',
-            };
+            userForm.value = getDefaultUserForm()
             selectedFile.value = null;
             isEditLocal.value = false;
             dialogVisible.value = true;
@@ -187,9 +255,19 @@ export default {
             dialogVisible.value = value;
         };
 
+        const handleInput = (key, val) => {
+            if (val === null || val === undefined || val === '') {
+                userForm.value.user_setting_salary[key] = 0
+                return
+            }
+            const cleaned = String(val).replace(/[^\d]/g, '')
+            userForm.value.user_setting_salary[key] = cleaned ? parseInt(cleaned) : 0
+        }
+
         const setUser = (row) => {
             if (row) {
-                Object.assign(userForm.value, row);
+                const defaultForm = getDefaultUserForm()
+                userForm.value = Object.assign(defaultForm, row)
                 if (typeof row.role === 'string') {
                     const found = Roles.find(r => r.label === row.role);
                     userForm.value.role = found ? found.value : '';
@@ -251,6 +329,9 @@ export default {
             setUser,
             saveUser,
             onFileSelected,
+            handleInput,
+            formatCurrency,
+            parseCurrency,
         };
     },
 };
@@ -383,6 +464,14 @@ export default {
 :deep(.el-input__prefix-inner .el-input__icon svg) {
     width: 24px !important;
     height: 24px !important;
+}
+
+.custom-input-number{
+    width: 100%;
+}
+.custom-input-number >>> .el-input-number__decrease,
+.custom-input-number >>> .el-input-number__increase {
+  display: none;
 }
 
 @media (max-width: 1024px) {}

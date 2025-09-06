@@ -16,6 +16,7 @@ import { UserFingerService } from 'src/user-finger/user-finger.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 import { LogTransactionModule } from './log-transaction/log-transaction.module';
+import { UserSettingSalaryModel, UserSettingSalarySchema } from 'src/models';
 
 @Global()
 @Module({
@@ -25,6 +26,7 @@ import { LogTransactionModule } from './log-transaction/log-transaction.module';
       { name: EntryLog.name, schema: EntryLogSchema },
       { name: EntryLogRaw.name, schema: EntryLogRawSchema },
       { name: UserFinger.name, schema: UserFingerSchema },
+      { name: UserSettingSalaryModel.name, schema: UserSettingSalarySchema },
     ]),
     // MqttModule,
     ExternalModule,

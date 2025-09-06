@@ -5,11 +5,29 @@ import {
   IsOptional,
   IsEnum,
   IsDateString,
+  IsNumber,
+  ValidateNested,
 } from 'class-validator';
 import { Gender, Role } from '../user.enums';
 import { IsUniqueUser } from '../validators/is-unique-user.decorator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
+export class UserSettingSalaryDto {
+  @IsNumber()
+  basic_salary: number;
+
+  @IsNumber()
+  @IsOptional()
+  base_allowance: number;
+
+  @IsNumber()
+  @IsOptional()
+  job_allowance: number;
+
+  @IsNumber()
+  @IsOptional()
+  overtime: number;
+}
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -65,4 +83,9 @@ export class CreateUserDto {
   @IsDateString()
   @Transform(({ obj }) => obj.work_permit_expiry ?? obj.work_permit_expiry)
   work_permit_expiry?: Date;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => UserSettingSalaryDto)
+  user_setting_salary?: UserSettingSalaryDto;
 }

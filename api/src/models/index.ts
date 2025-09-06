@@ -11,3 +11,4 @@ export * from './vehicle-type.schema';
 export * from './transaction.scheme';
 export * from './transaction-detail.schema';
 export * from './request-log.schema';
+export * from './user-setting-salary.schema';

@@ -4,9 +4,11 @@ import {
   IsEmail,
   IsEnum,
   IsDateString,
+  ValidateNested,
 } from 'class-validator';
 import { Gender, Role } from '../user.enums';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import { UserSettingSalaryDto } from './create-user.dto';
 
 export class UpdateUserDto {
   @IsString()
@@ -57,4 +59,9 @@ export class UpdateUserDto {
   @IsDateString()
   @Transform(({ obj }) => obj.work_permit_expiry ?? obj.work_permit_expiry)
   work_permit_expiry?: Date;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => UserSettingSalaryDto)
+  user_setting_salary?: UserSettingSalaryDto;
 }
