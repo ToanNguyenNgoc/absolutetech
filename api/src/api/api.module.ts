@@ -19,9 +19,11 @@ import { ReplenishModule } from './replenish/replenish.module';
 import { NormalWorkingHourModule } from './normal-working-hour/normal-working-hour.scheme.module';
 import { HolidayModule } from './holiday/holiday.module';
 import { SalaryModule } from './salary/salary.module';
+import { AppConfigModule } from './app-config/app-config.module';
 
 @Module({
   imports: [
+    AppConfigModule,
     BinModule,
     BinConfigureModule,
     ClusterModule,

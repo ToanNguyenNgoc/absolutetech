@@ -1,14 +1,21 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Injectable, Query } from '@nestjs/common';
+import { Controller, Get, Injectable, Query, UseGuards } from '@nestjs/common';
 import { SalaryJobnumberQr, SalaryTimesheetQr } from './salary.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { JobNumber } from 'src/job-number/schemas/job-number.schema';
 import { Model, PipelineStage } from 'mongoose';
 import { paginateWithAggregate } from 'src/common/pagination.util';
 import { TimesheetDetailSalaryModel } from 'src/models';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { NAME } from 'src/constants';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/user/user.enums';
 
 @Controller('api/salary')
 @Injectable()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth(NAME.JWT)
 export class SalaryController {
   constructor(
     @InjectModel(JobNumber.name)
@@ -16,6 +23,7 @@ export class SalaryController {
     @InjectModel(TimesheetDetailSalaryModel.name)
     private readonly timesheetDetailSalaryModel: Model<TimesheetDetailSalaryModel>,
   ) { }
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   @Get('job-numbers')
   getSalaryJobnumber(@Query() qr: SalaryJobnumberQr) {
     const pipeline: PipelineStage[] = [
@@ -62,6 +70,7 @@ export class SalaryController {
     });
   }
 
+  @Roles(Role.ADMINISTRATOR, Role.SUPER_ADMIN, Role.SUPERVISOR)
   @Get('timesheets')
   getSalaryTimesheets(@Query() qr: SalaryTimesheetQr) {
     const pipeline: PipelineStage[] = [
