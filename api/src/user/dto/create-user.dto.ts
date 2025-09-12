@@ -1,14 +1,13 @@
 import {
   IsString,
   IsNotEmpty,
-  IsEmail,
   IsOptional,
   IsEnum,
   IsDateString,
   IsNumber,
   ValidateNested,
 } from 'class-validator';
-import { Gender, Role } from '../user.enums';
+import { Role } from '../user.enums';
 import { IsUniqueUser } from '../validators/is-unique-user.decorator';
 import { Transform, Type } from 'class-transformer';
 
@@ -18,15 +17,51 @@ export class UserSettingSalaryDto {
 
   @IsNumber()
   @IsOptional()
-  base_allowance: number;
+  allowance_monthly: number;
 
   @IsNumber()
   @IsOptional()
-  job_allowance: number;
+  allowance_on_rope: number;
 
   @IsNumber()
   @IsOptional()
-  overtime: number;
+  allowance_indoor: number;
+
+  @IsNumber()
+  @IsOptional()
+  allowance_night_job: number;
+
+  @IsNumber()
+  @IsOptional()
+  allowance_training: number;
+
+  @IsNumber()
+  @IsOptional()
+  allowance_shipyard_smaller_5_hours: number;
+
+  @IsNumber()
+  @IsOptional()
+  allowance_shipyard_greater_5_hours: number;
+
+  @IsNumber()
+  @IsOptional()
+  allowance_others: number;
+
+  @IsNumber()
+  @IsOptional()
+  overtime_1_5: number;
+
+  @IsNumber()
+  @IsOptional()
+  overtime_2_0: number;
+
+  @IsNumber()
+  @IsOptional()
+  levy: number;
+
+  @IsNumber()
+  @IsOptional()
+  allowance_overseas_weekday: number;
 }
 export class CreateUserDto {
   @IsString()
@@ -49,9 +84,9 @@ export class CreateUserDto {
   @IsOptional()
   position?: string;
 
-  @IsEnum(Gender)
-  @IsOptional()
-  gender?: Gender;
+  // @IsEnum(Gender)
+  // @IsOptional()
+  // gender?: Gender;
 
   @IsDateString()
   @IsOptional()
@@ -63,12 +98,12 @@ export class CreateUserDto {
   @IsOptional()
   address?: string;
 
-  @IsEmail()
-  @IsUniqueUser({ message: 'Email already exists' })
-  email?: string;
+  // @IsEmail()
+  // @IsUniqueUser({ message: 'Email already exists' })
+  // email?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   password: string;
 
   @IsOptional()

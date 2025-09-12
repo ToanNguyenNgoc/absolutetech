@@ -16,6 +16,9 @@ import { SyncDataLogModule } from './sync-data-log/sync-data-log.module';
 import { StatisticModule } from './statistic/statistic.module';
 import { ReturnModule } from './return/return.module';
 import { ReplenishModule } from './replenish/replenish.module';
+import { NormalWorkingHourModule } from './normal-working-hour/normal-working-hour.scheme.module';
+import { HolidayModule } from './holiday/holiday.module';
+import { SalaryModule } from './salary/salary.module';
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { ReplenishModule } from './replenish/replenish.module';
     ReturnModule,
     ReplenishModule,
     TransactionModule,
+    NormalWorkingHourModule,
+    HolidayModule,
+    SalaryModule,
   ],
 })
 export class ApiModule {}

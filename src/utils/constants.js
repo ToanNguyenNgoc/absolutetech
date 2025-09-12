@@ -47,3 +47,13 @@ export const TYPE_SPARE = {
   TORQUE_WRENCH: 'torque_wrench',
   OTHERS: 'others',
 }
+
+export const WEEKDAYS = {
+  SUNDAY:'SUNDAY',
+  MONDAY:'MONDAY',
+  TUESDAY:'TUESDAY',
+  WEDNESDAY:'WEDNESDAY',
+  THURSDAY:'THURSDAY',
+  FRIDAY:'FRIDAY',
+  SATURDAY:'SATURDAY',
+}

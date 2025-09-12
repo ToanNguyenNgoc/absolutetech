@@ -30,6 +30,10 @@ import RequestLogView from "@/views/admin/Log/request-log/RequestLogView.vue";
 import TransactionDetailView from "@/views/admin/WarehouseView/transactions/TransactionDetailView.vue";
 import ReturnView from "@/views/admin/WarehouseView/return/ReturnView.vue";
 import ReplenishView from "@/views/admin/WarehouseView/replenish/ReplenishView.vue";
+import NormalWorkingHourView from "@/views/admin/NormalWorkingHourView.vue";
+import HolidayView from "@/views/admin/HolidayView.vue";
+import IndividualTimesheetView from "@/views/admin/Salary/IndividualTimesheetView.vue";
+import DailyTimesheetView from "@/views/admin/Salary/DailyTimesheetView.vue";
 
 const routes = [
   {
@@ -168,7 +172,27 @@ const routes = [
         path:'replenishes',
         name:'replenishes',
         component: ReplenishView
-      }
+      },
+      {
+        path:'normal-working-hours',
+        name:'normal-working-hours',
+        component: NormalWorkingHourView
+      },
+      {
+        path:'holidays',
+        name:'holidays',
+        component: HolidayView
+      },
+      {
+        path:'salary/individual-timesheets',
+        name:'salary/individual-timesheets',
+        component: IndividualTimesheetView,
+      },
+      {
+        path:'salary/daily-timesheets',
+        name:'salary/daily-timesheets',
+        component: DailyTimesheetView,
+      },
     ],
   },
   { path: "/", redirect: "/login" },

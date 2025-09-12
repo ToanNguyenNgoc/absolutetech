@@ -28,5 +28,6 @@ defineProps({
 .wrapper {
   height: calc(100% - 10px);
   overflow-y: scroll;
+  overflow-x: scroll;
 }
 </style>

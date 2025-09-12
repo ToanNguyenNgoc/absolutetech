@@ -3,6 +3,7 @@ import moment from 'moment';
 import imageError from '@/assets/img/image-placeholder.png'
 import { ElLoading, ElMessageBox } from 'element-plus'
 import { baseURL } from '@/api/axios';
+import { WEEKDAYS } from './constants';
 
 export const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -29,8 +30,84 @@ export const formatTime = (_, __, cellValue) => {
 }
 
 
-export const formatDateEn = (dateStr) => !dateStr ? '' : moment(dateStr).format('DD-MMM-YY');
-export const formatDateTime = (date) => !date ? '' : moment(date).format('YYYY-MM-DD HH:mm');
+export const formatDateEn = (dateStr) => !dateStr ? '' : moment().utc(dateStr).local().format('DD-MMM-YY');
+export const formatDateTime = (date) => !date ? '' : moment().utc(date).local().format('YYYY-MM-DD HH:mm');
+export const formatDateLocal = (date) => !date ? '' : moment().utc(date).local().format('YYYY-MM-DD');
+
+/**
+ * Format ISO time string to local time in HH:mm format
+ * If input is already HH:mm, return it as is.
+ * If input is empty or invalid, return "00:00"
+ *
+ * @param {string} isoString
+ * @returns {string}
+ */
+export const formattedTime = (isoString) => {
+  if (!isoString) return '00:00';
+  if (/^\d{2}:\d{2}$/.test(isoString)) return isoString;
+
+  const m = moment.utc(isoString);
+  return m.isValid() ? m.local().format('HH:mm') : '00:00';
+};
+
+/**
+ * Convert HH:mm (local time) + baseDate → ISO string in UTC
+ * @param {string} timeStr - Time in HH:mm format (e.g., "05:30")
+ * @param {string|Date} baseDate - Date reference (e.g., "2025-08-03")
+ * @returns {string|null} UTC ISO String (e.g., "2025-08-02T22:30:00.000Z")
+ */
+export const parseTimeToISO = (timeStr, baseDate) => {
+  if (!/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+
+  const localDate = moment(baseDate); // local day reference
+  const [hour, minute] = timeStr.split(':').map(Number);
+
+  // Create a moment in local time
+  const localMoment = moment(localDate)
+    .set({ hour, minute, second: 0, millisecond: 0 });
+
+  // Convert to UTC ISO string
+  return localMoment.utc().toISOString();
+}
+
+/**
+ * Tính số giờ giữa time_in và time_out
+ * @param {string} timeInISO - Thời gian bắt đầu (ISO string - UTC)
+ * @param {string} timeOutISO - Thời gian kết thúc (ISO string - UTC)
+ * @returns {number} - Số giờ (thập phân), làm tròn 2 chữ số
+ */
+export const calculateDurationHours = (timeInISO, timeOutISO) => {
+  if (!timeInISO || !timeOutISO) return 0;
+  const start = moment.utc(timeInISO);
+  const end = moment.utc(timeOutISO);
+  const duration = moment.duration(end.diff(start));
+  const hours = duration.asHours();
+  return hours >= 0 ? Number(hours.toFixed(2)) : Number(duration.add(1, 'day').asHours().toFixed(2));
+}
+
+/**
+ * Trả về tên thứ trong tuần dạng in hoa (MONDAY, TUESDAY, ...)
+ * @param {string} isoDate - ISO string (UTC)
+ * @returns {string} - Tên thứ tiếng Anh viết hoa
+ */
+export const getWeekdayNameUpper = (isoDate) => {
+  const dayNames = Object.values(WEEKDAYS);
+  const date = new Date(isoDate);
+  return dayNames[date.getUTCDay()];
+}
+
+/**
+ * Trả về tên thứ trong tuần dạng in hoa (MONDAY, TUESDAY, ...)
+ * @param {string} dateStr - Format: YYYY-MM-DD
+ * @returns {string} - Tên thứ tiếng Anh viết hoa
+ */
+export const getWeekday = (dateStr) => {
+  const dayNames = Object.values(WEEKDAYS);
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  return dayNames[date.getUTCDay()];
+};
 
 
 export class AppLoading {

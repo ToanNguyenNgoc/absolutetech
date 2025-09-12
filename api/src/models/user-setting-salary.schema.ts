@@ -18,13 +18,40 @@ export class UserSettingSalaryModel {
   basic_salary: number;
 
   @Prop({ required: false, default: 0 })
-  base_allowance: number;
+  allowance_monthly: number;
 
   @Prop({ required: false, default: 0 })
-  job_allowance: number;
+  levy: number;
 
   @Prop({ required: false, default: 0 })
-  overtime: number;
+  allowance_on_rope: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_indoor: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_night_job: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_training: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_shipyard_smaller_5_hours: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_shipyard_greater_5_hours: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_overseas_weekday: number;
+
+  @Prop({ required: false, default: 0 })
+  allowance_others: number;
+
+  @Prop({ required: false, default: 0 })
+  overtime_1_5: number;
+
+  @Prop({ required: false, default: 0 })
+  overtime_2_0: number;
 
   @Prop({ type: Date, default: null })
   deletedAt?: Date;

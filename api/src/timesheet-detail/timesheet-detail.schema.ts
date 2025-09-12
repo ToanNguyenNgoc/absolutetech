@@ -38,6 +38,12 @@ export class TimesheetDetail {
   @Prop()
   remarks?: string;
 
+  @Prop({ default: false })
+  is_night_job: boolean;
+
+  @Prop({ default: false })
+  is_indoor: boolean;
+
   @Prop()
   signature_tech?: string;
 
@@ -78,6 +84,8 @@ TimesheetDetailSchema.statics.getSyncColumns = function () {
     'other',
     'remarks',
     'signature_tech',
+    'is_night_job',
+    'is_indoor',
     'createdAt',
     'updatedAt',
     'deletedAt',

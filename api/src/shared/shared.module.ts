@@ -17,6 +17,7 @@ import { User, UserSchema } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 import { LogTransactionModule } from './log-transaction/log-transaction.module';
 import { UserSettingSalaryModel, UserSettingSalarySchema } from 'src/models';
+import { DaySalaryCheckModule } from './day-salary-check/day-salary-check.module';
 
 @Global()
 @Module({
@@ -31,6 +32,7 @@ import { UserSettingSalaryModel, UserSettingSalarySchema } from 'src/models';
     // MqttModule,
     ExternalModule,
     LogTransactionModule,
+    DaySalaryCheckModule,
   ],
   providers: [UserService, EntryLogService, UserFingerService],
   exports: [

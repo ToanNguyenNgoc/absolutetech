@@ -6,7 +6,7 @@ import {
   IsDateString,
   ValidateNested,
 } from 'class-validator';
-import { Gender, Role } from '../user.enums';
+import { Role } from '../user.enums';
 import { Transform, Type } from 'class-transformer';
 import { UserSettingSalaryDto } from './create-user.dto';
 
@@ -19,7 +19,7 @@ export class UpdateUserDto {
   @IsOptional()
   username?: string;
 
-  @IsEmail()
+  // @IsEmail()
   @IsOptional()
   email?: string;
 
@@ -33,9 +33,9 @@ export class UpdateUserDto {
   @IsOptional()
   position?: string;
 
-  @IsEnum(Gender)
+  // @IsEnum(Gender)
   @IsOptional()
-  gender?: Gender;
+  gender?: string;
 
   @IsDateString()
   @IsOptional()

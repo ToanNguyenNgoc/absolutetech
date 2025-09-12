@@ -23,6 +23,7 @@ import { User, UserDocument } from './user.schema';
 import { BaseService } from 'src/common';
 import { UserSettingSalaryDocument, UserSettingSalaryModel } from 'src/models';
 import { UserSettingSalaryDto } from './dto/create-user.dto';
+import { calculateOvertime_1_5, calculateOvertime_2_0 } from 'src/utils/formula';
 
 @Injectable()
 export class UserService extends BaseService<UserDocument> {
@@ -107,6 +108,7 @@ export class UserService extends BaseService<UserDocument> {
     if (roleIds?.length > 0) {
       pipeline.push({ $match: { role: { $in: roleIds } } })
     }
+    await this.seedingUserSettingSalary();
     return this.findWithAggregate({
       page,
       limit,
@@ -476,12 +478,41 @@ export class UserService extends BaseService<UserDocument> {
     }
   }
 
+  async seedingUserSettingSalary() {
+    const count = await this.userSettingSalaryModel.countDocuments();
+    if (count > 0) return;
+    const users = await this.userModel.find();
+    await Promise.all(users.map(async (user) => {
+      return this.saveUseSettingSalary(user._id, {
+        basic_salary: 0,
+        allowance_monthly: 0,
+        levy: 0,
+        allowance_on_rope: 0,
+        allowance_indoor: 0,
+        allowance_night_job: 0,
+        allowance_training: 0,
+        allowance_shipyard_smaller_5_hours: 0,
+        allowance_shipyard_greater_5_hours: 0,
+        allowance_overseas_weekday: 0,
+        allowance_others: 0,
+        overtime_1_5: 0,
+        overtime_2_0: 0
+      });
+    }))
+  }
+
   async saveUseSettingSalary(user_id: any, body?: UserSettingSalaryDto) {
-  if (!user_id || !body) return;
-  await this.userSettingSalaryModel.updateOne(
-    { user: user_id },
-    { $set: { ...body } },
-    { upsert: true }
-  );
-}
+    if (!user_id || !body) return;
+    await this.userSettingSalaryModel.updateOne(
+      { user: user_id },
+      {
+        $set: {
+          ...body,
+          overtime_1_5: calculateOvertime_1_5(body.basic_salary),
+          overtime_2_0: calculateOvertime_2_0(body.basic_salary)
+        }
+      },
+      { upsert: true }
+    );
+  }
 }

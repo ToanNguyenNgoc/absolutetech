@@ -35,37 +35,38 @@ export class User {
   })
   role: Role;
 
-  @Prop()
+  @Prop({ required: false })
   position: string;
 
   @Prop({
     type: String,
-    enum: Gender,
+    // enum: Gender,
+    required: false,
   })
   gender: Gender;
 
-  @Prop()
+  @Prop({ required: false })
   birthday: Date;
 
-  @Prop()
+  @Prop({ required: false })
   phone: string;
 
-  @Prop()
+  @Prop({ required: false })
   address: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: false })
   email: string;
 
-  @Prop()
+  @Prop({ required: false })
   password: string;
 
-  @Prop()
+  @Prop({ required: false })
   avatar: string;
 
-  @Prop()
+  @Prop({ required: false })
   nric_fin: string;
 
-  @Prop()
+  @Prop({ required: false })
   work_permit_expiry: Date;
 
   @Prop({ type: Date, default: null }) // Add deletedAt field

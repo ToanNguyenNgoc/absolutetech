@@ -21,8 +21,7 @@ class TimesheetDetailUpdateItemDto {
   time_out?: string;
 
   @IsOptional()
-  @IsString()
-  over_time?: string;
+  over_time?: any;
 
   @IsOptional()
   @IsBoolean()
@@ -39,6 +38,14 @@ class TimesheetDetailUpdateItemDto {
   @IsOptional()
   @IsString()
   remarks?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  is_indoor?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  is_night_job?: boolean;
 }
 
 export class UpdateTimesheetDetailsDto {

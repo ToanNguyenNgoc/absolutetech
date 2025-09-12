@@ -34,4 +34,5 @@ export class QUEUE_NAME {
   static sync_data = 'sync_data';
   static log_transaction = 'log_transaction';
   static log_request = 'log_request';
+  static approve_timesheet_detail_salary = 'approve_timesheet_detail_salary';
 }

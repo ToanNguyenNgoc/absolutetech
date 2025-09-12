@@ -12,3 +12,6 @@ export * from './transaction.scheme';
 export * from './transaction-detail.schema';
 export * from './request-log.schema';
 export * from './user-setting-salary.schema';
+export * from './normal-working-hour.scheme';
+export * from './holiday.schema';
+export * from './timesheet-detail-salary.schema';

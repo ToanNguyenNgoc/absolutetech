@@ -35,32 +35,32 @@
                 </el-form-item>
 
                 <!-- Position -->
-                <el-form-item label="Position">
+                <!-- <el-form-item label="Position">
                     <el-input v-model="userForm.position" placeholder="Position" />
-                </el-form-item>
+                </el-form-item> -->
 
                 <!-- Gender (Select) -->
-                <el-form-item label="Gender">
+                <!-- <el-form-item label="Gender">
                     <el-select v-model="userForm.gender" placeholder="Select Gender">
                         <el-option v-for="g in genders" :key="g" :label="g" :value="g" />
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
 
                 <!-- Birthday (Date Picker) -->
-                <el-form-item label="Birthday">
+                <!-- <el-form-item label="Birthday">
                     <el-date-picker v-model="userForm.birthday" type="date" placeholder="Select birthday"
                         style="width: 100%;" />
-                </el-form-item>
+                </el-form-item> -->
 
                 <!-- Phone -->
-                <el-form-item label="Phone">
+                <!-- <el-form-item label="Phone">
                     <el-input v-model="userForm.phone" placeholder="Phone number" />
-                </el-form-item>
+                </el-form-item> -->
 
                 <!-- Address -->
-                <el-form-item label="Address">
+                <!-- <el-form-item label="Address">
                     <el-input v-model="userForm.address" placeholder="Address" />
-                </el-form-item>
+                </el-form-item> -->
 
                 <!-- Email -->
                 <el-form-item label="Email">
@@ -85,12 +85,13 @@
                 </el-form-item>
             </div>
             <h2 class="dialog-title" style="margin: 24px 0px;">Setting Salary</h2>
-            <div class="form-modal-add-user">
+            <div class="form-modal-add-user form-modal-salary">
                 <el-form-item label="Basic salary">
                     <el-input v-model="userForm.user_setting_salary.basic_salary" :min="0" class="custom-input-number"
                         @input="(val) => handleInput('basic_salary', val)"
                         :formatter="formatCurrency"
                         :parser="parseCurrency"
+                        @blur="() => handleBlur('basic_salary')"
                     >
                         <template #prefix>
                             <span>$</span>
@@ -98,35 +99,157 @@
                     </el-input>
                 </el-form-item>
 
-                <el-form-item label="Base allowance">
-                    <el-input v-model="userForm.user_setting_salary.base_allowance" :min="0" class="custom-input-number"
-                        @input="(val) => handleInput('base_allowance', val)"
-                        :formatter="formatCurrency"
-                        :parser="parseCurrency"   
-                    >
-                        <template #prefix>
-                            <span>$</span>
-                        </template>
-                    </el-input>
-                </el-form-item>
-
-                <el-form-item label="Job allowance">
-                    <el-input v-model="userForm.user_setting_salary.job_allowance" :min="0" class="custom-input-number"
-                        @input="(val) => handleInput('job_allowance', val)"
-                        :formatter="formatCurrency"
-                        :parser="parseCurrency"  
-                    >
-                        <template #prefix>
-                            <span>$</span>
-                        </template>
-                    </el-input>
-                </el-form-item>
-
-                <el-form-item label="Overtime">
-                    <el-input v-model="userForm.user_setting_salary.overtime" :min="0" class="custom-input-number"
-                        @input="(val) => handleInput('overtime', val)"
+                <el-form-item label="Allowance Monthly">
+                    <el-input v-model="userForm.user_setting_salary.allowance_monthly" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_monthly', val)"
                         :formatter="formatCurrency"
                         :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_monthly')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Levy">
+                    <el-input v-model="userForm.user_setting_salary.levy" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('levy', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('levy')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance - On rope">
+                    <el-input v-model="userForm.user_setting_salary.allowance_on_rope" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_on_rope', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_on_rope')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance - Indoor">
+                    <el-input v-model="userForm.user_setting_salary.allowance_indoor" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_indoor', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_indoor')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance - Night Job">
+                    <el-input v-model="userForm.user_setting_salary.allowance_night_job" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_night_job', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_night_job')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance Training">
+                    <el-input v-model="userForm.user_setting_salary.allowance_training" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_training', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_training')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance - Shipyard < 5hrs">
+                    <el-input v-model="userForm.user_setting_salary.allowance_shipyard_smaller_5_hours" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_shipyard_smaller_5_hours', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_shipyard_smaller_5_hours')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance - Shipyard > 5hrs">
+                    <el-input v-model="userForm.user_setting_salary.allowance_shipyard_greater_5_hours" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_shipyard_greater_5_hours', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_shipyard_greater_5_hours')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance - Overseas (Weekday)">
+                    <el-input v-model="userForm.user_setting_salary.allowance_overseas_weekday" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_overseas_weekday', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_overseas_weekday')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Allowance Others">
+                    <el-input v-model="userForm.user_setting_salary.allowance_others" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('allowance_others', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('allowance_others')"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Overtime 1.5">
+                    <el-input v-model="userForm.user_setting_salary.overtime_1_5" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('overtime_1_5', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('overtime_1_5')"
+                        :disabled="true"
+                    >
+                        <template #prefix>
+                            <span>$</span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="Overtime 2.0">
+                    <el-input v-model="userForm.user_setting_salary.overtime_2_0" :min="0" class="custom-input-number"
+                        @input="(val) => handleInput('overtime_2_0', val)"
+                        :formatter="formatCurrency"
+                        :parser="parseCurrency"
+                        @blur="() => handleBlur('overtime_2_0')"
+                        :disabled="true"
                     >
                         <template #prefix>
                             <span>$</span>
@@ -151,11 +274,12 @@
 <script>
 import { createUser, updateUser } from '@/api/user';
 import { uploadFile } from '@/api/upload';
-import { computed, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue';
 import AvatarUploader from '../common/AvatarUploader.vue';
 import MyMessage from '../common/MyMessage.vue';
 import { Roles } from '@/constant/role';
 import { formatCurrency, parseCurrency } from '@/utils/common';
+import { calculateOvertime_1_5, calculateOvertime_2_0 } from '@/utils/formula';
 
 
 export default {
@@ -191,10 +315,9 @@ export default {
             nric_fin: '',
             work_permit_expiry: null,
             user_setting_salary: {
-                basic_salary: 0,
-                base_allowance: 0,
-                job_allowance: 0,
-                overtime: 0
+                basic_salary: 0, allowance_monthly: 0, levy: 0, allowance_on_rope: 0, allowance_indoor: 0, allowance_night_job: 0, allowance_training: 0,
+                allowance_shipyard_smaller_5_hours: 0, allowance_shipyard_greater_5_hours: 0, allowance_overseas_weekday: 0,
+                allowance_others: 0, overtime_1_5: 0, overtime_2_0: 0,
             }
         });
 
@@ -214,10 +337,9 @@ export default {
             nric_fin: '',
             work_permit_expiry: null,
             user_setting_salary: {
-                basic_salary: 0,
-                base_allowance: 0,
-                job_allowance: 0,
-                overtime: 0
+                basic_salary: 0, allowance_monthly: 0, levy: 0, allowance_on_rope: 0, allowance_indoor: 0, allowance_night_job: 0, allowance_training: 0,
+                allowance_shipyard_smaller_5_hours: 0, allowance_shipyard_greater_5_hours: 0, allowance_overseas_weekday: 0,
+                allowance_others: 0, overtime_1_5: 0, overtime_2_0: 0,
             }
         })
 
@@ -254,15 +376,38 @@ export default {
         const setShowDialog = (value) => {
             dialogVisible.value = value;
         };
+        const DEC_PREC = 2;
 
         const handleInput = (key, val) => {
-            if (val === null || val === undefined || val === '') {
-                userForm.value.user_setting_salary[key] = 0
-                return
+            let s = val == null ? '' : String(val);
+            s = s.replace(/[^\d.]/g, '')
+                .replace(/(\..*?)\..*/g, '$1');
+            if (s.startsWith('.')) s = '0' + s;
+            const dot = s.indexOf('.');
+            if (dot !== -1) {
+                const [i, d = ''] = s.split('.');
+                s = i + '.' + d.slice(0, DEC_PREC);
             }
-            const cleaned = String(val).replace(/[^\d]/g, '')
-            userForm.value.user_setting_salary[key] = cleaned ? parseInt(cleaned) : 0
-        }
+            userForm.value.user_setting_salary[key] = s;
+        };
+
+        const handleBlur = (key) => {
+            const raw = String(userForm.value.user_setting_salary[key] ?? '');
+            const n = parseFloat(raw);
+            if (!raw || !Number.isFinite(n)) {
+                userForm.value.user_setting_salary[key] = 0;
+                return;
+            }
+            userForm.value.user_setting_salary[key] = Number(n.toFixed(DEC_PREC));
+        };
+
+        watch(
+            () => userForm.value.user_setting_salary.basic_salary,
+            (val) => {
+                userForm.value.user_setting_salary.overtime_1_5 = calculateOvertime_1_5(Number(val));
+                userForm.value.user_setting_salary.overtime_2_0 = calculateOvertime_2_0(Number(val));
+            }
+        )
 
         const setUser = (row) => {
             if (row) {
@@ -330,6 +475,7 @@ export default {
             saveUser,
             onFileSelected,
             handleInput,
+            handleBlur,
             formatCurrency,
             parseCurrency,
         };

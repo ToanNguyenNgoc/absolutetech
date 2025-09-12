@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable prettier/prettier */
 import {
   BadRequestException,
@@ -5,19 +6,31 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Timesheet } from './timesheet.schema';
 import { TimesheetDetail } from '../timesheet-detail/timesheet-detail.schema';
 import { paginate } from 'src/common/pagination.util';
 import { UpdateTimesheetDetailsDto } from './dto/update-timesheet-details.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { QUEUE_NAME } from 'src/constants';
+import { Queue } from 'bull';
+import { TimesheetDetailSalaryModel, UserSettingSalaryModel } from 'src/models';
+import { DaySalaryCheckService } from 'src/shared/day-salary-check/day-salary-check.service';
 
 @Injectable()
 export class TimesheetService {
   constructor(
+    @InjectQueue(QUEUE_NAME.approve_timesheet_detail_salary)
+    private readonly approveTimesheetQueue: Queue<{timesheet_id: any}>,
     @InjectModel(Timesheet.name)
     private timesheetModel: Model<Timesheet>,
     @InjectModel(TimesheetDetail.name)
     private timesheetDetailModel: Model<TimesheetDetail>,
+    @InjectModel(UserSettingSalaryModel.name)
+    private readonly useSettingSalaryModel: Model<UserSettingSalaryModel>,
+    @InjectModel(TimesheetDetailSalaryModel.name)
+    private readonly timesheetDetailSalaryModel: Model<TimesheetDetailSalaryModel>,
+    private readonly daySalaryCheckService: DaySalaryCheckService,
   ) {}
 
   async findAllPaginated({ status, jobnumber, page = 1, limit = 10 }) {
@@ -200,10 +213,52 @@ export class TimesheetService {
     if (timesheet.status === Timesheet.STATUS.APPROVE) {
       throw new BadRequestException('Timesheet is already approve.');
     }
-
     timesheet.status = Timesheet.STATUS.APPROVE;
     await timesheet.save();
+    await this.approveTimesheetQueue.add({timesheet_id: timesheet._id},{delay: 1000})
     return this.getDetailWithDetails(timesheetId);
+  }
+
+  async calculateAndSaveTimesheetDetailSalary(timesheet_id: any) {
+    const timesheet = await this.timesheetModel.findById(timesheet_id);
+    if(!timesheet) return;
+    const timesheetDetails = await this.timesheetDetailModel.aggregate([
+      {
+        $match: {
+          timesheet: new mongoose.Types.ObjectId(timesheet_id),
+          time_in: { $exists: true, $ne: null },
+          time_out: { $exists: true, $ne: null },
+        }
+      }
+    ]).exec();
+    await Promise.all(timesheetDetails.map(async (timesheetDetail) => {
+      const over_time = Number(timesheetDetail.over_time || 0);
+      const userSettingSalary = await this.useSettingSalaryModel.findOne({user: timesheetDetail.attendance}).lean().exec();
+      if(!userSettingSalary) return;
+      let total_allowance_salary = 0;
+      if(timesheetDetail.on_rope) total_allowance_salary += userSettingSalary.allowance_on_rope;
+      if(timesheetDetail.other) total_allowance_salary += userSettingSalary.allowance_others;
+      if(timesheetDetail.is_indoor) total_allowance_salary += userSettingSalary.allowance_indoor;
+      if(timesheetDetail.is_night_job) total_allowance_salary += userSettingSalary.allowance_night_job;
+      const isHolidayOrSunday = await this.daySalaryCheckService.checkHolidayAndSunday(timesheet.date_time);
+      let overtime_salary = over_time * userSettingSalary.overtime_1_5;
+      if(isHolidayOrSunday) overtime_salary = over_time * userSettingSalary.overtime_2_0;
+      await this.timesheetDetailSalaryModel.updateOne(
+        {timesheet_detail: timesheetDetail._id},
+        {
+          $set:{
+            jobnumber: timesheet.jobnumber,
+            timesheet: timesheet._id,
+            total_allowance_salary,
+            overtime_salary,
+            date_record: timesheet.date_time
+          }
+        },
+        {upsert: true}
+      )
+      return;
+    }))
+    return;
   }
 
   async closeTimesheet(timesheetId: string) {

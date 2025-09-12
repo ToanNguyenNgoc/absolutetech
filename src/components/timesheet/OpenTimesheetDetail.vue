@@ -20,7 +20,7 @@
                     <span>DATE</span>
                     <!-- <span>{{ formatDate(timesheet?.date_time) }}</span> -->
                     <el-date-picker v-model="detailForm.date_time" type="date" placeholder="Date" style="width: 200px;"
-                        :disabled="!isEditing" />
+                        :disabled="!isEditing" value-format="YYYY-MM-DD" @change="changeDate" />
                     <span>LOCATION</span>
                     <span>{{ jobnumber.location_at }}</span>
                 </div>
@@ -44,14 +44,16 @@
                 <el-table-column label="TIME IN">
                     <template #default="{ row }">
                         <span v-if="!isEditing">{{ formatTime(null, null, row.time_in) }}</span>
-                        <el-input v-else v-model="row.time_in" type="time" />
+                        <el-time-picker v-else style="width: unset;" v-model="row.time_in" value-format="HH:mm"
+                            :format="'HH:mm'" :clearable="false" @change="() => onTimeInput(row)" />
                     </template>
                 </el-table-column>
 
                 <el-table-column label="TIME OUT">
                     <template #default="{ row }">
                         <span v-if="!isEditing">{{ formatTime(null, null, row.time_out) }}</span>
-                        <el-input v-else v-model="row.time_out" type="time" />
+                        <el-time-picker v-else style="width: unset;" v-model="row.time_out" value-format="HH:mm"
+                            :format="'HH:mm'" :clearable="false" @change="() => onTimeInput(row)" @blur="() => onTimeInput(row)" />
                     </template>
                 </el-table-column>
 
@@ -77,6 +79,18 @@
                 <el-table-column label="OTHER">
                     <template #default="{ row }">
                         <el-checkbox v-model="row.other" :disabled="!isEditing" />
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="INDOOR">
+                    <template #default="{ row }">
+                        <el-checkbox v-model="row.is_indoor" :disabled="!isEditing" />
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="NIGHT JOB">
+                    <template #default="{ row }">
+                        <el-checkbox v-model="row.is_night_job" :disabled="!isEditing" />
                     </template>
                 </el-table-column>
 
@@ -130,13 +144,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, toRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getTimesheetDetail, approveTimesheet, closeTimesheet, updateTimesheet } from '@/api/timesheet'
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { AppLoading, formatTime } from '@/utils/common';
-import { useGetUsers } from '@/hooks';
-import { ROLES } from '@/utils/constants';
+import { AppLoading, calculateDurationHours, formattedTime, formatTime, getWeekday, parseTimeToISO } from '@/utils/common';
+import { useGetNormalWorkingHours, useGetUsers } from '@/hooks';
+import { ROLES, WEEKDAYS } from '@/utils/constants';
+import moment from 'moment';
 
 const route = useRoute()
 const router = useRouter()
@@ -149,7 +164,8 @@ const supervisors = useGetUsers({ limit: 1000, roles: `${ROLES.SUPERVISOR}` });
 const detailForm = ref({
     date_time: null,
     office_supervisor: {}
-})
+});
+const {normalWorkingHours} = useGetNormalWorkingHours();
 
 const canEdit = computed(() => {
     return timesheet.value && timesheet.value.status !== 'approve' && timesheet.value.status !== 'closed';
@@ -171,12 +187,15 @@ const fetchData = async () => {
     AppLoading.show();
     try {
         const res = await getTimesheetDetail(route.params.id)
-        detailForm.value.office_supervisor = res.data?.data.office_supervisor || {},
-            detailForm.value.date_time = res.data?.data?.date_time,
-            timesheet.value = res.data?.data,
-            jobnumber.value = res.data?.data.jobnumber || {},
-            clientSignature.value = res.data?.data.client_signature
-        originalTimesheetDetails.value = JSON.parse(JSON.stringify(timesheet.value?.details || []));
+        detailForm.value.office_supervisor = res.data?.data.office_supervisor || {};
+        detailForm.value.date_time = res.data?.data?.date_time;
+        timesheet.value = {
+            ...res.data?.data,
+            details: (res?.data?.data?.details || []).map(i => ({ ...i, time_in: formattedTime(i.time_in), time_out: formattedTime(i.time_out) }))
+        };
+        jobnumber.value = res.data?.data.jobnumber || {};
+        clientSignature.value = res.data?.data.client_signature;
+        originalTimesheetDetails.value = JSON.parse(JSON.stringify((timesheet.value?.details || [])))
     } catch (e) {
         console.error(e)
         timesheet.value = null
@@ -186,6 +205,10 @@ const fetchData = async () => {
     }
 }
 
+function changeDate(){
+    if (!timesheet.value?.details?.length) return;
+  timesheet.value.details.forEach((row) => onTimeInput(row));
+}
 
 function formatDate(dt) {
     if (!dt) return ''
@@ -219,8 +242,8 @@ async function onSave() {
             details: timesheet.value.details.map(detail => ({
                 id: detail.id,
                 attendance_id: detail.attendance_id,
-                time_in: detail.time_in,
-                time_out: detail.time_out,
+                time_in: parseTimeToISO(detail.time_in, moment(detailForm.value.date_time).format('YYYY-MM-DD')),
+                time_out: parseTimeToISO(detail.time_out, moment(detailForm.value.date_time).format('YYYY-MM-DD')),
                 over_time: detail.over_time,
                 on_rope: detail.on_rope,
                 in_charge: detail.in_charge,
@@ -239,6 +262,20 @@ async function onSave() {
         }
     }
 }
+
+// Calc biding overtime
+function onTimeInput(row) {
+    const int = parseTimeToISO(row.time_in, moment(detailForm.value.date_time).format('YYYY-MM-DD'));
+    const out = parseTimeToISO(row.time_out, moment(detailForm.value.date_time).format('YYYY-MM-DD'));
+    const hours = calculateDurationHours(int, out);
+    const weekday = getWeekday(moment(detailForm.value.date_time).format('YYYY-MM-DD'));
+    if(weekday == WEEKDAYS.SUNDAY) return row.over_time = hours;
+    const standard = toRaw(normalWorkingHours.value).find(i => i.weekday === weekday)?.hours;
+    if (hours - standard >= 0) {
+        row.over_time = hours - standard
+    }
+}
+
 
 async function onApprove() {
     try {
