@@ -364,7 +364,14 @@ export default {
     },
 
     // Submenu toggle (Vue 3: gán trực tiếp)
-    toggleSubmenu(idx) { this.openSubmenus[idx] = !this.openSubmenus[idx]; },
+    toggleSubmenu(idx) { 
+      const item = this.menuItems[idx];
+      if(item.children?.length > 0){
+        this.$router.push(item.children[0].route);
+      }
+      this.isExpanded = true;
+      this.openSubmenus[idx] = !this.openSubmenus[idx];
+     },
     toggleSubmenuMobile(idx) { this.openSubmenusMobile[idx] = !this.openSubmenusMobile[idx]; },
 
     // API
