@@ -73,8 +73,8 @@ export class CreateUserDto {
   @IsUniqueUser({ message: 'Username already exists' })
   username: string;
 
-  @IsNotEmpty()
-  @IsUniqueUser({ message: 'Employee ID already exists' })
+  @IsOptional()
+  // @IsUniqueUser({ message: 'Employee ID already exists' })
   employee_id?: string;
 
   @IsEnum(Role)

@@ -16,10 +16,10 @@ export class User {
   @Prop({ required: true, unique: true })
   username: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: false })
   employee_id: string;
 
-  @Prop({ unique: true, sparse: true })
+  @Prop({ required: false })
   employee_hik: string;
 
   @Prop({ default: 0 })
