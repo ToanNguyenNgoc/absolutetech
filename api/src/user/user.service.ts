@@ -158,12 +158,15 @@ export class UserService extends BaseService<UserDocument> {
         }
       }
 
-      if ('password' in dto) {
-        delete dto['password'];
-      }
+      // if ('password' in dto) {
+      //   delete dto['password'];
+      // }
 
       const updated = await this.userModel
-        .findByIdAndUpdate(id, dto, {
+        .findByIdAndUpdate(id, {
+          ...dto,
+          password: dto.password ? await bcrypt.hash(dto.password ?? '', 10) : undefined,
+        }, {
           new: true,
           runValidators: true,
         })

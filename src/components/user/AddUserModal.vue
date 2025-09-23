@@ -68,7 +68,7 @@
                 </el-form-item>
 
                 <!-- Password -->
-                <el-form-item label="Password" v-if="!isEditLocal">
+                <el-form-item label="Password">
                     <el-input type="password" v-model="userForm.password" placeholder="Password"
                         autocomplete="new-password" />
                 </el-form-item>
@@ -311,7 +311,7 @@ export default {
             phone: '',
             address: '',
             email: '',
-            password: '',
+            password: null,
             nric_fin: '',
             work_permit_expiry: null,
             user_setting_salary: {
@@ -333,7 +333,7 @@ export default {
             phone: '',
             address: '',
             email: '',
-            password: '',
+            password: null,
             nric_fin: '',
             work_permit_expiry: null,
             user_setting_salary: {

@@ -1,7 +1,6 @@
 import {
   IsString,
   IsOptional,
-  IsEmail,
   IsEnum,
   IsDateString,
   ValidateNested,
@@ -64,4 +63,7 @@ export class UpdateUserDto {
   @IsOptional()
   @Type(() => UserSettingSalaryDto)
   user_setting_salary?: UserSettingSalaryDto;
+
+  @IsOptional()
+  password?: string;
 }
