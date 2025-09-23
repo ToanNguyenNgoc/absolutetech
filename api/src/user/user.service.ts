@@ -67,7 +67,7 @@ export class UserService extends BaseService<UserDocument> {
     const created = new this.userModel({
       ...dto,
       employeeID: new Date().getTime(),
-      email: dto.email ||  `${new Date().getTime()}@gmail.com`,
+      email: dto.email ||  `${dto.username}@gmail.com`,
       employee_hik: 
         dto.employee_hik ||
         `${dto.employee_id?.toLocaleLowerCase().trim() || ''}hik${shortId}`.slice(
