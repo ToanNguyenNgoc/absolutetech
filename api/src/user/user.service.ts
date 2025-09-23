@@ -66,6 +66,7 @@ export class UserService extends BaseService<UserDocument> {
     const hashed = await bcrypt.hash(dto.password ?? '', 10);
     const created = new this.userModel({
       ...dto,
+      employeeID: new Date().getTime(),
       employee_hik:
         dto.employee_hik ||
         `${dto.employee_id?.toLocaleLowerCase().trim() || ''}hik${shortId}`.slice(
