@@ -13,11 +13,14 @@ export class User {
   @Prop({ required: true })
   full_name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: false })
   username: string;
 
   @Prop({ required: false })
   employee_id: string;
+
+  @Prop({ required: false })
+  employeeID: string;
 
   @Prop({ required: false })
   employee_hik: string;
