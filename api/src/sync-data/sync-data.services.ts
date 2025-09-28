@@ -109,7 +109,7 @@ export class SyncDataService {
     try {
       const models = [
         { model: this.userModel, table: 'users' },
-        { model: this.userFingerModel, table: 'user_fingers' },
+        { model: this.userFingerModel, table: 'user_finger' },
         { model: this.jobNumberModule, table: 'jobnumbers' },
         { model: this.timesheetModel, table: 'timesheets' },
         { model: this.timesheetDetailModel, table: 'timesheet_details' },
